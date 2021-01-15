@@ -1,0 +1,24 @@
+ENC28J60和内存卡接到 "KC_LS1u_SPI_C" 和 "KC_LS1u_SPI_D" 这两片PCB上.
+
+
+内存卡是接到J7接口.
+
+内存卡的 "VCC" 接 "3V"
+内存卡的 "GND" 接 "GND"
+内存卡的 "MISO" 接 "SI"
+内存卡的 "MOSI" 接 "SO"
+内存卡的 "SCK" 接 "SCK"
+内存卡的 "CS" 接 "S_CS0"
+
+
+ENC28J60是接到J8接口.
+
+ENC28J60的 "VCC" 接 "3V"
+ENC28J60的 "GND" 接 "GND"
+ENC28J60的 "SO" 接 "SI"
+ENC28J60的 "SI" 接 "SO"
+ENC28J60的 "SCK" 接 "SCK"
+ENC28J60的 "CS" 接 "S_CS1"
+ENC28J60的 "RESET" 接 "RST"
+ENC28J60的 "INT" 接 "S_INT0"
+

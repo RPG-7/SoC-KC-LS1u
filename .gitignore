@@ -1,0 +1,4 @@
+altera/db/
+altera/incremental_db/
+altera/output_files/
+*.bak
