@@ -1,4 +1,7 @@
 altera/db/
 altera/incremental_db/
 altera/output_files/
+sim/uvm_library/*
+gowin/impl/
+temp/
 *.bak

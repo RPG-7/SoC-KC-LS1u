@@ -1,6 +1,3 @@
-
-//IVR LENGTH:4 INSTRUCTIONS PER ROW(3LOAD+1JMP)
-//IVC LENGTH:32 INTERRUPT SOURCES, 256 BYTE
 module KC_LS1u_plus
 (
     input clk,rst,INT,WAIT,
@@ -9,6 +6,7 @@ module KC_LS1u_plus
     output [23:0]iaddr,
     input [15:0]instr,
     output [23:0]daddr,
+    output reg dread,
     output reg dwrite,
     input [7:0]ddata_i,
     output [7:0]ddata_o
@@ -106,76 +104,47 @@ IMM
 //?XREG (IVT RET SYS INTC)
 //? maybe use hidden RET register might be closer to the original methodology
 ********************************/
-reg [4:0]dbsrc_addr;
+reg [3:0]dbsrc_addr;
 //wb dst decode
 assign regwaddr=instr[10:8];
 //Instruction FUNCT5 decode (写回总线数据源控制/控制信号编码)
 always@(*)
 begin
-    case(instr[15:11])
-        default: begin dbsrc_addr=5'h00;regwrite=0;jmp_en=0; end//NOP
-       
+    case({5{WAIT}}&instr[15:11])//当CPU进入等待状态，不译码，执行NOP
+        default: 
+            begin dbsrc_addr=4'h0;regwrite=0;jmp_en=0; end//NOP
         5'h01://JMP select
-        begin
-            dbsrc_addr=5'h0;regwrite=0;jmp_en=1;
-        end
+            begin dbsrc_addr=4'h0;regwrite=0;jmp_en=1; end
         5'h02://ALU SELECT
-        begin
-            dbsrc_addr=5'h1;regwrite=1;jmp_en=0;
-        end
+            begin dbsrc_addr=4'h1;regwrite=1;jmp_en=0; end
         5'h04://LOAD MEM
-        begin
-            dbsrc_addr=5'h2;regwrite=1;jmp_en=0;
-        end
+            begin dbsrc_addr=4'h2;regwrite=1;jmp_en=0; end
         5'h05://MOV C
-        begin
-            dbsrc_addr=5'h0;regwrite=1;jmp_en=0;
-        end
+            begin dbsrc_addr=4'h0;regwrite=1;jmp_en=0; end
         5'h06://LOAD IMM
-        begin
-            dbsrc_addr=5'h3;regwrite=1;jmp_en=0;
-        end
+            begin dbsrc_addr=4'h3;regwrite=1;jmp_en=0; end
         5'h07://MOV D
-        begin
-            dbsrc_addr=5'h4;regwrite=1;jmp_en=0;
-        end
-        //SHIFT
-        5'h0d:
-        begin
-            dbsrc_addr=5'h7;regwrite=1;jmp_en=0;
-        end
+            begin dbsrc_addr=4'h4;regwrite=1;jmp_en=0; end
+        5'h0d://SHIFT START
+            begin dbsrc_addr=4'h7;regwrite=1;jmp_en=0; end
         5'h10:
-        begin
-            dbsrc_addr=5'h8;regwrite=1;jmp_en=0;
-        end
+            begin dbsrc_addr=4'h8;regwrite=1;jmp_en=0; end
         5'h12:
-        begin
-            dbsrc_addr=5'h9;regwrite=1;jmp_en=0;
-        end  
+            begin dbsrc_addr=4'h9;regwrite=1;jmp_en=0; end  
         5'h14:
-        begin
-            dbsrc_addr=5'ha;regwrite=1;jmp_en=0;
-        end  
+            begin dbsrc_addr=4'ha;regwrite=1;jmp_en=0; end  
         5'h16:
-        begin
-            dbsrc_addr=5'hb;regwrite=1;jmp_en=0;
-        end  
+            begin dbsrc_addr=4'hb;regwrite=1;jmp_en=0; end  
         5'h18:
-        begin
-            dbsrc_addr=5'hc;regwrite=1;jmp_en=0;
-        end  
+            begin dbsrc_addr=4'hc;regwrite=1;jmp_en=0; end  
         5'h1a:
-        begin
-            dbsrc_addr=5'hd;regwrite=1;jmp_en=0;
-        end  
+            begin dbsrc_addr=4'hd;regwrite=1;jmp_en=0; end  
         5'h1c://SHIFT END
-        begin
-            dbsrc_addr=5'he;regwrite=1;jmp_en=0;
-        end       
+            begin dbsrc_addr=4'he;regwrite=1;jmp_en=0; end       
     endcase
 end
 //ALU控制线
-wire [4:0]ALU_S;
+wire [3:0]ALU_S;
 wire ALU_M,ALU_Ci;
 assign ALU_S=instr[7:4];
 assign ALU_M=instr[3];
@@ -229,30 +198,30 @@ else begin jmp=0;ret_sel=0; end
 //WB mux
 always@(*)//WB DATA BUS (shift contained here)
 begin
+    if(dbsrc_addr==4'h2)dread=1;
+        else dread=0;
     case(dbsrc_addr)
-        5'h00:DB8w=C;
-        5'h01:DB8w=ALU_out;
-        5'h02:DB8w=ddata_i;
-        5'h03:DB8w=IMM;
-        5'h04:DB8w=D;
-        5'h07:DB8w=ALU_inA<<1;
-        5'h08:DB8w={ALU_inA[6:0],ALU_inB[7]};
-        5'h09:DB8w=ALU_inA>>1;
-        5'h0a:DB8w={ALU_inA[7],ALU_inA[7:1]};
-        5'h0b:DB8w=ALU_inB<<1;
-        5'h0c:DB8w=ALU_inB>>1;
-        5'h0d:DB8w={ALU_inB[7],ALU_inB[7:1]};
-        5'h0e:DB8w={ALU_inA[0],ALU_inB[7:1]};
+        4'h0:DB8w=C;
+        4'h1:DB8w=ALU_out;
+        4'h2:DB8w=ddata_i;
+        4'h3:DB8w=IMM;
+        4'h4:DB8w=D;
+        4'h7:DB8w=ALU_inA<<1;
+        4'h8:DB8w={ALU_inA[6:0],ALU_inB[7]};
+        4'h9:DB8w=ALU_inA>>1;
+        4'ha:DB8w={ALU_inA[7],ALU_inA[7:1]};
+        4'hb:DB8w=ALU_inB<<1;
+        4'hc:DB8w=ALU_inB>>1;
+        4'hd:DB8w={ALU_inB[7],ALU_inB[7:1]};
+        4'he:DB8w={ALU_inA[0],ALU_inB[7:1]};
         default:DB8w=8'h00;
     endcase
 end
 assign jaddr=(  //JUMP ADDRESS
         ({24{ret_sel}}&{RET2,RET1,RET0})|
         ({24{~ret_sel}}&{A2,A1,A0}));
-
 //Top level connections
 assign daddr={A2,A1,A0};
 assign iaddr=PC;
 assign ddata_o=MDR;
-
 endmodule

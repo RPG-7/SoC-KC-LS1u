@@ -1,0 +1,15 @@
+<?xml version="1" encoding="UTF-8"?>
+<!DOCTYPE gowin-fpga-project>
+<Project>
+    <Template>FPGA</Template>
+    <Version>5</Version>
+    <Device name="GW1N-1" pn="GW1N-LV1QN48C6/I5">gw1n1-004</Device>
+    <FileList>
+        <File path="src/BIU_MOD/cache/cache.v" type="file.verilog" enable="1"/>
+        <File path="src/BIU_MOD/cache/l1.v" type="file.verilog" enable="1"/>
+        <File path="src/BIU_MOD/tag_arbiter.v" type="file.verilog" enable="1"/>
+        <File path="src/KC_LS1u_plus.v" type="file.verilog" enable="1"/>
+        <File path="src/SoC_LS1u.v" type="file.verilog" enable="1"/>
+        <File path="src/alu74181.v" type="file.verilog" enable="1"/>
+    </FileList>
+</Project>

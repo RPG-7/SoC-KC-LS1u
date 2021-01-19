@@ -39,7 +39,6 @@ module cachemem8
 #(
     parameter memdepth = 1024,
     memaddr=$clog2(memdepth)
-
 )
 (
     input clk,

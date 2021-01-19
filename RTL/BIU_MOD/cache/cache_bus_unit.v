@@ -113,7 +113,7 @@ always@(posedge clk)begin
 
 			//当传输到最后一个数据时候，停止传输，并等待传输完成
 			rb_dp:	statu <= hresp?acc_fault:((addr_counter==8'b11111111)&hready)?rb_dl:statu;		//特别注意，同步内存写入不需要延迟一个clk，但是读出需要延迟一个clk
-			rb_dp:	statu <= hresp?acc_fault:((addr_counter==8'b11111111)&hready)?wb_dl:statu;		//特别注意，同步内存写入不需要延迟一个clk，但是读出需要延迟一个clk
+			wb_dp:	statu <= hresp?acc_fault:((addr_counter==8'b11111111)&hready)?wb_dl:statu;		//特别注意，同步内存写入不需要延迟一个clk，但是读出需要延迟一个clk
 			wr_dp:	statu <= hresp?acc_fault:hready?stb:statu;
 			rd_dp:	statu <= hresp?acc_fault:hready?stb:statu;
 	

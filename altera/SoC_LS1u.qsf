@@ -38,7 +38,7 @@
 
 set_global_assignment -name FAMILY "Cyclone IV E"
 set_global_assignment -name DEVICE EP4CE6E22C8
-set_global_assignment -name TOP_LEVEL_ENTITY KC_LS1u_plus
+set_global_assignment -name TOP_LEVEL_ENTITY l1
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 13.1
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "16:11:14  JANUARY 11, 2021"
 set_global_assignment -name LAST_QUARTUS_VERSION 13.1
@@ -52,8 +52,17 @@ set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1
 set_global_assignment -name NOMINAL_CORE_SUPPLY_VOLTAGE 1.2V
 set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (VHDL)"
 set_global_assignment -name EDA_OUTPUT_DATA_FORMAT VHDL -section_id eda_simulation
+set_global_assignment -name VERILOG_FILE ../RTL/BIU_MOD/cache/l1.v
+set_global_assignment -name VERILOG_FILE ../RTL/BIU_MOD/cache/cacheable_lut.v
+set_global_assignment -name VERILOG_FILE ../RTL/BIU_MOD/cache/cache_entry.v
+set_global_assignment -name VERILOG_FILE ../RTL/BIU_MOD/cache/cache_bus_unit.v
+set_global_assignment -name VERILOG_FILE ../RTL/BIU_MOD/cache/cache.v
+set_global_assignment -name VERILOG_FILE ../RTL/BIU_MOD/cache/byte_sel.v
+set_global_assignment -name VERILOG_FILE ../RTL/BIU_MOD/bu_req_mux.v
+set_global_assignment -name VERILOG_FILE ../RTL/BIU_MOD/tag_arbiter.v
+set_global_assignment -name VERILOG_FILE ../RTL/BIU_MOD/biu.v
+set_global_assignment -name VERILOG_FILE ../RTL/CPU_LS1u.v
 set_global_assignment -name VERILOG_FILE ../RTL/alu74181.v
-set_global_assignment -name VERILOG_FILE ../RTL/SoC_LS1u.v
 set_global_assignment -name VERILOG_FILE ../RTL/KC_LS1u_plus.v
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top

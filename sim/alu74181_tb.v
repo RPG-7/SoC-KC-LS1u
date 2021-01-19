@@ -1,4 +1,20 @@
-module tb();
+/*
+This part is the shell scripts which will be extracted by autosim 
+act as preprocessor and execute before running the testbench itself.
+Convenient for tasks such as generate random instruction flow 
+for processor verification.
+---------THE FORMAT SHOWS AS FOLLOWING-----------------------
+#PREPROCESS_START 
+
+if ! test -s ./obj/74181.tv ; then
+    python tv_gen.py
+    mv ./sim/74181.tv ./obj/74181.tv
+    echo test case generated 
+fi
+
+#PREPROCESS_END 
+*/
+module alu74181_tb();
     reg clk, reset;
 
     // Control data
@@ -28,7 +44,7 @@ module tb();
     // and pulse reset
     initial
         begin
-        $readmemb("74181.tv", testvectors);
+        $readmemb("./obj/74181.tv", testvectors);
         vectornum = 0;
         errors = 0;
         reset = 1;
