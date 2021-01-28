@@ -1,5 +1,9 @@
 //By default, this cache uses 
-module cache
+`define VENDOR_ALTERA 2'b11
+`define VENDOR_ANLOGIC 2'b10
+`define VENDOR_GOWIN 2'b01
+`define GENERIC_ASRAM 2'b00
+module cachemem
 #
 (
     parameter datawidth=64,
@@ -47,14 +51,29 @@ module cachemem8
     input [7:0]di,
     output reg[7:0]dato,
     input we
-);
-reg [7:0]memcell[memdepth-1:0];
+ );
+// generate 
+// if(VENDOR=`VENDOR_ALTERA)
+//     begin : ASRAM_ALTERA
+    
 
+//     end
+// else if(VENDOR=`VENDOR_ANLOGIC)
+//     begin : ASRAM_ANLOGIC
+        
+//     end
+// else if(VENDOR=`VENDOR_GOWIN)
+//     begin : ASRAM_GOWIN
+        
+//     end
+// else 
+reg [7:0]memcell[memdepth-1:0];
+//begin //: GENERIC_SSRAM
 always @(posedge clk)
 begin
-	dato<=memcell[raddr]; 
-    if(we)
-      memcell[waddr]<=di;
+    dato<=memcell[raddr];
+    if(we)memcell[waddr]<=di;
 end
-
+//end
+//endgenerate
 endmodule

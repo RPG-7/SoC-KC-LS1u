@@ -1,11 +1,12 @@
-//NRU/RRIP(WIP) replace arbiter & tag manager
-module tag_arbiter
+//NRU/RRIP(WIP) full-associative replace arbiter & tag manager
+module tag_arbiter_fa
 #(
     parameter ENTRY_NUM=8
-    ,SEL_WIDTH = ((ENTRY_NUM > 1) ? $clog2(ENTRY_NUM) : 1)
+    ,ENTRYSEL_WID = ((ENTRY_NUM > 1) ? $clog2(ENTRY_NUM) : 1)
     ,TAG_MSB=32
     ,TAG_LSB=12//1K per page
     ,M_WIDTH=1//if this is 1, perform NRU, if>1, RRIP
+    ,WBACK_ENABLE=1'b0 //this actually heavily depends on optimization
 )
 (
     input clk,
@@ -21,8 +22,8 @@ module tag_arbiter
     input writeback_ok,//data block write back complete, from cache BU
     output line_miss,//refill request
     output replace_dirty, //page dirty, need to write back first
-    output [SEL_WIDTH-1:0]entry_replace_sel, //for replace select& dirty flush select
-    output [SEL_WIDTH-1:0]entry_select_addr//addr for access 
+    output [ENTRYSEL_WID-1:0]entry_replace_sel, //for replace select& dirty flush select
+    output [ENTRYSEL_WID-1:0]entry_select_addr//addr for access 
 );
 integer i,j;
 genvar k;
@@ -38,7 +39,7 @@ always @(*)
         entry_hit[i]=(access_addr[TAG_MSB-1:TAG_LSB-1]==tag_addr[i])&line_valid[i];
     end
 //地址生成
-reg [SEL_WIDTH-1:0]entry_select_encode[ENTRY_NUM-1:0];
+reg [ENTRYSEL_WID-1:0]entry_select_encode[ENTRY_NUM-1:0];
 assign entry_select_addr=entry_select_encode[ENTRY_NUM-1];
 always @(*)//cache命中选择优先编码器
 begin
@@ -55,13 +56,13 @@ begin
         if(rst)
         begin
             line_valid[i]	<=	0;
-            line_dirty[i]   <=  0;
+            if(WBACK_ENABLE)line_dirty[i]   <=  0;
         end
         else if( valid_clear ) //clear valid bit
         begin
             line_valid[i]	<=	0;
         end
-        else if (writeback_ok) //dirty page synced,we can move forward
+        else if (writeback_ok&WBACK_ENABLE) //dirty page synced,we can move forward
         begin
             line_dirty[entry_replace_sel]   <=  0;
         end
@@ -70,7 +71,7 @@ begin
             tag_addr[i]	<=	refill_pa[TAG_MSB-1:TAG_LSB-1];
             line_valid[i]	<=	1'b1;
         end
-        else if(entry_wback&entry_hit[i]) 
+        else if(entry_wback&entry_hit[i]&WBACK_ENABLE) 
         begin
             line_dirty[i]<=1'b1;
         end
@@ -94,25 +95,26 @@ begin
         end
 end
 //替换/写回管理
-reg [SEL_WIDTH-1:0]dirty_select_encode[ENTRY_NUM-1:0];
-reg [SEL_WIDTH-1:0]entry_replace_encode[ENTRY_NUM-1:0];
-assign entry_replace_sel=(force_sync)?dirty_select_encode[ENTRY_NUM-1]:
+reg [ENTRYSEL_WID-1:0]dirty_select_encode[ENTRY_NUM-1:0];
+reg [ENTRYSEL_WID-1:0]entry_replace_encode[ENTRY_NUM-1:0];
+assign entry_replace_sel=(WBACK_ENABLE)?((force_sync)?dirty_select_encode[ENTRY_NUM-1]:
+                                    entry_replace_encode[ENTRY_NUM-1]):
                                     entry_replace_encode[ENTRY_NUM-1];
 always @(*)//替换/写回选择优先编码器
 begin
-    dirty_select_encode[0]=0;
+    if(!WBACK_ENABLE)dirty_select_encode[0]=0;//
     entry_replace_encode[0]=0;
     for ( i=1;i<ENTRY_NUM;i=i+1 ) //从左向右扫描，高位cache单元优先换出
     begin
-        dirty_select_encode[i]=sel_entry_cell(dirty_select_encode[i-1],i,line_dirty[i]);
+        if(!WBACK_ENABLE)dirty_select_encode[i]=sel_entry_cell(dirty_select_encode[i-1],i,line_dirty[i]);
         entry_replace_encode[i]=sel_entry_cell(entry_replace_encode[i-1],i,!recent_used[i]);//为0才换出
     end
 end
-assign replace_dirty=line_dirty[entry_replace_sel];//拟定替换cache line脏不？
+assign replace_dirty=(WBACK_ENABLE)?line_dirty[entry_replace_sel]:1'b0;//拟定替换cache line脏不？
 //可扩展优先编码器：如果该位为1,返回该位所在编号,如果该位为0，传递上一级输入编号
-function [SEL_WIDTH-1:0]sel_entry_cell;
-    input [SEL_WIDTH-1:0]prev_entry_num;
-    input [SEL_WIDTH-1:0]cur_entry_num;
+function [ENTRYSEL_WID-1:0]sel_entry_cell;
+    input [ENTRYSEL_WID-1:0]prev_entry_num;
+    input [ENTRYSEL_WID-1:0]cur_entry_num;
     input cur_entry_bit;
     begin
    		sel_entry_cell=(cur_entry_bit)?cur_entry_num:prev_entry_num;

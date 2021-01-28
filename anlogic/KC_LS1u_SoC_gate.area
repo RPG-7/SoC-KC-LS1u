@@ -1,0 +1,42 @@
+standard
+***Report Model: CPU_LS1u***
+
+IO Statistics
+#IO                        78
+  #input                   39
+  #output                  39
+  #inout                    0
+
+LUT Statistics
+#Total_luts               713
+  #lut4                   535
+  #lut5                   137
+  #lut6                     0
+  #lut5_mx41                0
+  #lut4_alu1b              41
+
+Utilization Statistics
+#lut                      713   out of   8640    8.25%
+#reg                      345   out of   8640    3.99%
+#le                         0
+#dsp                        0   out of      3    0.00%
+#bram                       2   out of     48    4.17%
+  #bram9k                   2
+  #fifo9k                   0
+#bram32k                    0   out of      2    0.00%
+#pad                       78   out of     64  121.88%
+  #ireg                     0
+  #oreg                    25
+  #treg                     0
+#pll                        0   out of      2    0.00%
+
+Report Hierarchy Area:
++----------------------------------------------------------------------------------------------+
+|Instance        |Module                               |lut    |ripple |seq    |bram   |dsp    |
++----------------------------------------------------------------------------------------------+
+|top             |CPU_LS1u                             |672    |41     |370    |2      |0      |
+|  AHB_INTERFACE |bus_unit                             |52     |16     |43     |0      |0      |
+|  CORE          |KC_LS1u_plus                         |333    |25     |154    |0      |0      |
+|  L1_Cache      |l1_unified                           |281    |0      |173    |2      |0      |
+|    tag_manager |tag_arbiter_fa(TAG_MSB=24,TAG_LSB=8) |176    |0      |151    |0      |0      |
++----------------------------------------------------------------------------------------------+

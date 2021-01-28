@@ -6,7 +6,8 @@ module KC_LS1u
     input [15:0]instr,
     output [23:0]daddr,
     input [7:0]ddata_i,
-    output [7:0]ddata_o
+    output [7:0]ddata_o,    
+	output reg dwrite
 );
 reg [23:0]PC;//Program counter
 wire [23:0]jaddr;
@@ -81,10 +82,12 @@ assign IMM=instr[7:0];
 reg [3:0]dbsrc_addr;
 //wb dst decode
 assign regwaddr=instr[10:8];
+wire [4:0]funct5;
+assign funct5={5{!WAIT}}&instr[15:11];//当CPU进入等待状态，不译码，执行NOP
 //Instruction FUNCT5 decode (写回总线数据源控制/控制信号编码)
 always@(*)
 begin
-    case(instr[15:11])
+    case(funct5)
         default://NOP or ILLEGAL_INS
             begin dbsrc_addr=4'h0;regwrite=0;jmp_en=0; end
         5'h01://JMP select
@@ -161,13 +164,14 @@ alu74181 ALU_H4
 always@(*)
 if(jmp_en)
     case (jmp_sel)
-        3'h1:begin jmp=!ALU_inA[7]; ret_sel=0;end
-        3'h2:begin jmp=!ALU_inB[7]; ret_sel=0;end
-        3'h3:begin jmp=!ALU_eqo; ret_sel=0;end
-        3'h4:begin jmp=!ALU_Co; ret_sel=0;end
-        default: begin jmp=0; ret_sel=0;end
+        3'h1:begin jmp=!ALU_inA[7];end
+        3'h2:begin jmp=!ALU_inB[7];end
+        3'h3:begin jmp=!ALU_eqo;end
+        3'h4:begin jmp=!ALU_Co;end
+        3'h5:begin jmp=1;end//JMP指令
+        default: begin jmp=0;end
     endcase
-else begin jmp=0;ret_sel=0; end
+else begin jmp=0; end
 //WB mux
 always@(*)//WB DATA BUS (shift contained here)
 begin

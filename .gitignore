@@ -5,3 +5,5 @@ sim/uvm_library/*
 gowin/impl/
 temp/
 *.bak
+*.log
+*.db

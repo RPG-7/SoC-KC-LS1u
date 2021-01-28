@@ -12,21 +12,21 @@ help:
 	@echo "\033[33mclean\033[0m to clean all objects and temp files"
 elaborate:
 	bash ./script/elaborate.sh $(TOP_MODULE) $(RTL_DIR) $(INCLUDE_DIR) $(HIERARCHY_FILE)
-lint:$(REPORT_DIR)/hierarchy.rpt
+lint:$(HIERARCHY_FILE)
 	bash ./script/lint.sh $(INCLUDE_DIR) $(HIERARCHY_FILE)
 autosim:
-	bash ./script/simprep.sh $(TB_MODULE) $(TB_DIR) $(SIMU_INCDIR) $(HIERARCHY_FILE) $(RTL_DIR) $(OBJ_DIR)
+	bash ./script/simprep.sh $(TB_MODULE) $(TB_DIR) $(SIMU_INCDIR) $(REPORT_DIR)/tb_hierarchy.rpt $(RTL_DIR) $(OBJ_DIR)
 	bash ./temp/PREPROCESSOR.sh
-	cat $(REPORT_DIR)/tb_hierarchy.rpt|xargs iverilog -o $(OBJ_DIR)/tb.run $(SIMU_PARAM)
+	cat $(REPORT_DIR)/tb_hierarchy.rpt|xargs iverilog -g2005-sv -o $(OBJ_DIR)/tb.run $(SIMU_PARAM)
 	vvp $(OBJ_DIR)/tb.run
-	#gtkwave $(OBJ_DIR)/$(TB_MODULE).vcd
+	@echo "\033[32mSeems Simulation Finished,\033[33m make wave \033[32mto show waveform\033[0m"
 wave:
 	gtkwave $(OBJ_DIR)/$(TB_MODULE).vcd
 
 
-fpgaflow_%:$(REPORT_DIR)/hierarchy.rpt
+fpgaflow_%:$(HIERARCHY_FILE)
 
-asicflow:#$(REPORT_DIR)/hierarchy.rpt
+asicflow:#$(HIERARCHY_FILE)
 	bash ./script/hierarchy_export.sh 
 	qflow gui -T $(ASIC_PDK) -p temp $(TOP_MODULE)
 

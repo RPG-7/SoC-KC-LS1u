@@ -1,0 +1,38 @@
+standard
+***Report Model: CPU_LS1u***
+
+IO Statistics
+#IO                        78
+  #input                   39
+  #output                  39
+  #inout                    0
+
+Gate Statistics
+#Basic gates              861
+  #and                    215
+  #nand                     0
+  #or                      71
+  #nor                      0
+  #xor                     17
+  #xnor                     0
+  #buf                      0
+  #not                     86
+  #bufif1                   0
+  #MX21                   101
+  #FADD                     0
+  #DFF                    371
+  #LATCH                    0
+#MACRO_ADD                  3
+#MACRO_EQ                  49
+#MACRO_MUX                296
+
+Report Hierarchy Area:
++--------------------------------------------------------+
+|Instance        |Module         |gates  |seq    |macros |
++--------------------------------------------------------+
+|top             |CPU_LS1u       |490    |371    |54     |
+|  AHB_INTERFACE |bus_unit       |37     |43     |12     |
+|  CORE          |KC_LS1u_plus   |338    |154    |17     |
+|  L1_Cache      |l1_unified     |113    |174    |23     |
+|    tag_manager |tag_arbiter_fa |86     |151    |17     |
++--------------------------------------------------------+
