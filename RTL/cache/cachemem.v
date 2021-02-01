@@ -1,8 +1,4 @@
-//By default, this cache uses 
-`define VENDOR_ALTERA 2'b11
-`define VENDOR_ANLOGIC 2'b10
-`define VENDOR_GOWIN 2'b01
-`define GENERIC_ASRAM 2'b00
+
 module cachemem
 #
 (

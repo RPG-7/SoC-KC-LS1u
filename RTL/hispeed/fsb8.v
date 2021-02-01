@@ -2,30 +2,39 @@
 //允许最大256b的burst 传输
 //Core 24b访存+8b PAE
 
-module fsb8(
+module fsb8
+#(
+	parameter PAE_ENABLE = 1'b0,
+	ADDR_WIDTH=(PAE_ENABLE)?32:24
 
+)
+(
+input SYNC_MODE,
+input [6:0]ASYNC_WAITCYCLE,
 //ahb 接口
 input hclk,
 input hreset_n,
 input hsel,
-input [1:0]htrans,
+input hsel_cmd,
+input htrans,
+input hburst,
 input hwrite,
-input [31:0]haddr,	//本桥只占用地址的低32位空间
+input [ADDR_WIDTH-1:0]haddr,	
 input [7:0]hwdata,
 output [7:0]hrdata,
 output hresp,
 output hready,
-//fsb16信号
+//fsb8信号
 output clk,
 output rst_n,
-output ale,
-output cs,
-output cmd,
-output reg typ,//SINGLE/BLOCK
+output ale_n,
+output cs_n,
+output cmd_n,
+output reg typ,//SINGLE#/BLOCK
 output wr_n,
 input rdy_n,
 input irq_n,
-output reg Hi_z,	//拉高之后表示高阻态
+output reg ADdir,	//0表示高阻态
 output [7:0]AAH8,
 output [7:0]AD_out,
 input [7:0]AD_in,
@@ -33,26 +42,43 @@ input [7:0]AD_in,
 output FSB_irq
 
 );
-//AHB传输参数
-localparam Idle  = 2'b00;
-localparam Burst = ;
 //状态机
 localparam stb 		= 3'h0;	//等待状态
 localparam addrh	= 3'h1; //地址帧 ALE
 localparam dummy	= 3'h2; //空帧(总线换向)
-localparam reads	= 3'h3; //读帧
-localparam readb	= 3'h4;	//连续读
-localparam writs	= 3'h5; //写帧
-localparam writb	= 3'h6; //连续写
+localparam read		= 3'h3; //读帧
+localparam write	= 3'h4;	//写帧
 localparam commd	= 3'h7; //写高位地址/总线桥指令 {8'hxx,8'h00}=写H8地址
 
-reg[2:0]state;
+wire[7:0]command;
+reg [2:0]state;
 
-reg [7:0]H8latch;
 reg [7:0]M16latch;	
 reg [7:0]output_reg;	//输出寄存器	
 reg [15:0]DATA_reg;		//AD复用寄存器
+wire read_cond,write_cond; 
+wire h8_diff,m16_diff;
+generate 
+if(PAE_ENABLE) 
+	begin : PAE
+		reg [7:0]H8latch;//if haddr[31:24]!=h8latch, use commd to write outside h8 address
+		
+		assign h8_diff=hsel & (htrans!=0) & (H8latch!=haddr[31:24]) & PAE_ENABLE;
+		always @(posedge hclk ) 
+		begin	
+			if(h8_diff&state==commd)H8latch<=haddr[31:28];
+		end
+	end
+	else 
+	begin:PAELESS
+		assign h8_diff= 1'b0 ;
+	end
+endgenerate
 
+assign m16_diff=hsel & (htrans!=0) & (M16latch!=haddr[23:8]);
+assign read_cond=hsel & (htrans!=0) & !hwrite;
+assign write_cond=hsel & (htrans!=0) & hwrite;
+assign command=(h8_diff)?8'h00:hwdata;
 //主状态机
 always@(posedge hclk)begin
 	if(!hreset_n)begin
@@ -60,30 +86,43 @@ always@(posedge hclk)begin
 	end
 	else begin
 		case(state)
-			stb				:	if(hsel & (htrans!=Idle) & !hwrite)begin
-									state	<=	read_addr_frame0;
-								end
-								else if(hsel & (htrans!=Idle) & hwrite)begin
-									state	<=	write_addr_frame0;
-								end
+			stb	:	if(h8_diff|hsel_cmd)
+					begin
+						state<=commd;//In case funct select,update addr first
+					end
+					else if(m16_diff)state<=addrh;
+					else if(read_cond)
+					begin
+						state<=read;
+					end
+					else if(write_cond)begin
+						state<=write;
+					end
 	//地址帧
-			read_addr_frame0:	state <= read_addr_frame1;
-	
-			read_addr_frame1:	state <= nop_frame;
-	
-			write_addr_frame0:	state <= write_addr_frame1;
-	
-			write_addr_frame1:	state <= write_frame;
-	
-			nop_frame		:	state <= read_frame;
-	
-	//数据帧
-	//一个AHB传输可能被分为多个小的数据帧进行传输，trans_ready信号指示了当前传输是否完成
-	//发生了错误，马上转到stb状态
-			read_frame		:	state <= (!rdy_n | !error_n) ? stb : state;
-			write_frame		:	state <= (!rdy_n | !error_n) ? stb : state;
-	
-		default				:	state <= stb;
+			addrh:	if(read_cond)
+					begin
+						state <= dummy;
+					end
+					else if(write_cond)begin
+						state<=write;
+					end
+
+			dummy:	state <= read;//SET bus to read, but not really 
+
+			read :	state <= (hburst & hsel & (htrans!=0) )?read:stb;
+
+			write:	state <= (hburst & hsel & (htrans!=0) )?write:stb ;
+
+			commd:	if(m16_diff)state<=addrh;
+					else if(read_cond)
+					begin
+						state<=read;
+					end
+					else if(write_cond)begin
+						state<=write;
+					end
+					else state <= stb;
+		default :	state <= stb;
 		endcase
 	end
 end
@@ -95,62 +134,50 @@ always@(posedge hclk)begin
 	end
 end
 
-//输出寄存器
-always@(posedge hclk)begin
-	if(state==write_addr_frame0)begin
-		case(haddr[3:1])
-			2'b00	:	DATA_reg	<=	hwdata[15:0];
-			2'b01	:	DATA_reg	<=	hwdata[31:16];
-			2'b10	:	DATA_reg	<=	hwdata[47:32];
-			2'b11	:	DATA_reg	<=	hwdata[63:48];
-		endcase
-	end
+//地址缓冲寄存器
+always @(posedge hclk) 
+begin
+	if(state!=stb)typ<=hburst;
+	if(state==addrh)M16latch<=haddr[23:8];
 end
-
-//地址寄存器
-always@(posedge hclk)begin
-	if(hsel & (htrans!=Idle))begin
-		ADDR_reg	<=	haddr[31:0];
-	end
-end
-
 //高阻态指示寄存器
 always@(posedge hclk)begin
-	if(state==read_addr_frame1)begin	//当地址传输完成 进入高阻态
-		Hi_z	<=	1'b1;
+	if(state==stb|state==dummy)
+	begin	//默认 进入高阻态
+		ADdir	<=	1'b0;
 	end
-	else if(state==stb)begin
-		Hi_z	<=	1'b0;
+	else if(state==addrh|state==commd|state==write)//写东西时才摆入输出模式
+	begin
+		ADdir	<=	1'b0;
 	end
 end
-//FSB16信号
-//fsb16信号
+//FSB8信号
 assign clk	 = hclk;
 assign rst_n = hreset_n;
 //地址帧时，进行地址使能
-assign aen	 = (state==read_addr_frame0)|(state==read_addr_frame1)|(state==write_addr_frame0)|(state==write_addr_frame1);
-//传输大小为8bit时，SIZE为0，否则SIZE=1
-always@(posedge hclk)begin
-	if(hsel & (htrans!=Idle))begin
-		size	<=	(hsize!=3'b000);		//如果不是8位传输 那size=1
+assign ale_n=!(state==addrh);
+assign cs_n=!(state==read|state==write);
+assign cmd_n=!(state==commd);
+assign wr_n=!(state==write);
+
+assign AD_out=	(state==commd)?command:
+				(state==addrh)?haddr[15:8]:hwdata;
+generate 
+if(PAE_ENABLE) 
+	begin : PAE_OUT
+		assign AAH8	 =  (h8_diff&state==commd)?haddr[31:24]:
+						(state==addrh)?haddr[23:16]:haddr[7:0];
 	end
-	else if(!rdy_n)begin
-		size	<=	1'b0;					//传输完成后复位
+	else begin :PAELESS_OUT
+		assign AAH8	 =  (state==addrh)?haddr[23:16]:haddr[7:0];
 	end
-end
-
-
-assign wr_n	 = (state==write_addr_frame0) | (state==write_addr_frame1);
-
-assign AD_out	=	(((state==read_addr_frame0)|(state==write_addr_frame0))	?ADDR_reg[15:0]	:16'b0) |
-					(((state==read_addr_frame1)|(state==write_addr_frame1))	?ADDR_reg[31:16]:16'b0) |
-					(((state==write_frame))									?DATA_reg		:16'b0) ;
+endgenerate
 
 //AHB响应
-assign hresp	=	!error_n;
+assign hresp	=	1'b1;
 assign hready	=	!rdy_n;
 assign FSB_irq	=	!irq_n;
-assign hrdata	=	{output_reg,output_reg,output_reg,output_reg};
+assign hrdata	=	output_reg;
 
 
 

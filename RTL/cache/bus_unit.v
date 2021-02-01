@@ -16,7 +16,6 @@ input wire rst,
 input wire write_through_req,	//请求写穿
 input wire read_req,			//请求读一次
 input wire read_line_req,		//请求读一行
-//input wire [3:0]size,
 input wire [BUS_ADDR-1:0]pa,			//
 input wire [BUS_WIDTH-1:0]wt_data,
 output wire [BUS_WIDTH-1:0]line_data,
@@ -25,14 +24,19 @@ output wire line_write,			//cache写
 output wire cache_entry_refill,	//更新缓存entry
 output wire trans_rdy,			//传输完成
 output wire bus_error,			//访问失败
-
+//DMA控制器逻辑
+//input dma_incr,
+//input dma_dir,
+//input [BUS_ADDR-1:0]periph_addr,
+//input [3:0]ramsel //in between 4*M9K
+ 
 //AHB总线
 //ahb
 output wire[BUS_ADDR-1:0]haddr,
 output wire hwrite,
 //output wire[2:0]hsize,
-output [2:0]hburst,
-output [1:0]htrans,
+output hburst,//0=SINGLE 1=BURST BURST
+output htrans,//0=INACTIVE 1=ACTIVE
 output reg[BUS_WIDTH-1:0]hwdata,
 
 input wire hready,
@@ -46,35 +50,29 @@ output wire bus_req		//总线请求使用
 );
 localparam BURST_WID = $clog2(MAX_BURST);
 //ahb操作
-localparam nseq = 2'b10;
-localparam idle = 2'b00;
-localparam seq  = 2'b11;
-
 //TODO 重构异步Cache总线
 //TODO 确认写回状态机完成无误
 //TODO 写入：计数器直接接入，1CLK后打出前序计数值SSRAM数据
 //ahb burst
-localparam Single=3'b000;
-localparam INCR  =3'b001;
+localparam Single=1'b0;
+localparam BURST  =1'b1;
 //主状态机
-localparam stb  = 4'b0000;
-localparam pacov= 4'b0001;		//页面转换，进行此操作时AHB总线交给MMU控制
+localparam stb    = 4'b0000;
 localparam wr_ap  = 4'b0010;		//写入发地址
 localparam wr_dp  = 4'b0011;		//写入发数据
 localparam rd_ap  = 4'b0100;		//读取发地址
 localparam rd_dp  = 4'b0101;		//读取收数据
-localparam rb_ap= 4'b1001;		//read burst 批量读入，阶段0，使用一个nseq开启seq传输
-localparam rb_dp= 4'b1010;		//read burst 阶段1，使用seq连续传输，直到最后一个地址
-localparam rb_dl= 4'b1011;		//read burst 阶段2，末尾最后一个数据传输
+localparam rb_ap  = 4'b1001;		//read burst 批量读入，阶段0，使用一个nseq开启seq传输
+localparam rb_dp  = 4'b1010;		//read burst 阶段1，使用seq连续传输，直到最后一个地址
+localparam rb_dl  = 4'b1011;		//read burst 阶段2，末尾最后一个数据传输
+localparam wb_ap  = 4'b1101;		//write burst 批量写入，阶段0，使用一个nseq开启seq传输
+localparam wb_dp  = 4'b1110;		//write burst 阶段1，使用seq连续传输，直到最后一个地址
+localparam wb_dl  = 4'b1111;		//write burst 阶段2，末尾最后一个数据传输
 localparam acc_fault=4'b1111;	//访问失败
-
 reg [3:0]statu;					//状态机
-
 reg [BURST_WID-1:0]addr_counter;				//偏移地址计数器
 reg [BUS_ADDR-1:0]haddr_temp;
 wire [7:0]last_addr;				//cache地址寄存器，在写入模式下需要利用该寄存器延迟一拍
-
-
 //主状态机萝莉
 always@(posedge clk)begin
 	if(rst)begin
@@ -119,7 +117,6 @@ always@(posedge clk)begin
 		endcase
 	end	
 end
-
 //addr_counter
 //addr_counter在计到顶之后停止计数,并等待状态回到stb进行清零
 always@(posedge clk)begin
@@ -137,10 +134,8 @@ end
 assign last_addr 	= addr_counter - 8'b1;
 //从cache写入到内存里的时候，因为同步储存器读取需要一个clk的延迟，故在sync且准备好时候始终保持cache_counter和addr_counter一致
 //由于AHB总线总是在第二个周期给出应答信号，此时addr counter已经自动+1，故切换到上一个地址
-//
 assign line_write = ((statu==rb_dp)|(statu==rb_dl))?hready:1'b0;
 assign addr_count	= (statu==rb_dl) ? addr_counter : last_addr;
-
 //AHB总线
 //AHB输出寄存器
 always@(posedge clk)begin
@@ -154,29 +149,18 @@ always@(posedge clk)begin
 		if(statu==wr_ap)haddr_temp	<=	pa;
 	end
 end
-
 assign haddr	=	(read_line_req) ? //|write_line_req
 							{haddr_temp[BUS_ADDR-1:BURST_WID],addr_counter} : haddr_temp;
 assign hwrite	= (statu==wr_ap);
-
-
 assign hburst	= ((statu==wr_ap)|(statu==rd_ap))?Single:
-					((statu==rb_ap)|(statu==rb_dp))?
-																		INCR:Single;
-assign htrans	= ((statu==wr_ap)|(statu==rd_ap)|(statu==rb_ap))?
-														nseq:
-														(statu==rb_dp)?seq:idle;	//Burst传输第一个是NSEQ
-
+					((statu==rb_ap)|(statu==rb_dp))?BURST:Single;
+assign htrans	= ((statu==wr_ap)|(statu==rd_ap)|(statu==rb_ap)|(statu==rb_dp))?1'b1:1'b0;	
 //cache控制器逻辑
-
 assign line_data			=	hrdata;
 assign cache_entry_refill	=	trans_rdy & read_line_req;	//更新缓存entry
 assign trans_rdy			=	((statu==rd_dp)|(statu==wr_dp)|(statu==rb_dl))?hready:1'b0;		//传输完成
 assign bus_error			=	(statu==acc_fault);			//访问失败
 assign bus_req				=	write_through_req |  read_line_req | read_req;
-
-
-
 endmodule
 
 

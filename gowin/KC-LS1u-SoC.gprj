@@ -5,13 +5,26 @@
     <Version>5</Version>
     <Device name="GW1N-1" pn="GW1N-LV1QN48C6/I5">gw1n1-004</Device>
     <FileList>
-        <File path="src/BIU_MOD/cache/cache.v" type="file.verilog" enable="1"/>
-        <File path="src/BIU_MOD/cache/l1.v" type="file.verilog" enable="1"/>
-        <File path="src/BIU_MOD/tag_arbiter.v" type="file.verilog" enable="1"/>
+        <File path="src/CPU_LS1u.v" type="file.verilog" enable="1"/>
         <File path="src/KC_LS1u_plus.v" type="file.verilog" enable="1"/>
-        <File path="src/SoC_LS1u.v" type="file.verilog" enable="1"/>
+        <File path="src/MIN_LS1u.v" type="file.verilog" enable="1"/>
         <File path="src/alu74181.v" type="file.verilog" enable="1"/>
-        <File path="src/gowin_sdpb/gowin_sdpb.v" type="file.verilog" enable="1"/>
-        <File path="src/gowin_user_flash/GUF.v" type="file.verilog" enable="1"/>
+        <File path="src/cache/bus_unit.v" type="file.verilog" enable="1"/>
+        <File path="src/cache/cachemem.v" type="file.verilog" enable="1"/>
+        <File path="src/cache/l1_ionly.v" type="file.verilog" enable="1"/>
+        <File path="src/cache/pae32_tlb.v" type="file.verilog" enable="1"/>
+        <File path="src/cache/tag_arbiter_dm.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_rpll/gowin_rpll.v" type="file.verilog" enable="1"/>
+        <File path="src/hispeed/fsb8.v" type="file.verilog" enable="1"/>
+        <File path="src/left_bshifter.v" type="file.verilog" enable="1"/>
+        <File path="src/peripherals/int_ctrl.v" type="file.verilog" enable="1"/>
+        <File path="src/peripherals/min_pbus.v" type="file.verilog" enable="1"/>
+        <File path="src/peripherals/ocspm.v" type="file.verilog" enable="1"/>
+        <File path="src/peripherals/pbus_mux.v" type="file.verilog" enable="1"/>
+        <File path="src/peripherals/sys_ctrl.v" type="file.verilog" enable="1"/>
+        <File path="src/peripherals/syscall.v" type="file.verilog" enable="1"/>
+        <File path="src/peripherals/systick.v" type="file.verilog" enable="1"/>
+        <File path="src/l1d.cst" type="file.cst" enable="1"/>
+        <File path="src/l1d.sdc" type="file.sdc" enable="1"/>
     </FileList>
 </Project>

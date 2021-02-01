@@ -19,10 +19,10 @@ wire INT;
 wire [5:0]INTCODE;//中断源编码
 wire [23:0]IVT_addr;//中断向量表基址
 //Shrinked AHB
-wire [23:0]haddr;
+wire [31:0]haddr;
 wire hwrite;
-wire [2:0]hburst;
-wire [1:0]htrans;
+wire hburst;
+wire htrans;
 wire [7:0]hwdata;
 wire hready;
 wire hresp;
@@ -34,7 +34,7 @@ CPU_LS1u CPU1
     .clk(clk),
     .rst(rst),
 
-    .cache_flush(1'b0),//当存在MMU，切换页表须冲刷cache
+    //.cache_flush(1'b0),//当存在MMU，切换页表须冲刷cache
     //Interrupt
 	.INT(INT),
     //.INTCODE(INTCODE),//中断源编码

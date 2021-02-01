@@ -1,42 +1,48 @@
 standard
-***Report Model: CPU_LS1u***
+***Report Model: MIN_LS1u***
 
 IO Statistics
-#IO                        78
-  #input                   39
-  #output                  39
-  #inout                    0
+#IO                        25
+  #input                    4
+  #output                  13
+  #inout                    8
 
 LUT Statistics
-#Total_luts               713
-  #lut4                   535
-  #lut5                   137
+#Total_luts               820
+  #lut4                   517
+  #lut5                   194
   #lut6                     0
   #lut5_mx41                0
-  #lut4_alu1b              41
+  #lut4_alu1b             109
 
 Utilization Statistics
-#lut                      713   out of   8640    8.25%
-#reg                      345   out of   8640    3.99%
+#lut                      820   out of   8640    9.49%
+#reg                      358   out of   8640    4.14%
 #le                         0
 #dsp                        0   out of      3    0.00%
-#bram                       2   out of     48    4.17%
-  #bram9k                   2
+#bram                       4   out of     48    8.33%
+  #bram9k                   4
   #fifo9k                   0
 #bram32k                    0   out of      2    0.00%
-#pad                       78   out of     64  121.88%
-  #ireg                     0
-  #oreg                    25
+#dram                       4
+#pad                       25   out of     64   39.06%
+  #ireg                     8
+  #oreg                     1
   #treg                     0
-#pll                        0   out of      2    0.00%
+#pll                        1   out of      2   50.00%
 
 Report Hierarchy Area:
-+----------------------------------------------------------------------------------------------+
-|Instance        |Module                               |lut    |ripple |seq    |bram   |dsp    |
-+----------------------------------------------------------------------------------------------+
-|top             |CPU_LS1u                             |672    |41     |370    |2      |0      |
-|  AHB_INTERFACE |bus_unit                             |52     |16     |43     |0      |0      |
-|  CORE          |KC_LS1u_plus                         |333    |25     |154    |0      |0      |
-|  L1_Cache      |l1_unified                           |281    |0      |173    |2      |0      |
-|    tag_manager |tag_arbiter_fa(TAG_MSB=24,TAG_LSB=8) |176    |0      |151    |0      |0      |
-+----------------------------------------------------------------------------------------------+
++--------------------------------------------------------------------------------------------+
+|Instance                  |Module                   |lut    |ripple |seq    |bram   |dsp    |
++--------------------------------------------------------------------------------------------+
+|top                       |MIN_LS1u                 |711    |109    |367    |4      |0      |
+|  CPU1                    |CPU_LS1u(CACHE_TYP=2'b0) |438    |40     |191    |2      |0      |
+|    AHB_INTERFACE         |bus_unit                 |41     |16     |43     |0      |0      |
+|    CORE                  |KC_LS1u_plus             |318    |24     |136    |0      |0      |
+|    L1_I_Only$L1CX        |l1_ionly                 |78     |0      |12     |2      |0      |
+|  OC_PERIPHERALS          |min_pbus                 |218    |69     |156    |2      |0      |
+|    INTERRUPT_CONTROLLER1 |int_ctrl                 |48     |22     |43     |0      |0      |
+|    SYSCTRL               |sys_ctrl                 |85     |22     |43     |0      |0      |
+|      LCLK_Divider        |FDIV                     |43     |22     |14     |0      |0      |
+|    SYSTICK               |systick                  |51     |25     |53     |0      |0      |
++--------------------------------------------------------------------------------------------+

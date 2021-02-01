@@ -1,0 +1,5 @@
+PLL_Name	min_pbus:OC_PERIPHERALS|sys_ctrl:SYSCTRL|syspll:ALTERA_SYSPLL|altpll:altpll_component|syspll_altpll:auto_generated|pll1
+PLLJITTER	32
+PLLSPEmax	84
+PLLSPEmin	-53
+

@@ -1,28 +1,29 @@
 module CPU_LS1u
 #(
-    parameter CACHE_TYP = 2'b00
+    parameter CACHE_TYP = 2'b01,
+    CACHE_DEPTH=1024,
+    CACHE_WIDTH=16,
+    ENTRY_NUM=8,
+    MMU_ENABLE=1'b0
 )
 (
     input clk,rst,
-
-    input cache_flush,//当存在MMU，切换页表须冲刷cache
     //Interrupt
 	input INT,
-    //input [5:0]INTCODE,//中断源编码
     input [23:0]IVEC_addr,//中断向量表基址
     output IN_ISP,//在中断服务程序中
     //Shrinked AHB
-    output wire [23:0]haddr,
+    output wire [BUS_ADDRWID-1:0]haddr,
     output wire hwrite,
-    output wire [2:0]hburst,
-    output wire [1:0]htrans,
+    output wire hburst,
+    output wire htrans,
     output wire [7:0]hwdata,
     input wire hready,
     input wire hresp,
     input wire hreset_n,
-    input wire [7:0]hrdata,
-    input bus_ack,//this is for DMA as 2nd master
-    output bus_req
+    input wire [7:0]hrdata
+    //input bus_ack,//this is for DMA as 2nd master
+    //output bus_req
 );
 wire [23:0]iaddr;
 wire [15:0]instr;
@@ -31,9 +32,10 @@ wire dwrite;
 wire dread;
 wire [7:0]ddata_i;
 wire [7:0]ddata_o;
-wire icache_rdy;
-wire dcache_rdy;
 wire READY;
+wire cache_flush;//当存在MMU，切换页表须冲刷cache
+localparam BUS_ADDRWID =(MMU_ENABLE)?32:24;
+wire [BUS_ADDRWID-1:0]pa;
 KC_LS1u_plus CORE
 (
     .clk(clk),
@@ -54,10 +56,97 @@ KC_LS1u_plus CORE
 wire load_acc_fault;
 wire store_acc_fault;
 wire ins_acc_fault;
-wire write_through_req;	//请求写穿
-wire read_req;			//请求读一次
+wire write_through_req_l1;	//请求写穿
+wire read_req_l1;			//请求读一次
+wire read_line_req_l1;		//请求读一行
+wire [23:0]pa_l1;			//
+wire [7:0]wt_data_l1;
+wire [7:0]line_data_l1;
+wire [6:0]addr_count_l1;
+wire line_write_l1;			//cache写
+wire cache_entry_refill_l1;	//更新缓存entry
+wire trans_rdy_l1;			//传输完成
+wire bus_error_l1;			//访问失败
+//Since KC-LS1U is not and never a data access intensive core, 
+//seprate I$ D$ is NEVER in consideration
+generate
+case (CACHE_TYP)
+    2'b00 : begin : L1_I_Only
+            l1_ionly L1CX(
+            .clk(clk),//Since Code always executes from RAMs,
+            .rst(rst),//it's user's responsibility to guarantee PC won't read
+            .read(dread),//uncacheable peripherals
+            .write(dwrite),
+            .execute(1'b1),
+            .L1_clear(cache_flush),
+            .addr_pa_d(daddr),
+            .addr_pa_i(iaddr[22:0]),
+            .data_write(ddata_o),
+            .data_read(ddata_i),
+            .instr_read(instr),
+            .load_acc_fault(load_acc_fault),
+            .store_acc_fault(store_acc_fault),
+            .ins_acc_fault(ins_acc_fault),
+            .access_ready(READY),
+            //cache控制器逻辑 
+            .write_through_req(write_through_req_l1),	//请求写穿
+            .read_req(read_req_l1),			//请求读一次
+            .read_line_req(read_line_req_l1),		//请求读一行
+            .pa(pa_l1),			//
+            .wt_data(wt_data_l1),
+            .line_data(line_data_l1),
+            .addr_count(addr_count_l1),
+            .line_write(line_write_l1),			//cache写
+            .cache_entry_refill(cache_entry_refill_l1),	//更新缓存entry
+            .trans_rdy(trans_rdy_l1),			//传输完成
+            .bus_error(bus_error_l1)			//访问失败
+            );
+            end
+    2'b01:  begin : Unified_L1
+            l1_unified L1CX
+            (//64K peripheral space@0xC0xxxx
+            .cacheable((iaddr[23:16]!=8'hC0)&(daddr[23:16]!=8'hC0)),
+            .clk(clk),
+            .rst(rst),
+            .read(dread),
+            .write(dwrite),
+            .execute(1'b1),
+            .L1_clear(cache_flush),
+            .addr_pa_d(daddr),
+            .addr_pa_i(iaddr[22:0]),
+            .data_write(ddata_o),
+            .data_read(ddata_i),
+            .instr_read(instr),
+            .load_acc_fault(load_acc_fault),
+            .store_acc_fault(store_acc_fault),
+            .ins_acc_fault(ins_acc_fault),
+            .access_ready(READY),
+            //cache控制器逻辑
+            .write_through_req(write_through_req_l1),	//请求写穿
+            .read_req(read_req_l1),			//请求读一次
+            .read_line_req(read_line_req_l1),		//请求读一行
+            .pa(pa),			//
+            .wt_data(wt_data_l1),
+            .line_data(line_data),
+            .addr_count(addr_count),
+            .line_write(line_write),			//cache写
+            .cache_entry_refill(cache_entry_refill),	//更新缓存entry
+            .trans_rdy(trans_rdy),			//传输完成
+            .bus_error(bus_error)			//访问失败
+            );
+            end
+    default:begin : NO_CACHE
+                always@(*)//If you managed to finish this function
+                begin
+                    $display("Too lazy to do, plz DIY");
+                    //THIS_LINE_IS_TO_GENERATE_ERROR_IN_ORDER_TO_STOP_WORKFLOW<=1'b1;
+                end//Delete or comment this block 
+            end
+    endcase
+endgenerate
+wire write_through_req;
+wire read_req;
 wire read_line_req;		//请求读一行
-wire [23:0]pa;			//
 wire [7:0]wt_data;
 wire [7:0]line_data;
 wire [6:0]addr_count;
@@ -65,76 +154,31 @@ wire line_write;			//cache写
 wire cache_entry_refill;	//更新缓存entry
 wire trans_rdy;			//传输完成
 wire bus_error;			//访问失败
-//Since KC-LS1U is not and never a RAM access intensive core, 
-//seprate I$ D$ is not in consideration
-generate
-case (CACHE_TYP)
-    2'b00 : begin : L1_I_Only
-            l1_ionly L1CX(
-            .clk(clk),
-            .rst(rst),
-            .read(dread),
-            .write(dwrite),
-            .execute(1'b1),
-            .L1_clear(cache_flush),
-            .addr_pa_d(daddr),
-            .addr_pa_i(iaddr[22:0]),
-            .data_write(ddata_o),
-            .data_read(ddata_i),
-            .instr_read(instr),
-            .load_acc_fault(load_acc_fault),
-            .store_acc_fault(store_acc_fault),
-            .ins_acc_fault(ins_acc_fault),
-            .access_ready(READY),
-            //cache控制器逻辑
-            .write_through_req(write_through_req),	//请求写穿
-            .read_req(read_req),			//请求读一次
-            .read_line_req(read_line_req),		//请求读一行
-            .pa(pa),			//
-            .wt_data(wt_data),
-            .line_data(line_data),
-            .addr_count(addr_count),
-            .line_write(line_write),			//cache写
-            .cache_entry_refill(cache_entry_refill),	//更新缓存entry
-            .trans_rdy(trans_rdy),			//传输完成
-            .bus_error(bus_error)			//访问失败
-            );
-            end
-    default: begin : Unified_L1
-            l1_unified L1_Cache
-            (
-            .cacheable((iaddr[23:16]!=8'hC0)&(daddr[23:16]!=8'hC0)),//64K peripheral space@0xC0xxxx
-            .clk(clk),
-            .rst(rst),
-            .read(dread),
-            .write(dwrite),
-            .execute(1'b1),
-            .L1_clear(cache_flush),
-            .addr_pa_d(daddr),
-            .addr_pa_i(iaddr[22:0]),
-            .data_write(ddata_o),
-            .data_read(ddata_i),
-            .instr_read(instr),
-            .load_acc_fault(load_acc_fault),
-            .store_acc_fault(store_acc_fault),
-            .ins_acc_fault(ins_acc_fault),
-            .access_ready(READY),
-            //cache控制器逻辑
-            .write_through_req(write_through_req),	//请求写穿
-            .read_req(read_req),			//请求读一次
-            .read_line_req(read_line_req),		//请求读一行
-            .pa(pa),			//
-            .wt_data(wt_data),
-            .line_data(line_data),
-            .addr_count(addr_count),
-            .line_write(line_write),			//cache写
-            .cache_entry_refill(cache_entry_refill),	//更新缓存entry
-            .trans_rdy(trans_rdy),			//传输完成
-            .bus_error(bus_error)			//访问失败
-            );
-            end
-    endcase
+generate 
+if(MMU_ENABLE == 1'b1) 
+    begin : PAE32_MMU //Only L1 will trigger WT/RT
+        	
+        
+        //always@(*) STILL_WORK_IN_PROGRESS<=1'b1; //When finished, remove this line
+    end
+else 
+    begin : NO_MMU
+        //wire [23:0]pa;	
+        assign pa=pa_l1;
+        assign write_through_req=write_through_req_l1;
+        assign read_req=read_req_l1;
+        assign read_line_req=read_line_req_l1;		//请求读一行
+        assign wt_data=wt_data_l1;
+        assign line_data_l1=line_data;
+        assign addr_count_l1=addr_count;
+        assign line_write_l1=line_write;			//cache写
+        assign cache_entry_refill_l1=cache_entry_refill;	//更新缓存entry
+        assign trans_rdy_l1=trans_rdy;			//传输完成
+        assign bus_error_l1=bus_error;			//访问失败
+        assign cache_flush=1'b0;//不额外冲刷cache
+    end
 endgenerate
+defparam AHB_INTERFACE.BUS_ADDR=BUS_ADDRWID;
 bus_unit AHB_INTERFACE
 (
 .clk(clk),
@@ -162,8 +206,8 @@ bus_unit AHB_INTERFACE
 .hresp(hresp),
 .hreset_n(hreset_n),
 .hrdata(hrdata),
-.bus_ack(bus_ack),	//总线允许使用
-.bus_req(bus_req)		//总线请求使用
+.bus_ack(1'b1)	//总线允许使用
+//.bus_req(bus_req)		//总线请求使用
 
 );
 

@@ -1,38 +1,43 @@
 standard
-***Report Model: CPU_LS1u***
+***Report Model: MIN_LS1u***
 
 IO Statistics
-#IO                        78
-  #input                   39
-  #output                  39
-  #inout                    0
+#IO                        25
+  #input                    4
+  #output                  13
+  #inout                    8
 
 Gate Statistics
-#Basic gates              861
-  #and                    215
+#Basic gates              902
+  #and                    245
   #nand                     0
-  #or                      71
+  #or                      81
   #nor                      0
-  #xor                     17
+  #xor                     16
   #xnor                     0
   #buf                      0
-  #not                     86
-  #bufif1                   0
-  #MX21                   101
+  #not                     88
+  #bufif1                   8
+  #MX21                    96
   #FADD                     0
-  #DFF                    371
+  #DFF                    368
   #LATCH                    0
-#MACRO_ADD                  3
-#MACRO_EQ                  49
-#MACRO_MUX                296
+#MACRO_ADD                 11
+#MACRO_EQ                  53
+#MACRO_MUX                293
 
 Report Hierarchy Area:
-+--------------------------------------------------------+
-|Instance        |Module         |gates  |seq    |macros |
-+--------------------------------------------------------+
-|top             |CPU_LS1u       |490    |371    |54     |
-|  AHB_INTERFACE |bus_unit       |37     |43     |12     |
-|  CORE          |KC_LS1u_plus   |338    |154    |17     |
-|  L1_Cache      |l1_unified     |113    |174    |23     |
-|    tag_manager |tag_arbiter_fa |86     |151    |17     |
-+--------------------------------------------------------+
++----------------------------------------------------------------+
+|Instance                  |Module       |gates  |seq    |macros |
++----------------------------------------------------------------+
+|top                       |MIN_LS1u     |534    |368    |69     |
+|  CPU1                    |CPU_LS1u     |389    |192    |36     |
+|    AHB_INTERFACE         |bus_unit     |32     |43     |12     |
+|    CORE                  |KC_LS1u_plus |323    |136    |17     |
+|    L1_I_Only$L1CX        |l1_ionly     |33     |13     |7      |
+|  OC_PERIPHERALS          |min_pbus     |105    |156    |25     |
+|    INTERRUPT_CONTROLLER1 |int_ctrl     |39     |43     |2      |
+|    SYSCTRL               |sys_ctrl     |33     |43     |15     |
+|      LCLK_Divider        |FDIV         |2      |14     |11     |
+|    SYSTICK               |systick      |27     |53     |3      |
++----------------------------------------------------------------+

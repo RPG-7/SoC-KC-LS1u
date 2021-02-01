@@ -1,7 +1,6 @@
 module KC_LS1u_plus
 (
     input clk,rst,INT,WAIT,
-    //input [5:0]INTCODE,//中断源编码
     input [23:0]IVEC_addr,//中断向量地址
     output IN_ISP,
     output [23:0]iaddr,
@@ -30,7 +29,7 @@ assign PCP1=PC+1;
 always@(*)//PC_NEXT 选择器
 begin
     if(rst)PC_NEXT=0;//复位
-    else if(WAIT)PC_NEXT=PC;//保持
+    else if(WAIT)PC_NEXT<=PC;
     else if(int_filter)PC_NEXT=IVEC_addr;//中断向量
     else if(jmp)PC_NEXT=jaddr;//跳转或返回
     else PC_NEXT=PCP1;//没事+1s
@@ -38,6 +37,7 @@ end
 always@(posedge clk or posedge rst)//PC寄存器
 begin
     if(rst)PC<=24'h0;
+    else if(WAIT)PC<=PC;
     else PC<=PC_NEXT;
 end
 //中断管理寄存器

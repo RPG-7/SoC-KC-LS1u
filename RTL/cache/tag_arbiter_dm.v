@@ -27,6 +27,7 @@ integer i;
 reg [ENTRY_NUM-1:0]line_valid;
 reg [ENTRY_NUM-1:0]line_dirty;
 reg [TAG_WID-1:0]entry_tag[ENTRY_NUM-1:0];
+wire entry_hit;
 //对于CPU访存提供写穿透策略/写回策略接口，配套了内存同步控制线。
 assign line_miss=(entry_read|entry_wback|entry_wthru) & (entry_hit==0);
 assign entry_hit=entry_tag[address_ent]==address_tag&line_valid[address_ent];

@@ -2,25 +2,23 @@
 module pbus_top
 (
 //------------SYSTEM CONTROL-------
-
+    input SYST_PAUSE,
 //------------Misc signals--------
     output	  MOSI,
     output	  SCLK,
     input	  MISO,
     output [7:0]GPIOo,//RGB+SPI CS+SPI DEVSEL
     output [7:0]GPIOdir,
-    input [7:0]GPIOi,
-
-    input SYST_PAUSE,
+    input [7:0]GPIOi, 
 //------------INT signals--------   
-    output [5:0]INT_CODE,
-    output [23:0]IVT_ADDR,
+    output INT,
+    output [23:0]IVEC_ADDR,
 //------------Global signals--------
     input wire clki,
     input wire rsti,
     output clk,rst,//SYSTEM CORE CLK/RST
 //-----------Wishbone BUS-----------
-    input wire [9:0]WB_ADRi,
+    input wire [10:0]WB_ADRi, //768b Peripherals+256b SYSCALL+1K OCSPM
     output reg [7:0]WB_DATo,
     input wire [7:0]WB_DATi,
     input wire WB_WEi,
@@ -94,8 +92,8 @@ timer TIMER1( //8 Regs
 
 int_ctrl INTERRUPT_CONTROLLER1( //8Regs
 
-    .INT_CODE(INT_CODE),
-    .IVT_ADDR(IVT_ADDR),
+    .IVEC_ADDR(IVEC_ADDR),
+    .EXP_ARR(),
     .INT_ARR({SYSCALL,SYSTICK_INT,XTNL_INT,TIM_INT,P8080_INT,SPI_INT,UART_INT,1'b0}),
     .INT(INT),
     .clk(clk),

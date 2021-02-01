@@ -40,3 +40,5 @@ clean:
 	-rm -r $(REPORT_DIR)/*
 	-rm $(OBJ_DIR)/*
 	-find ./ -name "*.bak"|xargs rm
+	-find ./ -name "*.log"|xargs rm
+	-find ./ -name "*.area"|xargs rm
