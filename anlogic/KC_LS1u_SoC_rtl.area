@@ -8,33 +8,32 @@ IO Statistics
   #inout                    8
 
 Gate Statistics
-#Basic gates              902
-  #and                    245
+#Basic gates              973
+  #and                    263
   #nand                     0
-  #or                      81
+  #or                      84
   #nor                      0
   #xor                     16
   #xnor                     0
   #buf                      0
-  #not                     88
+  #not                     90
   #bufif1                   8
-  #MX21                    96
+  #MX21                   144
   #FADD                     0
   #DFF                    368
   #LATCH                    0
 #MACRO_ADD                 11
-#MACRO_EQ                  53
-#MACRO_MUX                293
+#MACRO_EQ                  55
+#MACRO_MUX                348
 
 Report Hierarchy Area:
 +----------------------------------------------------------------+
 |Instance                  |Module       |gates  |seq    |macros |
 +----------------------------------------------------------------+
-|top                       |MIN_LS1u     |534    |368    |69     |
-|  CPU1                    |CPU_LS1u     |389    |192    |36     |
+|top                       |MIN_LS1u     |605    |368    |71     |
+|  CPU1                    |CPU_LS1u     |460    |192    |38     |
 |    AHB_INTERFACE         |bus_unit     |32     |43     |12     |
-|    CORE                  |KC_LS1u_plus |323    |136    |17     |
-|    L1_I_Only$L1CX        |l1_ionly     |33     |13     |7      |
+|    CORE                  |KC_LS1u_plus |394    |136    |19     |
 |  OC_PERIPHERALS          |min_pbus     |105    |156    |25     |
 |    INTERRUPT_CONTROLLER1 |int_ctrl     |39     |43     |2      |
 |    SYSCTRL               |sys_ctrl     |33     |43     |15     |

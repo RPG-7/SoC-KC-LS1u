@@ -8,15 +8,15 @@ IO Statistics
   #inout                    8
 
 LUT Statistics
-#Total_luts               820
-  #lut4                   517
-  #lut5                   194
+#Total_luts               868
+  #lut4                   528
+  #lut5                   231
   #lut6                     0
   #lut5_mx41                0
   #lut4_alu1b             109
 
 Utilization Statistics
-#lut                      820   out of   8640    9.49%
+#lut                      868   out of   8640   10.05%
 #reg                      358   out of   8640    4.14%
 #le                         0
 #dsp                        0   out of      3    0.00%
@@ -35,11 +35,10 @@ Report Hierarchy Area:
 +--------------------------------------------------------------------------------------------+
 |Instance                  |Module                   |lut    |ripple |seq    |bram   |dsp    |
 +--------------------------------------------------------------------------------------------+
-|top                       |MIN_LS1u                 |711    |109    |367    |4      |0      |
-|  CPU1                    |CPU_LS1u(CACHE_TYP=2'b0) |438    |40     |191    |2      |0      |
+|top                       |MIN_LS1u                 |759    |109    |367    |4      |0      |
+|  CPU1                    |CPU_LS1u(CACHE_TYP=2'b0) |486    |40     |191    |2      |0      |
 |    AHB_INTERFACE         |bus_unit                 |41     |16     |43     |0      |0      |
-|    CORE                  |KC_LS1u_plus             |318    |24     |136    |0      |0      |
-|    L1_I_Only$L1CX        |l1_ionly                 |78     |0      |12     |2      |0      |
+|    CORE                  |KC_LS1u_plus             |367    |24     |136    |0      |0      |
 |  OC_PERIPHERALS          |min_pbus                 |218    |69     |156    |2      |0      |
 |    INTERRUPT_CONTROLLER1 |int_ctrl                 |48     |22     |43     |0      |0      |
 |    SYSCTRL               |sys_ctrl                 |85     |22     |43     |0      |0      |

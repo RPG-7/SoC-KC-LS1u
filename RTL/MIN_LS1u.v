@@ -8,8 +8,8 @@
 module MIN_LS1u
 (
     //FSB8 bus
-    input busclk,//let bus reset system
-    input busrst_n,
+    input sysclk,//let bus reset system
+    input sysclk_n,
     output ale_n,
     output cs_n,
     output cmd_n,
@@ -54,12 +54,12 @@ wire [7:0]hrdata_fsb;
 wire hready_fsb;
 wire hsel_ocf;//OCF are on-chip 1T functions, no need to have hready
 wire [7:0]hrdata_ocf;
-wire [7:0]EXP_ARR;
+wire [7:0]XCP_ARR;
 wire FSB_IRQ;
 assign hreset_n=~rst;
 defparam CPU1.CACHE_TYP =`L1IONLY;
-defparam CPU1.CACHE_DEPTH=1024;
-defparam CPU1.ENTRY_NUM=8;
+defparam CPU1.CACHE_DEPTH=2048;
+defparam CPU1.ENTRY_NUM=16;
 defparam CPU1.MMU_ENABLE=MMU_SETTING;
 CPU_LS1u CPU1
 (
@@ -127,12 +127,12 @@ min_pbus OC_PERIPHERALS
     .ALWAYS_SVM(ALWAYS_SVM),     
 //------------INT signals--------  
     .XTNL_INT(FSB_IRQ),
-    .EXP_ARR(EXP_ARR),
+    .XCP_ARR(XCP_ARR),
     .INT(INT),
     .IVEC_ADDR(IVEC_addr),
 //------------Global signals--------
-    .clki(busclk),
-    .rsti(~busrst_n),
+    .clki(sysclk),
+    .rsti(~sysclk_n),
     .clk(clk),
     .rst(rst),//SYSTEM CORE CLK/RST
 //-----------Wishbone BUS-----------

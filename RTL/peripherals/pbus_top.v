@@ -93,7 +93,7 @@ timer TIMER1( //8 Regs
 int_ctrl INTERRUPT_CONTROLLER1( //8Regs
 
     .IVEC_ADDR(IVEC_ADDR),
-    .EXP_ARR(),
+    .XCP_ARR(),
     .INT_ARR({SYSCALL,SYSTICK_INT,XTNL_INT,TIM_INT,P8080_INT,SPI_INT,UART_INT,1'b0}),
     .INT(INT),
     .clk(clk),

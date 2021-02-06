@@ -5,16 +5,15 @@
 //0x02:IVT1 :   Interrupt Vector Table[15:8]
 //0x03:IVT2 :   Interrupt Vector Table[23:16]
 //0x04:INTE0:   INTerrupt Enable0
-//0x05:EXPE0:   EXcePtion Enable0
-//0x06:EXPC :   EXcePtion Clear
+//0x05:XCPE0:   eXCePtion Enable0
+//0x06:XCPC :   eXCePtion Clear
 module int_ctrl
 (
 //------------INT signals--------   
-    //output 
-    output [23:0]IVEC_ADDR,
     input [7:0]INT_ARR,
-    input [7:0]EXP_ARR,
-    output INT,
+    input [7:0]XCP_ARR,
+    output reg[23:0]IVEC_ADDR,
+    output reg INT,
 //------------Global signals--------
     input wire clk,
     input wire rst,
@@ -36,43 +35,56 @@ reg [2:0]   INTC;
 reg [7:0]   IVT0,IVT1,IVT2,
             INTE0,EXPE0;//,INTE2,INTE3//sub-interrupt enable
 wire [7:0]int_masked;
-reg [7:0]exp_trig;
+reg [7:0]xcp_trig;
 wire [4:0]INT_CODE;
 wire [7:0]INT_OFFSET;
 wire [23:0]IVT_ADDR;
 reg [2:0]int_select_encode[7:0];
-reg [2:0]exp_select_encode[7:0];
+reg [2:0]xcp_select_encode[7:0];
 always @(*)//中断源选择优先编码器
 begin
     int_select_encode[0]=0;
-    exp_select_encode[0]=0;
+    xcp_select_encode[0]=0;
     for ( i=1;i<8;i=i+1 ) 
     begin
         int_select_encode[i]=sel_entry_cell(int_select_encode[i-1],i,int_masked[i]);
-        exp_select_encode[i]=sel_entry_cell(exp_select_encode[i-1],i,exp_trig[i]);
+        xcp_select_encode[i]=sel_entry_cell(xcp_select_encode[i-1],i,xcp_trig[i]);
     end
 end
-wire [7:0]exp_clr,exp_set;
-assign exp_set=EXP_ARR&EXPE0;
-assign exp_clr={8{(WB_CYCi & WB_STBi & WB_WEi & (WB_ADRi[2:0]==4'h6))}}&WB_DATi|{8{rst}};
+wire [7:0]xcp_clr,xcp_set;
+assign xcp_set=XCP_ARR&EXPE0;
+assign xcp_clr={8{(WB_CYCi & WB_STBi & WB_WEi & (WB_ADRi[2:0]==4'h6))}}&WB_DATi|{8{rst}};
 genvar j;
 generate 
     for(j=0;j<8;j=j+1) 
     begin : EXCEPTION_CATCHER
-        always@(posedge exp_set[i] or posedge exp_clr[i])
+        always@(posedge xcp_set[i] or posedge xcp_clr[i])
         begin
-            if(exp_clr[i])
-                exp_trig[i]<=0;
-            else exp_trig<=1;
+            if(xcp_clr[i])
+                xcp_trig[i]<=0;
+            else xcp_trig<=1;
         end
     end
 endgenerate
 //中断地址生成
-assign IVEC_ADDR=IVT_ADDR+{INT_OFFSET,2'b00};
 assign int_masked=(INT_ARR[7:0]&INTE0);
-assign IVT_ADDR={IVT2,IVT1,IVT0};
-assign INT=INTC[2]&(int_masked!=0);//INTC Highest bit is interrupt enable 
+assign IVT_ADDR={IVT2,IVT1,IVT0};//INTC Highest bit is interrupt enable 
 assign INT_CODE={2'b00,int_select_encode[7]};
+always @(posedge clk) 
+begin
+    if(rst)
+        INT<=0;
+    else if(INTC[2])
+    begin
+        INT<=(int_masked!=0);
+        IVEC_ADDR<=IVT_ADDR+{INT_OFFSET,2'b00};
+    end
+    else 
+    begin
+        INT <= INT;
+        IVEC_ADDR<=IVEC_ADDR;
+    end
+end
 defparam IVE_SIZE_SHIFTER.IN_WIDTH=8;
 left_bshifter IVE_SIZE_SHIFTER
 (
@@ -83,7 +95,7 @@ left_bshifter IVE_SIZE_SHIFTER
 //---------------REG WRITE------------------
 always@(posedge clk)begin
     if(rst)begin
-        INTC <= 3'h00;
+        INTC <= 3'h0;
     end
     else if(WB_CYCi & WB_STBi & WB_WEi)
     begin

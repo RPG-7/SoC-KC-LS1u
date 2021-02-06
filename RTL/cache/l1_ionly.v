@@ -34,7 +34,7 @@ output store_acc_fault,
 output ins_acc_fault,
 output cache_data_ready,	//可缓存的数据准备好
 output uncache_data_ready,	//不可缓存的数据准备好
-output reg access_ready,
+output access_ready,
 //cache控制器逻辑
 output write_through_req,	//请求写穿
 output read_req,			//请求读一次
@@ -63,18 +63,13 @@ localparam 	ENTRYSEL_WIDTH = ((ENTRY_NUM > 1) ? $clog2(ENTRY_NUM) : 1)
 reg [3:0]main_state;
 wire cache_miss;
 //wire writeback;
-wire transfer_valid;
-always@(posedge clk or negedge transfer_valid)//等待状态锁存
-begin
-	if(!transfer_valid)access_ready<=1'b0;
-	else access_ready<=1'b1;
-end
-assign transfer_valid=(cache_data_ready | uncache_data_ready) ;//&(!(main_state==stb&(read|write)))
+
+assign #1 access_ready=(cache_data_ready | uncache_data_ready) ;//&(!(main_state==stb&(read|write)))
 //缓存控制信号
 wire [15:0]cache_read;	
 wire we;				//最终的cache写入信号
-assign instr_read=cache_read;
-assign data_read=write_data;
+assign #1 instr_read=cache_read;
+assign #1 data_read=write_data;
 wire [ENTRYSEL_WIDTH-1:0]read_block_sel;	//读块选择 00=entry0…………
 wire [ENTRYSEL_WIDTH-1:0]write_block_sel;	//写块选择
 wire [9:0]read_addr;
@@ -109,19 +104,19 @@ always@(posedge clk)begin
 	end
 end
 //wire [ADDR_WIDTH-1:0]addr_pa;//TODO 注意：此处字节编址
-//assign addr_pa=
-assign uncache_data_ready=	(main_state==read_singal)|
-							(main_state==write_singal) & trans_rdy;
+//assign #1 addr_pa=
+assign #1 uncache_data_ready=	(main_state==read_singal)|(main_state==write_singal)
+								|(main_state==stb&(!(read_req|write_through_req))) & trans_rdy;
 
 //访问失败信号
-assign load_acc_fault	=	(main_state==access_fault) & read;
-assign store_acc_fault	=	(main_state==access_fault) & write;
-assign ins_acc_fault	=	(main_state==access_fault) & execute;
+assign #1 load_acc_fault	=	(main_state==access_fault) & read;
+assign #1 store_acc_fault	=	(main_state==access_fault) & write;
+assign #1 ins_acc_fault	=	(main_state==access_fault) & execute;
 
 //cache控制器逻辑
-assign write_through_req=	(main_state==write_singal);	//请求写穿
-assign read_req			=	(main_state==read_singal);			//请求读一次
-assign read_line_req	=	(main_state==read_line);		//请求读一行
+assign #1 write_through_req=	(main_state==write_singal);	//请求写穿
+assign #1 read_req			=	(main_state==read_singal);			//请求读一次
+assign #1 read_line_req	=	(main_state==read_line);		//请求读一行
 
 //tag管理逻辑
 defparam tag_manager.ENTRY_NUM=ENTRY_NUM;
@@ -133,7 +128,6 @@ tag_arbiter_dm tag_manager
 .clk(clk),
 .rst(rst),
 .entry_read(execute),   //Core interface
-.entry_wthru(1'b0),	//可选写穿/写回策略 
 .address_tag(addr_pa_i[23:10]),	
 .address_ent(addr_pa_i[9:7]),
 .valid_clear(L1_clear), //flush
@@ -141,18 +135,22 @@ tag_arbiter_dm tag_manager
 .line_refill(cache_entry_refill),
 .line_miss(cache_miss),//refill req
 .entry_replace_sel(write_block_sel), //生成cache line写入地址	
-.entry_select_addr(read_block_sel)//addr for access //缓存块选择
+.entry_select_addr(read_block_sel),//addr for access //缓存块选择
+.entry_wthru(1'b0),	//L1I不需要
+.entry_wback(1'b0),
+//.force_sync(1'b0),
+.writeback_ok(1'b1)
 );
-//assign cache_write	=write & (trans_rdy);
+//assign #1 cache_write	=write & (trans_rdy);
 //如果是不可缓存的数据，直接将line data打入内部
-assign write_data	=(main_state==read_line) ? line_data : data_write;
+assign #1 write_data	=(main_state==read_line) ? line_data : data_write;
 //生成缓存地址
 wire we_u,we_d;
-assign read_addr	={read_block_sel,addr_pa_i[7:1]};
+assign #1 read_addr	={read_block_sel,addr_pa_i[7:1]};
 //L1写地址由当前是否处在缓存行更新阶段生成，如果缓存行没有被更新，地址是正常地址
-assign write_addr	=(main_state==read_line) ? {write_block_sel,addr_count[7:1]} : read_addr;
+assign #1 write_addr	=(main_state==read_line) ? {write_block_sel,addr_count[7:1]} : read_addr;
 //如果是进行行更新，写入信号切换到外部cache控制器
-assign we	=(main_state==read_line) ? line_write : 1'b0;//cache_write
+assign #1 we	=(main_state==read_line) ? line_write : 1'b0;//cache_write
 //L1缓存
 //TODO async cache-bus interface(decouple bus and core speed)
 //This might take 2 BRAMs
@@ -160,8 +158,8 @@ wire [15:0]cwrite_data;
 wire [1:0]byte_sel;
 defparam l1_ram.datawidth=16;
 defparam l1_ram.cache_depth=1024;
-assign cwrite_data={write_data,write_data};
-assign byte_sel={!write_addr,write_addr};
+assign #1 cwrite_data={write_data,write_data};
+assign #1 byte_sel={addr_count[0],!addr_count[0]};
 cachemem 				l1_ram
 (
     .raddr			({read_addr,1'b0}),
@@ -173,7 +171,7 @@ cachemem 				l1_ram
     .clk			(clk)
 );
 //准备好信号
-assign cache_data_ready	=	(!cache_miss) & (execute &trans_rdy);	
-assign pa	=	(read|write)?addr_pa_d:{addr_pa_i,1'b0};
-assign wt_data=data_write;	
+assign #1 cache_data_ready	=	(!cache_miss) & (execute &trans_rdy);	
+assign #1 pa	=	(read|write)?addr_pa_d:{addr_pa_i,1'b0};
+assign #1 wt_data=data_write;	
 endmodule		

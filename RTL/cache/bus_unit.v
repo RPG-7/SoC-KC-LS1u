@@ -1,7 +1,7 @@
 /*
 用于cache操作的总线单元
 */
-
+`timescale 1ns/100ps
 module bus_unit
 #(
 	parameter BUS_WIDTH=8,
@@ -146,21 +146,23 @@ always@(posedge clk)begin
 	else if((statu==wr_ap)|(statu==rb_ap)|(statu==rd_ap))
 	begin
 		hwdata		<=	wt_data;
-		if(statu==wr_ap)haddr_temp	<=	pa;
+		haddr_temp	<=	pa;
 	end
 end
-assign haddr	=	(read_line_req) ? //|write_line_req
+wire req_occur;
+assign req_occur=read_line_req|read_req|write_through_req;
+assign #1 haddr	=	(read_line_req) ? //|write_line_req
 							{haddr_temp[BUS_ADDR-1:BURST_WID],addr_counter} : haddr_temp;
-assign hwrite	= (statu==wr_ap);
-assign hburst	= ((statu==wr_ap)|(statu==rd_ap))?Single:
+assign #1 hwrite	= (statu==wr_ap);
+assign #1 hburst	= ((statu==wr_ap)|(statu==rd_ap))?Single:
 					((statu==rb_ap)|(statu==rb_dp))?BURST:Single;
-assign htrans	= ((statu==wr_ap)|(statu==rd_ap)|(statu==rb_ap)|(statu==rb_dp))?1'b1:1'b0;	
+assign #1 htrans	= ((statu==wr_ap)|(statu==rd_ap)|(statu==rb_ap)|(statu==rb_dp))?1'b1:1'b0;	
 //cache控制器逻辑
-assign line_data			=	hrdata;
-assign cache_entry_refill	=	trans_rdy & read_line_req;	//更新缓存entry
-assign trans_rdy			=	((statu==rd_dp)|(statu==wr_dp)|(statu==rb_dl))?hready:1'b0;		//传输完成
-assign bus_error			=	(statu==acc_fault);			//访问失败
-assign bus_req				=	write_through_req |  read_line_req | read_req;
+assign #1 line_data			=	hrdata;
+assign #1 cache_entry_refill=	trans_rdy & read_line_req;	//更新缓存entry
+assign #1 trans_rdy			=	((statu==rd_dp)|(statu==wr_dp)|(statu==rb_dl)|(statu==stb&(!req_occur)))?hready:1'b0;		//传输完成
+assign #1 bus_error			=	(statu==acc_fault);			//访问失败
+assign #1 bus_req			=	write_through_req |  read_line_req | read_req;
 endmodule
 
 

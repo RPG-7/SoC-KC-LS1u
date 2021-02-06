@@ -18,7 +18,7 @@ module min_pbus
     output ALWAYS_SVM, 
 //------------INT signals--------  
     input XTNL_INT,
-    input [7:0]EXP_ARR,
+    input [7:0]XCP_ARR,
     output INT,
     output [23:0]IVEC_ADDR,
 //------------Global signals--------
@@ -64,7 +64,7 @@ systick SYSTICK
 int_ctrl INTERRUPT_CONTROLLER1( //8Regs
 
     .IVEC_ADDR(IVEC_ADDR),
-    .EXP_ARR(EXP_ARR),
+    .XCP_ARR(XCP_ARR),
     .INT_ARR({SYSCALL,SYSTICK_INT,XTNL_INT,5'b0}),
     .INT(INT),
     .clk(clk),

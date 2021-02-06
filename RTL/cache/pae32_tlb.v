@@ -13,9 +13,8 @@ module pae32_mmu
 	input [7:0]dva_h8,
 	output reg [15:0]ipa_h16,
 	output reg [15:0]dpa_h16,
-	output reg exp_iptemiss,
-	output reg exp_dptemiss,
-	output reg cpu_savexp
+	output reg xcp_iptemiss,
+	output reg xcp_dptemiss
 
 );
 always @(*) 

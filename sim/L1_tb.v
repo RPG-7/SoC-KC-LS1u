@@ -1,11 +1,5 @@
-module CPU_LS1u
-#(
-    parameter CACHE_TYP = 2'b00,
-    CACHE_DEPTH=2048,
-    CACHE_WIDTH=16,
-    ENTRY_NUM=16,
-    MMU_ENABLE=1'b0
-)
+module L1_tb();
+
 (
     input clk,rst,
     //Interrupt
@@ -24,34 +18,16 @@ module CPU_LS1u
     input wire hreset_n,
     input wire [7:0]hrdata
 );
-wire [23:0]iaddr;
+reg [23:0]iaddr;
 wire [15:0]instr;
-wire [23:0]daddr;
-wire dwrite;
-wire dread;
+reg [23:0]daddr;
+reg dwrite,dread;
 wire [7:0]ddata_i;
-wire [7:0]ddata_o;
+reg [7:0]ddata_o;
 wire READY;
 wire cache_flush;//当存在MMU，切换页表须冲刷cache
 localparam BUS_ADDRWID =(MMU_ENABLE)?32:24;
-wire [BUS_ADDRWID-1:0]pa;
-KC_LS1u_plus CORE
-(
-    .clk(clk),
-    .rst(rst),
-    .INT(INT),
-    .WAIT(!READY),
-    .IVEC_addr(IVEC_addr),//中断向量地址
-    .IN_ISP(IN_ISP),//注意:这里的取值是字编址的！
-    .iaddr(),//如果使用异步SRAM(ASRAM)，用这个
-    .iaddr_next(iaddr),//但是基于FPGA中多见同步SRAM(SSRAM)，必须用PC_NEXT输出才保证取指正确
-    .instr(instr),
-    .daddr(daddr),
-    .dwrite(dwrite),
-    .dread(dread),
-    .ddata_i(ddata_i),
-    .ddata_o(ddata_o)
-);
+reg [BUS_ADDRWID-1:0]pa;
 
 wire load_acc_fault;
 wire store_acc_fault;
@@ -67,9 +43,6 @@ wire line_write_l1;			//cache写
 wire cache_entry_refill_l1;	//更新缓存entry
 wire trans_rdy_l1;			//传输完成
 wire bus_error_l1;			//访问失败
-assign XCP_ARR[0]=ins_acc_fault;
-assign XCP_ARR[1]=load_acc_fault;
-assign XCP_ARR[2]=store_acc_fault;
 //Since KC-LS1U is not and never a data access intensive core, 
 //seprate I$ D$ is NEVER in consideration
 generate
@@ -214,4 +187,4 @@ bus_unit AHB_INTERFACE
 
 );
 
-endmodule
+endmodule 

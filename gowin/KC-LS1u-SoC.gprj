@@ -12,15 +12,16 @@
         <File path="src/cache/bus_unit.v" type="file.verilog" enable="1"/>
         <File path="src/cache/cachemem.v" type="file.verilog" enable="1"/>
         <File path="src/cache/l1_ionly.v" type="file.verilog" enable="1"/>
+        <File path="src/cache/l1_unified.v" type="file.verilog" enable="1"/>
         <File path="src/cache/pae32_tlb.v" type="file.verilog" enable="1"/>
         <File path="src/cache/tag_arbiter_dm.v" type="file.verilog" enable="1"/>
+        <File path="src/cache/tag_arbiter_fa.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_rpll/gowin_rpll.v" type="file.verilog" enable="1"/>
         <File path="src/hispeed/fsb8.v" type="file.verilog" enable="1"/>
         <File path="src/left_bshifter.v" type="file.verilog" enable="1"/>
         <File path="src/peripherals/int_ctrl.v" type="file.verilog" enable="1"/>
         <File path="src/peripherals/min_pbus.v" type="file.verilog" enable="1"/>
         <File path="src/peripherals/ocspm.v" type="file.verilog" enable="1"/>
-        <File path="src/peripherals/pbus_mux.v" type="file.verilog" enable="1"/>
         <File path="src/peripherals/sys_ctrl.v" type="file.verilog" enable="1"/>
         <File path="src/peripherals/syscall.v" type="file.verilog" enable="1"/>
         <File path="src/peripherals/systick.v" type="file.verilog" enable="1"/>

@@ -25,7 +25,6 @@ module tag_arbiter_dm
 );
 integer i;
 reg [ENTRY_NUM-1:0]line_valid;
-reg [ENTRY_NUM-1:0]line_dirty;
 reg [TAG_WID-1:0]entry_tag[ENTRY_NUM-1:0];
 wire entry_hit;
 //对于CPU访存提供写穿透策略/写回策略接口，配套了内存同步控制线。
@@ -37,7 +36,6 @@ begin
         for(i=0;i<ENTRY_NUM;i=i+1)
         begin
             line_valid[i]	<=	0;
-            if(WBACK_ENABLE)line_dirty[i]   <=  0;
         end
     else
     begin
@@ -45,23 +43,34 @@ begin
         begin
             line_valid[address_ent]	<=	0;
         end
-        else if (writeback_ok&WBACK_ENABLE) //dirty page synced,we can move forward
-        begin
-            line_dirty[address_ent]   <=  0;
-        end
         else if(line_refill)
         begin
             entry_tag[address_ent]	<=	refill_tag;
             line_valid[address_ent]	<=	1'b1;
         end
-        else if(entry_wback&entry_hit&WBACK_ENABLE) 
+    end
+end
+generate if(WBACK_ENABLE) 
+begin : WBACK_REGS
+reg [ENTRY_NUM-1:0]line_dirty;
+    always@(posedge clk)
+    begin
+        if(rst)
+        for(i=0;i<ENTRY_NUM;i=i+1)
+            line_dirty[i]   <=  0;
+        else if (writeback_ok) //dirty page synced,we can move forward
+        begin
+            line_dirty[address_ent]   <=  0;
+        end
+        else if(entry_wback&entry_hit) 
         begin
             line_dirty[address_ent]<=1'b1;
         end
     end
+assign replace_dirty=line_dirty[address_ent];//拟定替换cache line脏不？
 end
+endgenerate
 //写回管理
-assign replace_dirty=(WBACK_ENABLE)?line_dirty[address_ent]:1'b0;//拟定替换cache line脏不？
 assign entry_replace_sel=address_ent;
 assign entry_select_addr=address_ent;
 endmodule
