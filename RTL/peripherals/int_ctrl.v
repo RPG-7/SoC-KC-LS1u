@@ -35,7 +35,7 @@ reg [2:0]   INTC;
 reg [7:0]   IVT0,IVT1,IVT2,
             INTE0,EXPE0;//,INTE2,INTE3//sub-interrupt enable
 wire [7:0]int_masked;
-reg [7:0]xcp_trig;
+reg  [7:0]xcp_trig;
 wire [4:0]INT_CODE;
 wire [7:0]INT_OFFSET;
 wire [23:0]IVT_ADDR;
@@ -58,11 +58,11 @@ genvar j;
 generate 
     for(j=0;j<8;j=j+1) 
     begin : EXCEPTION_CATCHER
-        always@(posedge xcp_set[i] or posedge xcp_clr[i])
+        always@(posedge xcp_set[j] or posedge xcp_clr[j])
         begin
-            if(xcp_clr[i])
-                xcp_trig[i]<=0;
-            else xcp_trig<=1;
+            if(xcp_clr[j])
+                xcp_trig[j]<=1'b0;
+            else xcp_trig[j]<=1'b1;
         end
     end
 endgenerate

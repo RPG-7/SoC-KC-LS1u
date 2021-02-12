@@ -9,13 +9,15 @@ module MIN_LS1u
 (
     //FSB8 bus
     input sysclk,//let bus reset system
-    input sysclk_n,
+    input sysrst_n,
+    output busclk,
+    output busrst_n,
     output ale_n,
     output cs_n,
     output cmd_n,
     output typ,//SINGLE#/BLOCK
     output wr_n,
-    input rdy_n,
+    input rdy_n,//Also MN#/MX
     input irq_n,
     inout [7:0]AD8,
     output [7:0]AAH8
@@ -27,9 +29,8 @@ wire [7:0]AD_in,AD_out;
 assign AD8=(ADdir)?AD_out:8'hzz;
 assign AD_in=AD8;
 wire clk,rst;
-wire INT,SYST_PAUSE;
+wire INT,XCP,IN_ISP;
 wire [23:0]IVEC_addr;//中断向量
-
 wire  SYNC_MODE;
 wire  [6:0]ASYNC_WAITCYCLE;
 //-----------MMU SIGNALS-----------
@@ -67,8 +68,9 @@ CPU_LS1u CPU1
     .rst(rst),
     //Interrupt
 	 .INT(INT),
+    .XCP_ARR(XCP_ARR),
     .IVEC_addr(IVEC_addr),//中断向量表基址
-    .IN_ISP(SYST_PAUSE),
+    .IN_ISP(IN_ISP),
     //Shrinked AHB
     .haddr(haddr),
     .hwrite(hwrite),
@@ -100,6 +102,8 @@ fsb8 FSB8_CONTROLLER
     .hresp(hresp_fsb),
     .hready(hready_fsb),
     //fsb8信号
+    .clk(busclk),
+    .rst_n(busrst_n),
     .ale_n(ale_n),
     .cs_n(cs_n),
     .cmd_n(cmd_n),
@@ -107,6 +111,7 @@ fsb8 FSB8_CONTROLLER
     .wr_n(wr_n),
     .rdy_n(rdy_n),
     .irq_n(irq_n),
+    .err_n(1'b1),
     .ADdir(ADdir),	//0表示高阻态
     .AAH8(AAH8),
     .AD_out(AD_out),
@@ -118,9 +123,10 @@ fsb8 FSB8_CONTROLLER
 min_pbus OC_PERIPHERALS
 (
 //------------SYSTEM CONTROL-------
-    .SYST_PAUSE(SYST_PAUSE),
+    .SYST_PAUSE(IN_ISP),
     .SYNC_MODE(SYNC_MODE),
     .ASYNC_WAITCYCLE(ASYNC_WAITCYCLE),
+    .MNMX(rdy_n),
     //-----------MMU SIGNALS-----------
     .HPAGE_BASEADDR(HPAGE_BASEADDR),
     .PAE_ENABLE(PAE_ENABLE),
@@ -132,7 +138,7 @@ min_pbus OC_PERIPHERALS
     .IVEC_ADDR(IVEC_addr),
 //------------Global signals--------
     .clki(sysclk),
-    .rsti(~sysclk_n),
+    .rsti(~sysrst_n),
     .clk(clk),
     .rst(rst),//SYSTEM CORE CLK/RST
 //-----------Wishbone BUS-----------
@@ -148,5 +154,5 @@ assign hsel_ocf=(haddr[23:16]==8'hC0)&(haddr[11:8]>=4'h5);
 assign hsel_fsb=!hsel_ocf;
 assign hrdata=(hsel_ocf)?hrdata_ocf:hrdata_fsb;
 assign hready=(hsel_ocf)?1'b1:hready_fsb;
-assign hresp=1'b1;
+assign hresp=(hsel_ocf)?1'b0:hresp_fsb;
 endmodule 

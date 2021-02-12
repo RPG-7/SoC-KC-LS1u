@@ -7,8 +7,9 @@ module KC_LS1u_plus
     output [23:0]iaddr_next,
     input [15:0]instr,
     output [23:0]daddr,
-    output reg dread,
-    output reg dwrite,
+    output reg dread=0,
+    output reg dwrite=0,
+    input dop_finish,
     input [7:0]ddata_i,
     output [7:0]ddata_o
 );
@@ -22,13 +23,21 @@ assign IN_ISP=int_service;
 reg [7:0]DB8w;//CPU数据写回总线
 reg jmp,ret_sel;//执行跳转/中断返回
 wire int_filter;//中断屏蔽信号线
-assign int_filter=INT&(!int_service);//中断屏蔽=在中断服务程序中
-reg wait_trap;
+assign int_filter=(INT)&(!int_service);//中断屏蔽=在中断服务程序中
+reg wait_trap,dop_wait;
 wire transfer_valid;
 always@(posedge clk or posedge WAIT)//等待状态锁存
 begin
 	if(WAIT)wait_trap<=1'b1;
-	else wait_trap<=1'b0;
+	else wait_trap<=dop_wait;
+end
+wire daccess,daccessclear;
+assign daccess=(dread|dwrite);
+assign daccessclear=(dop_finish|rst);
+always@(posedge daccess or posedge daccessclear)
+begin
+    if(daccessclear) dop_wait<=1'b0;
+    else if(daccess)dop_wait<=1'b1;
 end
 wire [23:0]PCP1;//PC+1,省LE的奇技淫巧(MUX比加法器节约LE)
 assign PCP1=PC+1;
@@ -61,7 +70,7 @@ begin
     else if(int_filter&(!wait_trap)) 
     begin
         if(jmp){RET2,RET1,RET0}=jaddr;
-            else {RET2,RET1,RET0}<=PCP1;
+            else {RET2,RET1,RET0}<=PCP1;// in case XCP,manually -1
         int_service<=1'b1;
         RTA0<=A0;
         RTA1<=A1;

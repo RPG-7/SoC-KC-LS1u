@@ -135,7 +135,7 @@ assign last_addr 	= addr_counter - 8'b1;
 //从cache写入到内存里的时候，因为同步储存器读取需要一个clk的延迟，故在sync且准备好时候始终保持cache_counter和addr_counter一致
 //由于AHB总线总是在第二个周期给出应答信号，此时addr counter已经自动+1，故切换到上一个地址
 assign line_write = ((statu==rb_dp)|(statu==rb_dl))?hready:1'b0;
-assign addr_count	= (statu==rb_dl) ? addr_counter : last_addr;
+assign addr_count	= (statu==rb_dl) ? addr_counter : last_addr;//|addr_counter==0
 //AHB总线
 //AHB输出寄存器
 always@(posedge clk)begin

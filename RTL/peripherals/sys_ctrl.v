@@ -20,6 +20,7 @@ module sys_ctrl
     output reg rst,
     //-----------Syscall wire-----------
     output SYSCALL_clr,
+    input MNMX,
     input [7:0]SYSCALL_num,
     input [7:0]SYSCALL_info,
     //-----------Bus Control-----------
@@ -67,7 +68,7 @@ always@(posedge clk)begin
     if(rst)begin
         CKSET<=8'h00;
         scall_en <= 0;
-        FSBMOD<=8'h7f;
+        FSBMOD<={MNMX,7'h7f};
         MMUMOD<=2'h0;
     end
     else if(WB_CYCi & WB_STBi & WB_WEi)
@@ -171,7 +172,22 @@ syspll ALTERA_SYSPLL(
 	.c0(clk),
 	.locked(pll_lock)
 );
-`endif 
+`elsif VENDOR_ASIC
+asic_pll ASIC_PLL
+(
+    .clki(clki),
+    .rsti(rsti),
+    .forediv(),
+    .loopdiv(),
+    .postdiv(),
+    .fout(clk),
+    .lock(pll_lock)
+);
+`elsif VENDOR_SIMU
+    assign pll_lock=1'b1;
+    assign clk=clki;
+`endif
+ 
 //Output ports
 assign SYNC_MODE=FSBMOD[7];
 assign ASYNC_WAITCYCLE=FSBMOD[6:0];

@@ -16,7 +16,6 @@
         <File path="src/cache/pae32_tlb.v" type="file.verilog" enable="1"/>
         <File path="src/cache/tag_arbiter_dm.v" type="file.verilog" enable="1"/>
         <File path="src/cache/tag_arbiter_fa.v" type="file.verilog" enable="1"/>
-        <File path="src/gowin_rpll/gowin_rpll.v" type="file.verilog" enable="1"/>
         <File path="src/hispeed/fsb8.v" type="file.verilog" enable="1"/>
         <File path="src/left_bshifter.v" type="file.verilog" enable="1"/>
         <File path="src/peripherals/int_ctrl.v" type="file.verilog" enable="1"/>

@@ -34,6 +34,7 @@ output reg typ,//SINGLE#/BLOCK
 output wr_n,
 input rdy_n,
 input irq_n,
+input err_n,
 output reg ADdir,	//0表示高阻态
 output [7:0]AAH8,
 output [7:0]AD_out,
@@ -53,32 +54,30 @@ localparam commd	= 3'h7; //写高位地址/总线桥指令 {8'hxx,8'h00}=写H8�
 wire[7:0]command;
 reg [2:0]state;
 
-reg [7:0]M16latch;	
+//reg [7:0]M16latch;	
 reg [7:0]output_reg;	//输出寄存器	
 reg [15:0]DATA_reg;		//AD复用寄存器
+reg rwsel;
 wire read_cond,write_cond; 
-wire h8_diff,m16_diff;
-generate 
-if(PAE_ENABLE) 
-	begin : PAE
-		reg [7:0]H8latch;//if haddr[31:24]!=h8latch, use commd to write outside h8 address
-		
-		assign h8_diff=hsel & (htrans!=0) & (H8latch!=haddr[31:24]) & PAE_ENABLE;
-		always @(posedge hclk ) 
-		begin	
-			if(h8_diff&state==commd)H8latch<=haddr[31:28];
-		end
-	end
-	else 
-	begin:PAELESS
-		assign h8_diff= 1'b0 ;
-	end
-endgenerate
-
-assign m16_diff=hsel & (htrans!=0) & (M16latch!=haddr[23:8]);
-assign read_cond=hsel & (htrans!=0) & !hwrite;
-assign write_cond=hsel & (htrans!=0) & hwrite;
-assign command=(h8_diff)?8'h00:hwdata;
+reg [6:0]async_cnt;
+wire wait_cond,burst_cond;
+wire cnt_eq_set;
+assign cnt_eq_set=(async_cnt==ASYNC_WAITCYCLE);
+assign burst_cond=(hburst & hsel & (htrans!=0));
+assign wait_cond=(!(cnt_eq_set|SYNC_MODE)|rdy_n);
+//assign m16_diff=hsel & (htrans!=0) & (M16latch!=haddr[23:8]);
+assign command=(hsel)?8'h00:hwdata;
+always@(posedge hclk)//异步总线等待计数器
+begin
+	if(!hreset_n|cnt_eq_set)
+		async_cnt<=0;
+	else if(state!=stb&!SYNC_MODE)
+		async_cnt<=async_cnt+1;
+	else async_cnt<=async_cnt;
+end
+wire transfer_sel,cmdtran_sel;
+assign transfer_sel=hsel & (htrans!=0) ;
+assign cmdtran_sel=hsel_cmd & (htrans!=0); 
 //主状态机
 always@(posedge hclk)begin
 	if(!hreset_n)begin
@@ -86,41 +85,33 @@ always@(posedge hclk)begin
 	end
 	else begin
 		case(state)
-			stb	:	if(h8_diff|hsel_cmd)
-					begin
-						state<=commd;//In case funct select,update addr first
+			stb	:	begin
+						rwsel<=hwrite;
+						if((PAE_ENABLE&transfer_sel)|cmdtran_sel)
+							state<=commd;//In case funct select,update addr first
+						else if((!PAE_ENABLE&transfer_sel))
+							state<=addrh;
+						else state<=stb;
 					end
-					else if(m16_diff)state<=addrh;
-					else if(read_cond)
-					begin
-						state<=read;
-					end
-					else if(write_cond)begin
-						state<=write;
-					end
-	//地址帧
-			addrh:	if(read_cond)
+
+			addrh:	if(wait_cond)state<=addrh;//地址帧
+					else if(~rwsel)
 					begin
 						state <= dummy;
 					end
-					else if(write_cond)begin
-						state<=write;
-					end
-
-			dummy:	state <= read;//SET bus to read, but not really 
-
-			read :	state <= (hburst & hsel & (htrans!=0) )?read:stb;
-
-			write:	state <= (hburst & hsel & (htrans!=0) )?write:stb ;
-
-			commd:	if(m16_diff)state<=addrh;
-					else if(read_cond)
+					else 
 					begin
-						state<=read;
-					end
-					else if(write_cond)begin
 						state<=write;
 					end
+
+			dummy:	state <= (wait_cond)?dummy:read;//SET bus to read, but not really 
+
+			read :	state <= (burst_cond|wait_cond)?read:stb;
+
+			write:	state <= (burst_cond|wait_cond)?write:stb ;
+
+			commd:	if(wait_cond)state<=commd;
+					else if(transfer_sel)state<=addrh;
 					else state <= stb;
 		default :	state <= stb;
 		endcase
@@ -138,17 +129,17 @@ end
 always @(posedge hclk) 
 begin
 	if(state!=stb)typ<=hburst;
-	if(state==addrh)M16latch<=haddr[23:8];
 end
 //高阻态指示寄存器
-always@(posedge hclk)begin
+always@(*)
+begin
 	if(state==stb|state==dummy)
 	begin	//默认 进入高阻态
 		ADdir	<=	1'b0;
 	end
 	else if(state==addrh|state==commd|state==write)//写东西时才摆入输出模式
 	begin
-		ADdir	<=	1'b0;
+		ADdir	<=	1'b1;
 	end
 end
 //FSB8信号
@@ -165,7 +156,7 @@ assign AD_out=	(state==commd)?command:
 generate 
 if(PAE_ENABLE) 
 	begin : PAE_OUT
-		assign AAH8	 =  (h8_diff&state==commd)?haddr[31:24]:
+		assign AAH8	 =  ((!cmdtran_sel)&state==commd)?haddr[31:24]:
 						(state==addrh)?haddr[23:16]:haddr[7:0];
 	end
 	else begin :PAELESS_OUT
@@ -174,8 +165,8 @@ if(PAE_ENABLE)
 endgenerate
 
 //AHB响应
-assign hresp	=	1'b1;
-assign hready	=	!rdy_n;
+assign hresp	=	!err_n;
+assign hready	=	(state==stb&(!htrans&!wait_cond))|((state==read|state==write)&!wait_cond);
 assign FSB_irq	=	!irq_n;
 assign hrdata	=	output_reg;
 

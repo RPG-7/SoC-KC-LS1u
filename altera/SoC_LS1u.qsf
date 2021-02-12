@@ -38,7 +38,7 @@
 
 set_global_assignment -name FAMILY "Cyclone IV E"
 set_global_assignment -name DEVICE EP4CE6F17C8
-set_global_assignment -name TOP_LEVEL_ENTITY CPU_LS1u
+set_global_assignment -name TOP_LEVEL_ENTITY MIN_LS1u
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 13.1
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "16:11:14  JANUARY 11, 2021"
 set_global_assignment -name LAST_QUARTUS_VERSION 13.1
@@ -50,7 +50,6 @@ set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (VHDL)"
 set_global_assignment -name EDA_OUTPUT_DATA_FORMAT VHDL -section_id eda_simulation
 set_global_assignment -name VERILOG_FILE ../RTL/left_bshifter.v
 set_global_assignment -name VERILOG_FILE ../RTL/peripherals/min_pbus.v
-set_global_assignment -name QIP_FILE ../RTL/peripherals/syspll.qip
 set_global_assignment -name VERILOG_FILE syspll.v
 set_global_assignment -name VERILOG_FILE ../RTL/peripherals/systick.v
 set_global_assignment -name VERILOG_FILE ../RTL/peripherals/syscall.v

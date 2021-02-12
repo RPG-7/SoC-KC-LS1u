@@ -9,7 +9,7 @@ module min_pbus
 (
 //------------SYSTEM CONTROL-------
     input SYST_PAUSE,
-    
+    input MNMX,
     output SYNC_MODE,
     output [6:0]ASYNC_WAITCYCLE,
     //-----------MMU SIGNALS-----------
@@ -91,7 +91,7 @@ sys_ctrl SYSCTRL
     .SYSCALL_clr(SYSCALL_clr),
     .SYSCALL_num(SYSCALL_num),
     .SYSCALL_info(SYSCALL_info),
-
+    .MNMX(MNMX),
     .SYNC_MODE(SYNC_MODE),
     .ASYNC_WAITCYCLE(ASYNC_WAITCYCLE),
     //-----------MMU SIGNALS-----------
@@ -139,7 +139,7 @@ ocspm DATA_SPM
     .WB_DATi(WB_DATi),
     .WB_WEi(WB_WEi),
     .WB_CYCi(WB_CYCi),
-    .WB_STBi(DATo_SPM),
+    .WB_STBi(STBi_SPM),
     .WB_ACKo()
 );
 //IO Bank Base-Addr:0xC00000~0xC005FF (1.5KB)

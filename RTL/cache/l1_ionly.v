@@ -34,7 +34,6 @@ output store_acc_fault,
 output ins_acc_fault,
 output cache_data_ready,	//可缓存的数据准备好
 output uncache_data_ready,	//不可缓存的数据准备好
-output access_ready,
 //cache控制器逻辑
 output write_through_req,	//请求写穿
 output read_req,			//请求读一次
@@ -64,7 +63,6 @@ reg [3:0]main_state;
 wire cache_miss;
 //wire writeback;
 
-assign #1 access_ready=(cache_data_ready | uncache_data_ready) ;//&(!(main_state==stb&(read|write)))
 //缓存控制信号
 wire [15:0]cache_read;	
 wire we;				//最终的cache写入信号
@@ -105,8 +103,8 @@ always@(posedge clk)begin
 end
 //wire [ADDR_WIDTH-1:0]addr_pa;//TODO 注意：此处字节编址
 //assign #1 addr_pa=
-assign #1 uncache_data_ready=	(main_state==read_singal)|(main_state==write_singal)
-								|(main_state==stb&(!(read_req|write_through_req))) & trans_rdy;
+//								|(main_state==stb&(!(read_req|write_through_req))) 
+assign #1 uncache_data_ready=	(main_state==read_singal)|(main_state==write_singal)& trans_rdy;
 
 //访问失败信号
 assign #1 load_acc_fault	=	(main_state==access_fault) & read;
@@ -171,7 +169,7 @@ cachemem 				l1_ram
     .clk			(clk)
 );
 //准备好信号
-assign #1 cache_data_ready	=	(!cache_miss) & (execute &trans_rdy);	
+assign #1 cache_data_ready	=	(!cache_miss) & execute ;	//&trans_rdy
 assign #1 pa	=	(read|write)?addr_pa_d:{addr_pa_i,1'b0};
 assign #1 wt_data=data_write;	
 endmodule		

@@ -9,7 +9,7 @@ module CPU_LS1u
 (
     input clk,rst,
     //Interrupt
-	input INT,
+	input INT,XCP,
     input [23:0]IVEC_addr,//中断向量表基址
     output IN_ISP,//在中断服务程序中
     output [7:0]XCP_ARR,//eXCePtion array
@@ -31,7 +31,7 @@ wire dwrite;
 wire dread;
 wire [7:0]ddata_i;
 wire [7:0]ddata_o;
-wire READY;
+wire READY,dop_finish;
 wire cache_flush;//当存在MMU，切换页表须冲刷cache
 localparam BUS_ADDRWID =(MMU_ENABLE)?32:24;
 wire [BUS_ADDRWID-1:0]pa;
@@ -49,6 +49,7 @@ KC_LS1u_plus CORE
     .daddr(daddr),
     .dwrite(dwrite),
     .dread(dread),
+    .dop_finish(dop_finish),
     .ddata_i(ddata_i),
     .ddata_o(ddata_o)
 );
@@ -67,9 +68,6 @@ wire line_write_l1;			//cache写
 wire cache_entry_refill_l1;	//更新缓存entry
 wire trans_rdy_l1;			//传输完成
 wire bus_error_l1;			//访问失败
-assign XCP_ARR[0]=ins_acc_fault;
-assign XCP_ARR[1]=load_acc_fault;
-assign XCP_ARR[2]=store_acc_fault;
 //Since KC-LS1U is not and never a data access intensive core, 
 //seprate I$ D$ is NEVER in consideration
 generate
@@ -90,7 +88,9 @@ case (CACHE_TYP)
             .load_acc_fault(load_acc_fault),
             .store_acc_fault(store_acc_fault),
             .ins_acc_fault(ins_acc_fault),
-            .access_ready(READY),
+            .cache_data_ready(READY),
+            .uncache_data_ready(dop_finish),
+            //.access_ready(READY),
             //cache控制器逻辑 
             .write_through_req(write_through_req_l1),	//请求写穿
             .read_req(read_req_l1),			//请求读一次
@@ -123,7 +123,8 @@ case (CACHE_TYP)
             .load_acc_fault(load_acc_fault),
             .store_acc_fault(store_acc_fault),
             .ins_acc_fault(ins_acc_fault),
-            .access_ready(READY),
+            .cache_data_ready(READY),
+            .uncache_data_ready(dop_finish),
             //cache控制器逻辑
             .write_through_req(write_through_req_l1),	//请求写穿
             .read_req(read_req_l1),			//请求读一次
@@ -157,6 +158,9 @@ wire line_write;			//cache写
 wire cache_entry_refill;	//更新缓存entry
 wire trans_rdy;			//传输完成
 wire bus_error;			//访问失败
+assign XCP_ARR[0]=ins_acc_fault;
+assign XCP_ARR[1]=load_acc_fault;
+assign XCP_ARR[2]=store_acc_fault;
 generate 
 if(MMU_ENABLE == 1'b1) 
     begin : PAE32_MMU //Only L1 will trigger WT/RT
@@ -179,6 +183,7 @@ else
         assign trans_rdy_l1=trans_rdy;			//传输完成
         assign bus_error_l1=bus_error;			//访问失败
         assign cache_flush=1'b0;//不额外冲刷cache
+        assign XCP_ARR[7:3]=0;
     end
 endgenerate
 defparam AHB_INTERFACE.BUS_ADDR=BUS_ADDRWID;
