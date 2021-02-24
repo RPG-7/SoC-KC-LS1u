@@ -49,6 +49,7 @@ begin
             line_valid[address_ent]	<=	1'b1;
         end
     end
+    
 end
 generate if(WBACK_ENABLE) 
 begin : WBACK_REGS

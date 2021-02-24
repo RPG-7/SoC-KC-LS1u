@@ -79,7 +79,7 @@ wire transfer_sel,cmdtran_sel;
 assign transfer_sel=hsel & (htrans!=0) ;
 assign cmdtran_sel=hsel_cmd & (htrans!=0); 
 //主状态机
-always@(posedge hclk)begin
+always@(posedge hclk or negedge hreset_n)begin
 	if(!hreset_n)begin
 		state <= stb;
 	end
@@ -95,14 +95,8 @@ always@(posedge hclk)begin
 					end
 
 			addrh:	if(wait_cond)state<=addrh;//地址帧
-					else if(~rwsel)
-					begin
-						state <= dummy;
-					end
-					else 
-					begin
-						state<=write;
-					end
+					else if(~rwsel) state <= dummy; 
+					else  state<=write; 
 
 			dummy:	state <= (wait_cond)?dummy:read;//SET bus to read, but not really 
 
@@ -111,7 +105,7 @@ always@(posedge hclk)begin
 			write:	state <= (burst_cond|wait_cond)?write:stb ;
 
 			commd:	if(wait_cond)state<=commd;
-					else if(transfer_sel)state<=addrh;
+					else if(hsel)state<=addrh;
 					else state <= stb;
 		default :	state <= stb;
 		endcase

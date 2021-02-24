@@ -70,7 +70,7 @@ endgenerate
 assign int_masked=(INT_ARR[7:0]&INTE0);
 assign IVT_ADDR={IVT2,IVT1,IVT0};//INTC Highest bit is interrupt enable 
 assign INT_CODE={2'b00,int_select_encode[7]};
-always @(posedge clk) 
+always @(posedge clk or posedge rst) 
 begin
     if(rst)
         INT<=0;
@@ -93,7 +93,8 @@ left_bshifter IVE_SIZE_SHIFTER
     .dataout(INT_OFFSET)
 );
 //---------------REG WRITE------------------
-always@(posedge clk)begin
+always@(posedge clk or posedge rst)
+begin
     if(rst)begin
         INTC <= 3'h0;
     end

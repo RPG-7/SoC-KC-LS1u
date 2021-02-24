@@ -1,21 +1,28 @@
 /*************************************************
 //SYSCTRL Module Mem map:
-//0x00 CKSET: {LCLK_EN SYSRST LCKDIV[5:0]}
+//0x00 CKSET: {SYSLEEP PLLEN REFCLKSEL MAINCLK[1:0]}
 //0x01 SCALL: {SCALL_EN SCALL_CLR RSVD[5:0]}
 //0x02 SCNUM: System call number    //READ ONLY
 //0X03 CINFO: System call info      //READ ONLY
 //0x04 FSBMOD:{SYNC_FSB ASYNC_WAITCNT[6:0]}
-//0x05 MMUMOD:{PAE_ENABLE,SVMOD}
-//0x06 HPADR0:Huge Page Address [31:24]
-//0x07 HPADR1:Huge Page Address [23:21]
+//0x05 MMUMOD:{PAE_ENABLE,SVMOD RSVD[5:0]}
+//0x06 DMATRG:{DIR,BLKNUM}
+//0x07 DMA
+//0x08 HPADR0:Huge Page Address [31:24]
+//0x09 HPADR1:Huge Page Address [23:21]
+//0x0A IPTE  :
+//0x0B IPAE0 :
+//0x0C IPAE1 :
+//0x0D DPTE  :
+//0x0E DPAE0 :
+//0x0F DPAE1 :
 //Huge Page is for Supervisor(Only in case MMU enabled and in supervisor access)
 *************************************************/
 `include "VENDOR.vh"
-
 module sys_ctrl
 (
     input clki,rsti,//Low-speed CLK& RST input
-    input wdt_reset,
+    input reset_req,
     output clk,lclk,//SYSTEM GLOBAL SIGNAL
     output reg rst,
     //-----------Syscall wire-----------
@@ -27,13 +34,17 @@ module sys_ctrl
     output SYNC_MODE,
     output [6:0]ASYNC_WAITCYCLE,
     //-----------MMU SIGNALS-----------
-    output reg[9:0]HPAGE_BASEADDR,
+    output reg[10:0]HPAGE_BASEADDR,
     output PAE_ENABLE,
     //1=Always at Supervisor mode, use hugepage,no TLB 
     //0=ISP in supervisor mode,RET to user level TLB
     output ALWAYS_SVM, 
+    output [15:0]ipae_h16,//From MMU control regs
+    output [15:0]dpae_h16,
+    output [7:0]ipte_h8,
+    output [7:0]dpte_h8,
     //-----------Wishbone BUS-----------
-    input wire [2:0]WB_ADRi,
+    input wire [3:0]WB_ADRi,
     output reg [7:0]WB_DATo,
     input wire [7:0]WB_DATi,
     input wire WB_WEi,
@@ -41,19 +52,23 @@ module sys_ctrl
     input wire WB_STBi,
     output wire WB_ACKo
 );
-reg [6:0]CKSET;
+//reg [6:0]CKSET;
 reg [7:0]FSBMOD;
 reg [1:0]MMUMOD;
+reg [7:0]ipae0,ipae1,ipte;
+reg [7:0]dpae0,dpae1,dpte;
+assign ipae_h16={ipae1,ipae0};
+assign dpae_h16={dpae1,dpae0};
+assign ipte_h8=ipte;
+assign dpte_h8=dpte;
 reg scall_en;
 wire pll_lock;
 wire lclk_div;
 wire sys_rst;
 wire wb_write;
-assign lclk=(!CKSET[6])?1'b0:
-                        (CKSET[5:0]==0)?clki:lclk_div;
 assign wb_write=(WB_CYCi & WB_STBi & WB_WEi);
 //SYSTEM Reset management
-assign sys_rst=rsti|(wb_write&(WB_ADRi==3'h0)&WB_DATi[6])|wdt_reset;
+assign sys_rst=rsti|reset_req;
 assign SYSCALL_clr=rst|(wb_write&(WB_ADRi==3'h1)&WB_DATi[6]);
 always@(posedge clki or posedge sys_rst)
 begin
@@ -64,58 +79,68 @@ begin
 end
 //---------------wishbone signals------------
 //---------------REG WRITE------------------
-always@(posedge clk)begin
+always@(posedge clk or posedge rst)begin
     if(rst)begin
-        CKSET<=8'h00;
+        //CKSET<=8'h00;
         scall_en <= 0;
         FSBMOD<={MNMX,7'h7f};
         MMUMOD<=2'h0;
     end
     else if(WB_CYCi & WB_STBi & WB_WEi)
     begin
-        case(WB_ADRi[2:0])
-        4'h0    :   CKSET<={WB_DATi[7],WB_DATi[5:0]} ;
+        case(WB_ADRi[3:0])
+        //4'h0    :   CKSET<={WB_DATi[7],WB_DATi[5:0]} ;
         4'h1    :   scall_en<=WB_DATi[7];   
         4'h4    :   FSBMOD<=WB_DATi;
         4'h5    :   MMUMOD<=WB_DATi[7:6];
-        4'h6    :   HPAGE_BASEADDR[9:2]<=WB_DATi;
-        4'h7    :   HPAGE_BASEADDR[1:0]<=WB_DATi;
+        4'h8    :   HPAGE_BASEADDR[10:8]<=WB_DATi[2:0];
+        4'h9    :   HPAGE_BASEADDR[7:0]<=WB_DATi;
+        4'ha    :   ipte <=WB_DATi;
+        4'hb    :   ipae0<=WB_DATi;   
+        4'hc    :   ipae1<=WB_DATi;
+        4'hd    :   dpte <=WB_DATi;
+        4'he    :   dpae0<=WB_DATi;
+        4'hf    :   dpae1<=WB_DATi;
         endcase
     end
     else 
     begin
-        CKSET<=CKSET ;
+        //CKSET<=CKSET ;
         scall_en<=scall_en;
         FSBMOD<=FSBMOD;
         MMUMOD<=MMUMOD;
         HPAGE_BASEADDR<=HPAGE_BASEADDR;
+        ipte <=ipte;
+        ipae0<=ipae0;   
+        ipae1<=ipae1;
+        dpte <=dpte;
+        dpae0<=dpae0;
+        dpae1<=dpae1;
     end
 end
 
 //-----------DATA READ-----------
 always@(*)begin
-    case(WB_ADRi[2:0])
-        4'h0    :   WB_DATo <= {CKSET[6],1'b0,CKSET[5:0]};
+    case(WB_ADRi[3:0])
+        //4'h0    :   WB_DATo <= {CKSET[6],1'b0,CKSET[5:0]};
         4'h1    :   WB_DATo <= {scall_en,7'hxx};
         4'h2    :   WB_DATo <= SYSCALL_num;
         4'h3    :   WB_DATo <= SYSCALL_info;
         4'h4    :   WB_DATo <= FSBMOD;
         4'h5    :   WB_DATo <= {MMUMOD,6'hxx};
-        4'h6    :   WB_DATo <= HPAGE_BASEADDR[9:2];
-        4'h7    :   WB_DATo <= {6'hxx,HPAGE_BASEADDR[1:0]};
+        4'h8    :   WB_DATo <= {6'hxx,HPAGE_BASEADDR[10:8]};
+        4'h9    :   WB_DATo <= HPAGE_BASEADDR[7:0];
+        4'ha    :   WB_DATo <= ipte;
+        4'hb    :   WB_DATo <= ipae0;
+        4'hc    :   WB_DATo <= ipae1;
+        4'hd    :   WB_DATo <= dpte;
+        4'he    :   WB_DATo <= dpae0;
+        4'hf    :   WB_DATo <= dpae1;
         default :   WB_DATo <= 8'hxx;
     endcase
 end
 //----------ACK----------------
 assign WB_ACKo = 1'b1;
-//Clock management start
-FDIV LCLK_Divider
-(
-    .CLK(clki),
-    .RST_N(!rst&CKSET[6]),
-    .CDIV(CKSET[5:0]),
-    .COUT(lclk_div)
-);
 //PLL Generate
 `ifdef VENDOR_GOWIN
 assign gw_gnd = 1'b0;
@@ -184,7 +209,13 @@ asic_pll ASIC_PLL
     .lock(pll_lock)
 );
 `elsif VENDOR_SIMU
-    assign pll_lock=1'b1;
+    reg delay;
+    initial 
+    begin
+        delay=0;
+        #100 delay=1;
+    end
+    assign pll_lock=delay;
     assign clk=clki;
 `endif
  
@@ -194,53 +225,6 @@ assign ASYNC_WAITCYCLE=FSBMOD[6:0];
 assign PAE_ENABLE=MMUMOD[1];
 assign ALWAYS_SVM=MMUMOD[0];
 
-endmodule
+assign lclk=clk;
 
-module FDIV
-(
-    input CLK,
-    input RST_N,
-    input [5:0]CDIV,
-    output COUT
-);
-wire COUTC;
-reg COUT1,COUT2;
-reg [5:0]m,n;
-assign COUT=COUT1|COUTC;
-assign COUTC=COUT2&CDIV[0];
-always@(posedge CLK or negedge RST_N)
-begin
-    if(!RST_N)
-    begin
-        m<=0;
-    end
-    else if(m==(CDIV-1))
-        m<=0;
-    else m<=m+1;
-end
-always@(posedge CLK)
-begin
-    if(m==(CDIV>>1)-1)
-        COUT1<=1;
-    else if(m==(CDIV-2))
-        COUT1<=0;
-    else COUT1<=COUT1;
-end
-always@(negedge CLK or negedge RST_N)
-begin
-    if(!RST_N)
-    begin
-        n<=0;
-    end
-    else if(n==(CDIV-1))
-        n<=0;
-    else n<=n+1;
-end
-always@(negedge CLK)
-begin
-    if(n==(CDIV>>1)-1)COUT2<=1;
-    else if(n==(CDIV-2))
-        COUT2<=0;
-    else COUT2<=COUT2;
-end
 endmodule

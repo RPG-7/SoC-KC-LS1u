@@ -5,7 +5,8 @@
 //3rd 1K for OCSPM
 //4th 1K for thread TLB
 module min_pbus
-#(parameter MMU_ENABLE=1'b0)
+#(parameter MMU_ENABLE=1'b0,
+  cDMA_ENABLE=1'b0)
 (
 //------------SYSTEM CONTROL-------
     input SYST_PAUSE,
@@ -16,6 +17,10 @@ module min_pbus
     output [9:0]HPAGE_BASEADDR,
     output PAE_ENABLE,
     output ALWAYS_SVM, 
+    output [15:0]ipae_h16,//From MMU control regs
+    output [15:0]dpae_h16,
+    output [7:0]ipte_h8,
+    output [7:0]dpte_h8,
 //------------INT signals--------  
     input XTNL_INT,
     input [7:0]XCP_ARR,
@@ -39,19 +44,18 @@ wire SYSCALL;
 
 wire lclk;
 wire [7:0]  DATo_STK,DATo_ITC,
-            DATo_SYC,DATo_SPM;
+            DATo_SYC,DATo_SPM,
+            DATo_MMA;
 wire    STBi_STK,STBi_ITC,
         STBi_SYC,STBi_SCL,
-        STBi_SPM;
+        STBi_SPM,STBi_MMA;
 systick SYSTICK
 (   //4Regs
     .SYSTICK_INT(SYSTICK_INT),
     .SYST_PAUSE(SYST_PAUSE),
-    //------------Global signals--------
     .clk(clk),
-    .lclk(lclk),
+    .cntclk(clk),
     .rst(rst),
-//-----------Wishbone BUS-----------
     .WB_ADRi(WB_ADRi[1:0]),
     .WB_DATo(DATo_STK),
     .WB_DATi(WB_DATi),
@@ -80,11 +84,13 @@ int_ctrl INTERRUPT_CONTROLLER1( //8Regs
 );
 wire [7:0]SYSCALL_num;
 wire [7:0]SYSCALL_info;
+
+
 sys_ctrl SYSCTRL
 (   //8regs
     .clki(clki),
     .rsti(rsti),//Low-speed CLK& RST input
-    .wdt_reset(1'b0),
+    .reset_req(1'b0),
     .clk(clk),
     .lclk(lclk),//SYSTEM GLOBAL SIGNAL
     .rst(rst),
@@ -100,8 +106,12 @@ sys_ctrl SYSCTRL
     //1=Always at Supervisor mode, use hugepage,no TLB 
     //0=ISP in supervisor mode,RET to user level TLB
     .ALWAYS_SVM(ALWAYS_SVM), 
+    .ipae_h16(ipae_h16),//From MMU control regs
+    .dpae_h16(dpae_h16),
+    .ipte_h8(ipte_h8),
+    .dpte_h8(dpte_h8),
     //-----------Wishbone BUS-----------
-    .WB_ADRi(WB_ADRi[2:0]),
+    .WB_ADRi(WB_ADRi[3:0]),
     .WB_DATo(DATo_SYC),
     .WB_DATi(WB_DATi),
     .WB_WEi(WB_WEi),
@@ -146,9 +156,9 @@ ocspm DATA_SPM
 //GOTO EXTERNAL 
 //Config Bank Base-Addr:0xC00600~0xC006FF;(256B)
 assign STBi_STK=(WB_ADRi[11:2]==10'b0110_000000);//0xC00600~0xC00603
-//assign STBi_MMU=(WB_ADRi[11:4]==8'b0110_1110);//0xC006E0~0xC006EF
-assign STBi_ITC=(WB_ADRi[11:3]==9'b0110_11110);//0xC006F0~0xC006F7
-assign STBi_SYC=(WB_ADRi[11:3]==9'b0110_11111);//0xC006F8~0xC006FF
+assign STBi_ITC=(WB_ADRi[11:3]==9'b0110_11100);//0xC006E0~0xC006E7
+//assign STBi_MMA=(WB_ADRi[11:3]==8'b0110_11110)&MMU_ENABLE;//0xC006F0~0xC006F7
+assign STBi_SYC=(WB_ADRi[11:4]==8'b0110_1111);//0xC006F0~0xC006FF
 //SYSCALL Base-Addr:0xC00700~0xC007FF(256B)
 assign STBi_SCL=(WB_ADRi[11:8]==4'b0111);
 //SPM Base-Addr:0xC00800~0xC00FFF (2KB)
@@ -156,11 +166,11 @@ assign STBi_SPM=(WB_ADRi[11]==1'b1);
 
 always @(*) 
 begin
-    case ({STBi_STK,STBi_ITC,STBi_SYC,STBi_SCL,STBi_SPM})
+    case ({STBi_STK,STBi_ITC,STBi_SYC,1'b0,STBi_SPM})
         5'b10000: WB_DATo=DATo_STK;
         5'b01000: WB_DATo=DATo_ITC;
         5'b00100: WB_DATo=DATo_SYC;
-        //5'b00010: WB_DATo=DATo_SCL;
+        //5'b00010: WB_DATo=DATo_MMA;
         5'b00001: WB_DATo=DATo_SPM;
         default: WB_DATo=8'hxx;
     endcase

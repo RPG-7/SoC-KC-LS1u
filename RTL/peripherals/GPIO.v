@@ -81,7 +81,7 @@ begin
 end
 //---------------wishbone signals------------
 //---------------REG WRITE------------------
-always@(posedge clk)begin
+always@(posedge clk or posedge rst)begin
     if(rst)begin
         P_mode <= 8'h00;
         P_dir <= 8'h00;

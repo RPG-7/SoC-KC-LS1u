@@ -22,7 +22,8 @@ module MIN_LS1u
     inout [7:0]AD8,
     output [7:0]AAH8
 );
-localparam MMU_SETTING = `FALSE;
+localparam MMU_SETTING = `TRUE;
+localparam cDMA_SETTING = `FALSE;
 localparam BUS_ADDRWID =(MMU_SETTING)?32:24;
 wire ADdir;
 wire [7:0]AD_in,AD_out;
@@ -34,11 +35,11 @@ wire [23:0]IVEC_addr;//中断向量
 wire  SYNC_MODE;
 wire  [6:0]ASYNC_WAITCYCLE;
 //-----------MMU SIGNALS-----------
-wire [9:0]HPAGE_BASEADDR;
+wire [10:0]HPAGE_BASEADDR;
 wire PAE_ENABLE;
-//1=Always at Supervisor mode, use hugepage,no TLB 
-//0=ISP in supervisor mode,RET to user level TLB
-wire ALWAYS_SVM; 
+wire ALWAYS_SVM;
+wire [15:0]IPAE,DPAE;
+wire [7:0]IPTE,DPTE;
 //Shrinked AHB
 wire [BUS_ADDRWID-1:0]haddr;
 wire hwrite;
@@ -71,6 +72,14 @@ CPU_LS1u CPU1
     .XCP_ARR(XCP_ARR),
     .IVEC_addr(IVEC_addr),//中断向量表基址
     .IN_ISP(IN_ISP),
+    //MMU signals
+    .hugepage_ptr(HPAGE_BASEADDR), //for OS working in pure physical address mode 
+    .mmu_enable(PAE_ENABLE),
+    .force_svpriv(ALWAYS_SVM),
+    .ipae_h16(IPAE),//From MMU control regs
+    .dpae_h16(DPAE),
+    .ipte_h8(IPTE),
+    .dpte_h8(DPTE),
     //Shrinked AHB
     .haddr(haddr),
     .hwrite(hwrite),
@@ -120,6 +129,7 @@ fsb8 FSB8_CONTROLLER
     .FSB_irq(FSB_IRQ)
 
 );
+defparam OC_PERIPHERALS.MMU_ENABLE=MMU_SETTING;
 min_pbus OC_PERIPHERALS
 (
 //------------SYSTEM CONTROL-------
@@ -130,7 +140,11 @@ min_pbus OC_PERIPHERALS
     //-----------MMU SIGNALS-----------
     .HPAGE_BASEADDR(HPAGE_BASEADDR),
     .PAE_ENABLE(PAE_ENABLE),
-    .ALWAYS_SVM(ALWAYS_SVM),     
+    .ALWAYS_SVM(ALWAYS_SVM),
+    .ipae_h16(IPAE),//From MMU control regs
+    .dpae_h16(DPAE),
+    .ipte_h8(IPTE),
+    .dpte_h8(DPTE),     
 //------------INT signals--------  
     .XTNL_INT(FSB_IRQ),
     .XCP_ARR(XCP_ARR),

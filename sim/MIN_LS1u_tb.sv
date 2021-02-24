@@ -12,9 +12,9 @@ initial
 begin
     $dumpfile("./temp/MIN_LS1u_tb.vcd"); // 指定用作dumpfile的文件
     $dumpvars; // dump all vars
-    sysclk=0;sysrst_n=0;rdy_n=0;irq_n=1;
+    sysclk=0;sysrst_n=0;rdy_n=1;irq_n=1;
     #20 sysrst_n=1;
-    #30 rdy_n=0; 
+    #300 rdy_n=0; 
     #50000 irq_n=0;
     #100000 $finish;
 end

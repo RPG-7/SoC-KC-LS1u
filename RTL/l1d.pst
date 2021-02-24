@@ -1,0 +1,39 @@
+//Copyright (C)2014-2020 Gowin Semiconductor Corporation.
+//All rights reserved. 
+//File Title: Physical Constraints file
+//GOWIN Version: 1.9.7 Beta
+//Part Number: GW1N-LV1QN48C6/I5
+//Device: GW1N-1
+//Created Time: Tue 02 16 19:24:52 2021
+
+IO_LOC "AD8[0]" 27
+IO_LOC "AD8[4]" 31
+IO_LOC "AD8[5]" 32
+IO_LOC "AD8[6]" 33
+IO_LOC "AD8[7]" 34
+IO_LOC "AD8[1]" 28
+IO_LOC "AD8[2]" 29
+IO_LOC "AD8[3]" 30
+IO_LOC "AAH8[0]" 45
+IO_LOC "AAH8[1]" 44
+IO_LOC "AAH8[2]" 43
+IO_LOC "AAH8[3]" 42
+IO_LOC "AAH8[4]" 41
+IO_LOC "AAH8[5]" 40
+IO_LOC "AAH8[6]" 39
+IO_LOC "AAH8[7]" 38
+IO_LOC "ale_n" 16
+IO_LOC "busclk" 22
+IO_LOC "busrst_n" 5
+IO_LOC "cmd_n" 17
+IO_LOC "cs_n" 18
+IO_LOC "typ" 20
+IO_LOC "wr_n" 21
+IO_LOC "irq_n" 10
+IO_LOC "rdy_n" 11
+IO_LOC "sysclk" 35
+IO_LOC "sysrst_n" 15
+INS_LOC "CPU1/L1_I_Only.L1CX/l1_ram/cacheblk[0].cacheunit/memcell_memcell_0_0_s" BSRAM_R6[2]
+INS_LOC "CPU1/L1_I_Only.L1CX/l1_ram/cacheblk[1].cacheunit/memcell_memcell_0_0_s" BSRAM_R6[1]
+INS_LOC "OC_PERIPHERALS/DATA_SPM/SPMEM_SPMEM_0_0_s" BSRAM_R6[0]
+INS_LOC "OC_PERIPHERALS/SYSCTRL/rpll_inst" PLL_R

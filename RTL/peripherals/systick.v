@@ -4,7 +4,7 @@ module systick
     input SYST_PAUSE,
     //------------Global signals--------
     input wire clk,
-    input lclk,
+    input cntclk,
     input wire rst,
 //-----------Wishbone BUS-----------
     input wire [1:0]WB_ADRi,
@@ -25,17 +25,18 @@ reg [7:0]STK0,STK1,STK2;
 reg [23:0]systick_cnt;
 
 
-//Counter Clk sel. this kind of gated, selectable clock is highly NOT recommended in FPGA designs 
-wire systick_clk;
-assign systick_clk=((TIMC[2])?clk:lclk)&TIMC[0];
+
 //INT SET logic, pair with CLR to form S-R Latch
 wire tint_set,stint_set;
 assign stint_set=TIMC[3]&(systick_cnt=={STK2,STK1,STK0});
 //TCLR logic,use async rst, pay attention to tHOLD constrain and fanout
-wire timclr,systick_clr;
-wire tint_clr,stint_clr;
-assign systick_clr=(WB_CYCi & WB_STBi & WB_WEi & (WB_ADRi==4'h1)&(WB_DATi[7]|WB_DATi[5]))|rst;
-assign stint_clr=(WB_CYCi & WB_STBi & WB_WEi & (WB_ADRi==4'h1)&(WB_DATi[7]|WB_DATi[3]))|rst;
+reg systick_clr,stint_clr;
+always @(posedge clk) 
+begin
+    systick_clr<=(WB_CYCi & WB_STBi & WB_WEi & (WB_ADRi==4'h1)&(WB_DATi[7]|WB_DATi[5]))|rst;
+    stint_clr<=(WB_CYCi & WB_STBi & WB_WEi & (WB_ADRi==4'h1)&(WB_DATi[7]|WB_DATi[3]))|rst;
+end
+
 //INT OUTPUT
 always @(posedge stint_set or posedge stint_clr) 
 begin
@@ -45,7 +46,7 @@ end
 //COUNTERS
 wire systick_pause;
 assign systick_pause=SYST_PAUSE&TIMC[1];
-always@(posedge systick_clk or posedge systick_clr)
+always@(posedge cntclk or posedge systick_clr)
 begin
     if(systick_clr)systick_cnt<=0;
     else if(!systick_pause)systick_cnt<=systick_cnt+1;
@@ -54,7 +55,8 @@ end
 
 //---------------wishbone signals------------
 //---------------REG WRITE------------------
-always@(posedge clk)begin
+always@(posedge clk or posedge rst)
+begin
     if(rst)begin
         TIMC <= 8'h00;
     end
@@ -79,9 +81,10 @@ always@(posedge clk)begin
 end
 
 //-----------DATA READ-----------
-always@(*)begin
+always@(*)
+begin
     case(WB_ADRi[1:0])
-        4'h0    :   WB_DATo <= {TIMC,4'hx};
+        4'h0    :   WB_DATo <= {4'hx,TIMC};
         4'h1    :   WB_DATo <= STK0;
         4'h2    :   WB_DATo <= STK1;
         4'h3    :   WB_DATo <= STK2;

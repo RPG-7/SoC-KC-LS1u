@@ -21,7 +21,6 @@ input wire [BUS_WIDTH-1:0]wt_data,
 output wire [BUS_WIDTH-1:0]line_data,
 output wire [BURST_WID-1:0]addr_count,
 output wire line_write,			//cache写
-output wire cache_entry_refill,	//更新缓存entry
 output wire trans_rdy,			//传输完成
 output wire bus_error,			//访问失败
 //DMA控制器逻辑
@@ -143,7 +142,7 @@ always@(posedge clk)begin
 		hwdata		<=	0;
 		haddr_temp	<=	0;
 	end
-	else if((statu==wr_ap)|(statu==rb_ap)|(statu==rd_ap))
+	else //if((statu==wr_ap)|(statu==rb_ap)|(statu==rd_ap))
 	begin
 		hwdata		<=	wt_data;
 		haddr_temp	<=	pa;
@@ -159,8 +158,8 @@ assign #1 hburst	= ((statu==wr_ap)|(statu==rd_ap))?Single:
 assign #1 htrans	= ((statu==wr_ap)|(statu==rd_ap)|(statu==rb_ap)|(statu==rb_dp))?1'b1:1'b0;	
 //cache控制器逻辑
 assign #1 line_data			=	hrdata;
-assign #1 cache_entry_refill=	trans_rdy & read_line_req;	//更新缓存entry
-assign #1 trans_rdy			=	((statu==rd_dp)|(statu==wr_dp)|(statu==rb_dl)|(statu==stb&(!req_occur)))?hready:1'b0;		//传输完成
+//assign #1 cache_entry_refill=	trans_rdy & read_line_req;	//更新缓存entry
+assign  trans_rdy			=	((statu==rd_dp)|(statu==wr_dp)|(statu==rb_dl))?hready:1'b0;		//传输完成
 assign #1 bus_error			=	(statu==acc_fault);			//访问失败
 assign #1 bus_req			=	write_through_req |  read_line_req | read_req;
 endmodule
