@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project Version="1" Path="/home/hongxiaoyu/Projects/FPGA/KC_LS1u_SoC/anlogic">
-    <Project_Created_Time>2021-01-27 13:48:09</Project_Created_Time>
+    <Project_Created_Time>2021-07-23 17:08:36</Project_Created_Time>
     <TD_Version>5.0.25341</TD_Version>
+    <UCode>00000000</UCode>
     <Name>KC_LS1u_SoC</Name>
     <HardWare>
         <Family>AL3</Family>
@@ -361,7 +362,33 @@
                     <Attr Name="CompileOrder" Val="44"/>
                 </FileInfo>
             </File>
+            <File Path="al_ip/dRAM.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="45"/>
+                </FileInfo>
+            </File>
+            <File Path="RegFile.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="46"/>
+                </FileInfo>
+            </File>
         </Verilog>
+        <SDC_FILE>
+            <File Path="KC_LS1u_SoC.sdc">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="constrain_1"/>
+                    <Attr Name="CompileOrder" Val="1"/>
+                </FileInfo>
+            </File>
+        </SDC_FILE>
     </Source_Files>
     <FileSets>
         <FileSet Name="constrain_1" Type="ConstrainFiles">
@@ -399,8 +426,8 @@
         </Control>
     </Configurations>
     <Project_Settings>
-        <Step_Last_Change>2021-02-24 19:07:31.133</Step_Last_Change>
-        <Current_Step>0</Current_Step>
+        <Step_Last_Change>2021-07-23 20:09:53.773</Step_Last_Change>
+        <Current_Step>10</Current_Step>
         <Step_Status>true</Step_Status>
     </Project_Settings>
 </Project>

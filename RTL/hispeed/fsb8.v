@@ -127,13 +127,13 @@ end
 //高阻态指示寄存器
 always@(*)
 begin
-	if(state==stb|state==dummy)
-	begin	//默认 进入高阻态
-		ADdir	<=	1'b0;
-	end
-	else if(state==addrh|state==commd|state==write)//写东西时才摆入输出模式
+	if(state==addrh|state==commd|state==write)//写东西时才摆入输出模式
 	begin
 		ADdir	<=	1'b1;
+	end
+    else 
+	begin	//默认 进入高阻态
+		ADdir	<=	1'b0;
 	end
 end
 //FSB8信号

@@ -54,6 +54,7 @@ generate
         begin
             writedat=WB_DATi;
             ramaddr=WB_ADRi;
+            dat_o=0;
             ramwe=WB_CYCi & WB_STBi & WB_WEi;    
         end
     end

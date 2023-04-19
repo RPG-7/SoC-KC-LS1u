@@ -2,30 +2,17 @@
 //1st 1.5K for peripherals (can be located on external bridge)
 //following 256b for on chip functions
 //last 256b for SYSCALL
-//3rd 1K for OCSPM
-//4th 1K for thread TLB
+//next 2K for OCSPM
 module min_pbus
-#(parameter MMU_ENABLE=1'b0,
-  cDMA_ENABLE=1'b0)
 (
 //------------SYSTEM CONTROL-------
     input SYST_PAUSE,
     input MNMX,
     output SYNC_MODE,
     output [6:0]ASYNC_WAITCYCLE,
-    //-----------MMU SIGNALS-----------
-    output [9:0]HPAGE_BASEADDR,
-    output PAE_ENABLE,
-    output ALWAYS_SVM, 
-    output [15:0]ipae_h16,//From MMU control regs
-    output [15:0]dpae_h16,
-    output [7:0]ipte_h8,
-    output [7:0]dpte_h8,
-//------------INT signals--------  
-    input XTNL_INT,
-    input [7:0]XCP_ARR,
-    output INT,
-    output [23:0]IVEC_ADDR,
+//Systick Output
+    output SYSTICK_INT,
+    output SYSCALL,
 //------------Global signals--------
     input wire clki,
     input wire rsti,
@@ -40,15 +27,12 @@ module min_pbus
     output wire WB_ACKo
 );
 
-wire SYSCALL;
 
 wire lclk;
-wire [7:0]  DATo_STK,DATo_ITC,
-            DATo_SYC,DATo_SPM,
-            DATo_MMA;
-wire    STBi_STK,STBi_ITC,
-        STBi_SYC,STBi_SCL,
-        STBi_SPM,STBi_MMA;
+wire [7:0]  DATo_SYC,DATo_SPM,DATo_STK;
+wire    STBi_SYC,STBi_SCL,
+        STBi_SPM, STBi_STK;
+wire SYSCALL_clr;
 systick SYSTICK
 (   //4Regs
     .SYSTICK_INT(SYSTICK_INT),
@@ -64,24 +48,10 @@ systick SYSTICK
     .WB_STBi(STBi_STK),
     .WB_ACKo()
 
-);
-int_ctrl INTERRUPT_CONTROLLER1( //8Regs
+);    
+//.INT_ARR({SYSCALL,SYSTICK_INT,XTNL_INT,5'b0}),   
+//.INT(INT),
 
-    .IVEC_ADDR(IVEC_ADDR),
-    .XCP_ARR(XCP_ARR),
-    .INT_ARR({SYSCALL,SYSTICK_INT,XTNL_INT,5'b0}),
-    .INT(INT),
-    .clk(clk),
-    .rst(rst),
-    .WB_ADRi(WB_ADRi),
-    .WB_DATo(DATo_ITC),
-    .WB_DATi(WB_DATi),
-    .WB_WEi(WB_WEi),
-    .WB_CYCi(WB_CYCi),
-    .WB_STBi(STBi_ITC),
-    .WB_ACKo()
-
-);
 wire [7:0]SYSCALL_num;
 wire [7:0]SYSCALL_info;
 
@@ -100,16 +70,6 @@ sys_ctrl SYSCTRL
     .MNMX(MNMX),
     .SYNC_MODE(SYNC_MODE),
     .ASYNC_WAITCYCLE(ASYNC_WAITCYCLE),
-    //-----------MMU SIGNALS-----------
-    .HPAGE_BASEADDR(HPAGE_BASEADDR),
-    .PAE_ENABLE(PAE_ENABLE),
-    //1=Always at Supervisor mode, use hugepage,no TLB 
-    //0=ISP in supervisor mode,RET to user level TLB
-    .ALWAYS_SVM(ALWAYS_SVM), 
-    .ipae_h16(ipae_h16),//From MMU control regs
-    .dpae_h16(dpae_h16),
-    .ipte_h8(ipte_h8),
-    .dpte_h8(dpte_h8),
     //-----------Wishbone BUS-----------
     .WB_ADRi(WB_ADRi[3:0]),
     .WB_DATo(DATo_SYC),
@@ -137,8 +97,8 @@ syscall SYSCALL_UNIT
     .WB_STBi(STBi_SCL),
     .WB_ACKo()
 );
-defparam DATA_SPM.SPM_DEPTH=2048;
-ocspm DATA_SPM
+ocspm #(.SPM_DEPTH(2048))
+DATA_SPM
 (   //Last 2K R/W area
 //------------Global signals--------
     .clk(clk),
@@ -155,20 +115,18 @@ ocspm DATA_SPM
 //IO Bank Base-Addr:0xC00000~0xC005FF (1.5KB)
 //GOTO EXTERNAL 
 //Config Bank Base-Addr:0xC00600~0xC006FF;(256B)
-assign STBi_STK=(WB_ADRi[11:2]==10'b0110_000000);//0xC00600~0xC00603
-assign STBi_ITC=(WB_ADRi[11:3]==9'b0110_11100);//0xC006E0~0xC006E7
-//assign STBi_MMA=(WB_ADRi[11:3]==8'b0110_11110)&MMU_ENABLE;//0xC006F0~0xC006F7
+assign STBi_STK=(WB_ADRi[11:4]==8'b0110_0000);//0xC00600~0xC0060F
 assign STBi_SYC=(WB_ADRi[11:4]==8'b0110_1111);//0xC006F0~0xC006FF
 //SYSCALL Base-Addr:0xC00700~0xC007FF(256B)
 assign STBi_SCL=(WB_ADRi[11:8]==4'b0111);
 //SPM Base-Addr:0xC00800~0xC00FFF (2KB)
 assign STBi_SPM=(WB_ADRi[11]==1'b1);
-
+assign WB_ACKo=1'b1;
 always @(*) 
 begin
-    case ({STBi_STK,STBi_ITC,STBi_SYC,1'b0,STBi_SPM})
+    case ({STBi_STK,STBi_SYC,1'b0,STBi_SPM})
         5'b10000: WB_DATo=DATo_STK;
-        5'b01000: WB_DATo=DATo_ITC;
+        //5'b01000: WB_DATo=DATo_ITC;
         5'b00100: WB_DATo=DATo_SYC;
         //5'b00010: WB_DATo=DATo_MMA;
         5'b00001: WB_DATo=DATo_SPM;

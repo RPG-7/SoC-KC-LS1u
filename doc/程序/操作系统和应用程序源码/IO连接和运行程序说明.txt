@@ -1,0 +1,131 @@
+1. SD/TF内存卡的连接:
+
+内存卡接到 "KC_LS1u_SPI_C" 和 "KC_LS1u_SPI_D" 这两片PCB上，可以连接两张4GB以内的SD或TF内存卡，建议使用2GB; 
+
+内存卡0的 "VCC" 接 "3V" 
+内存卡0的 "GND" 接 "GND" 
+内存卡0的 "MISO" 接 "SI" 
+内存卡0的 "MOSI" 接 "SO" 
+内存卡0的 "SCK" 接 "SCK" 
+内存卡0的 "CS" 接 "S_CS0" 
+
+内存卡1的 "VCC" 接 "3V" 
+内存卡1的 "GND" 接 "GND" 
+内存卡1的 "MISO" 接 "SI" 
+内存卡1的 "MOSI" 接 "SO" 
+内存卡1的 "SCK" 接 "SCK" 
+内存卡1的 "CS" 接 "S_CS1" 
+
+
+
+
+
+
+2. USB接口芯片CH375的连接:
+
+CH375 接 "KC_LS1u_CLK_RST_IO_PS" PCB上的J5、J6、J7、J8接口，可以扩展连接最多4个CH375; 
+
+第一个CH375的连接；
+VCC和GND电源线接J7或J8接口上的VCC和GND;
+D0~D7数据线接J7或J8接口上的D0~D7;
+WR和RD读写线接J7或J8接口上的WR和RD;
+A0线接J7或J8接口上的A0;
+INT中断信号线接J5或J6接口上的IT0;
+CS片选线接J5或J6接口上的CS0;
+
+第二个CH375的连接；
+VCC和GND电源线接J7或J8接口上的VCC和GND;
+D0~D7数据线接J7或J8接口上的D0~D7;
+WR和RD读写线接J7或J8接口上的WR和RD;
+A0线接J7或J8接口上的A0;
+INT中断信号线接J5或J6接口上的IT0;
+CS片选线接J5或J6接口上的CS1;
+
+第三个CH375的连接；
+VCC和GND电源线接J7或J8接口上的VCC和GND;
+D0~D7数据线接J7或J8接口上的D0~D7;
+WR和RD读写线接J7或J8接口上的WR和RD;
+A0线接J7或J8接口上的A0;
+INT中断信号线接J5或J6接口上的IT0;
+CS片选线接J5或J6接口上的CS2;
+
+第四个CH375的连接；
+VCC和GND电源线接J7或J8接口上的VCC和GND;
+D0~D7数据线接J7或J8接口上的D0~D7;
+WR和RD读写线接J7或J8接口上的WR和RD;
+A0线接J7或J8接口上的A0;
+INT中断信号线接J5或J6接口上的IT0;
+CS片选线接J5或J6接口上的CS3;
+
+
+
+
+
+3. VS1003音频芯片的连接:
+
+VS1003接 "KC_LS1u_SPI_C" 和 "KC_LS1u_SPI_D" 和 "KC_LS1u_CT&VGA_CS" PCB的J8接口；
+
+VS1003的 "VCC" 接 "5V" 
+VS1003的 "GND" 接 "GND" 
+VS1003的 "XCS" 接 "S_CS2"
+VS1003的 "XDCS" 接 "S_CS3"
+VS1003的 "XRST" 接 "RST"
+VS1003的 "DREQ" 接 "S_INT1"
+
+VS1003的 "MISO" 接 "BI3" ,位于"KC_LS1u_CT&VGA_CS" PCB上
+VS1003的 "MOSI" 接 "RA"  ,位于"KC_LS1u_CT&VGA_CS" PCB上, PCB上插针没标有丝印, 这根线是在J7J8接口上, 最靠近J5J6接口的那根线,和J5J6接口的"RA"相通
+VS1003的 "SCK" 接 "BO3"  ,位于"KC_LS1u_CT&VGA_CS" PCB上
+
+
+
+
+
+
+4. ENC28J60网络芯片的连接:
+
+
+ENC28J60接到 "KC_LS1u_SPI_C" 和 "KC_LS1u_SPI_D" 这两片PCB上;
+
+ENC28J60的 "VCC" 接 "3V";
+ENC28J60的 "GND" 接 "GND";
+ENC28J60的 "SO" 接 "SI";
+ENC28J60的 "SI" 接 "SO";
+ENC28J60的 "SCK" 接 "SCK";
+ENC28J60的 "CS" 接 "S_CS4";
+ENC28J60的 "RESET" 接 "RST";
+ENC28J60的 "INT" 接 "S_INT0";
+
+
+
+
+
+
+应用程序使用说明:
+
+程序的运行方式为,机器从内存卡(TF/SD)加载程序文件到内存运行,程序文件为编译器生成的 "ROM.bin"
+
+1. 在内存卡根目录新建两个txt文本, "KC_LS1u_boot_0.txt"  和 "KC_LS1u_boot_1.txt" , 内存卡文件系统格式为FAT32;
+
+2. 编辑 "KC_LS1u_boot_0.txt" 这个引导文本, 文本存放的是程序文件的路径, 路径格式为, 设备名称:文件路径, 比如, spi_device0:ROM.bin,  spi_device0的意思是选择SPI设备0(硬件SPI控制器上面有8根片选信号线, 接"S_CS0" 片选信号的设备会被选中),  ROM.bin就是根目录下的ROM.bin二进制程序文件; 
+
+3. 插上内存卡, 通电开机, 这时机器会把 "ROM.bin" 这个文件加载到内存里面并运行; 
+
+
+在这里, SPI设备0(spi_device0:)  和 SPI设备1(spi_device1:) 作为开机引导的对象,也就是可以接两张内存卡, 两张内存卡的片选信号(CS)分别接硬件SPI控制器的 "S_CS0" 片选信号 和 "S_CS1" 片选信号; 
+  
+txt引导文本的路径可以写成如下几种格式,文件名称或文件夹名称可以有空格,但是路径前后不能有空格或换行. 
+spi_device0:ROM.bin         指定从SPI设备0加载根目录的程序文件 
+spi_device1:ROM.bin         指定从SPI设备1加载根目录的程序文件 
+spi_device_:ROM.bin         机器会从当前设备加载根目录的程序文件 
+spi_device0:xx\xxx\xxx\xsads\xs\6768678\67867867fdg\ad\ROM.bin    指定从SPI设备0加载指定目录的程序文件 
+spi_device1:xx\xxx\xxx\xsads\xs\6768678\67867867fdg\ad\ROM.bin    指定从SPI设备1加载指定目录的程序文件 
+spi_device_:xx\xxx\xxx\xsads\xs\6768678\67867867fdg\ad\ROM.bin    机器会从当前设备加载指定目录的程序文件 
+  
+在有两张内存卡的情况下,开机的时候机器会先搜索SPI设备0根目录下的txt引导文本,如果没有找到文本,这时会搜索SPI设备1, 如果SPI设备1的txt引导文本里面路径指定的是SPI设备0(spi_device0:), 那么机器会从SPI设备0搜索程序文件, 也就是引导文本在SPI设备1,程序文件在SPI设备0; 
+如果txt引导文本里的设备名称写成 "spi_device_:" , 这时机器只会搜索存放这个引导文本的设备, 也就是引导文本在SPI设备0, 机器就在SPI设备0搜索程序文件, 文本在SPI设备1,机器就在SPI设备1搜索程序文件; 
+
+
+注意: 引导文本内容的大小不能超过512字节
+
+
+现在把 "KC_LS1u_boot_0.txt" 这个引导文本的内容改为 "spi_device0:ROM.bin" , 然后把编译器生成的 "ROM.bin" 二进制程序文件复制到根目录下, 插上内存卡, 开机就OK了

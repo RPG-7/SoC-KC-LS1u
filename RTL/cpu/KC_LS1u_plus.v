@@ -3,6 +3,13 @@ module KC_LS1u_plus
     input clk,rst,INT,WAIT,
     input [23:0]IVEC_addr,//中断向量地址
     output IN_ISP,
+    //--------XCR Bus--------
+    input [7:0]XCRi,
+    output [7:0]XCRo,
+    output [7:0]XCRa,
+    output reg XCRwe,
+    output reg XCRcs,
+    //--------I/D Bus
     output [23:0]iaddr,
     input [15:0]instr,
     output [23:0]daddr,
@@ -34,20 +41,22 @@ assign data_wait=((dread|(regwrite&(regwaddr==3'h7)|dwrite))&WAIT_DATA);//数据
 //程序计数器，状态：+1s/等待/跳中断处理/(加载A2A1A0跳转|加载返回寄存器(RET)
 wire [23:0]PCP1;//PC+1,省LE的奇技淫巧(MUX比加法器节约LE)
 assign PCP1=PC+1;
-always@(*)//PC_NEXT 选择器
+//PC_NEXT 选择器
+always@(*)
 begin
-    //if(rst)PC_NEXT=0;//复位
     if (data_wait)PC_NEXT=PC;
     else if(int_filter)PC_NEXT=IVEC_addr;//中断向量
     else if(jmp)PC_NEXT=jaddr;//跳转或返回
     else PC_NEXT=PCP1;//没事+1s
 end
-always@(posedge clk or posedge rst)//PC寄存器
+//PC寄存器
+always@(posedge clk or posedge rst)
 begin
     if(rst)PC<=24'h0;
     else if(instr_wait|data_wait)PC<=PC;
     else PC<=PC_NEXT;
 end
+
 reg xreg_write;//修改中断返回寄存器
 wire [2:0]xreg_addr;
 assign xreg_addr=instr[2:0];
@@ -62,7 +71,7 @@ begin
     else if(int_filter&(!instr_wait)) 
     begin
         if(jmp){RET2,RET1,RET0}=jaddr;
-            else {RET2,RET1,RET0}<=PCP1;//? in case XCP,OS should manually -1
+            else {RET2,RET1,RET0}<=PC;//? in some cases (XCP/INT),OS should manually +1 ?
         int_service<=1'b1;
         RTA0<=A0;
         RTA1<=A1;
@@ -109,7 +118,6 @@ begin
             3'h4:A1<=DB8w;  
             3'h5:A2<=DB8w;
             3'h6:D<=DB8w;  
-            //3'h7:MDR<=DB8w;
         endcase
     end
     else 
@@ -121,7 +129,6 @@ begin
         A0<=A0;        
         A1<=A1;  
         A2<=A2;  
-        //MDR<=MDR;
     end
 end
 //Instruction decode logic
@@ -134,55 +141,61 @@ wire [7:0]IMM;
 assign IMM=instr[7:0];
 //wb src decode
 /*****************************
-C D AO A1 A2 RAM
+AO A1 A2 RAM
 ALU OUT (A B) 
 8 SHIFT OUT
 IMM
 XREG (RETURN REGs)
 ********************************/
 //Instruction FUNCT5 decode (写回总线数据源控制/控制信号编码)
-wire [4:0]funct5;
-assign funct5=instr[15:11];
+wire [4:0]opcode5;
+assign opcode5=instr[15:11];
 reg [3:0]dbsrc_addr;
 always@(*)
 begin
-    if(funct5==5'h08)xreg_write=1;
+    if(opcode5==5'h08)xreg_write=1;
         else xreg_write=0;
-    case(funct5)
+    if(opcode5==5'h01)jmp_en=1;
+        else jmp_en=0;
+    if(opcode5==5'h08)XCRwe=1;
+        else XCRwe=0;
+    if(opcode5==5'h08 | opcode5==5'h07) XCRcs=1;
+    else XCRcs=0;
+    case(opcode5)
         default: //NOP
-            begin dbsrc_addr=4'hf;regwrite=0;jmp_en=0; end
+            begin dbsrc_addr=4'hf;regwrite=0; end
         5'h01://JMP select
-            begin dbsrc_addr=4'hf;regwrite=0;jmp_en=1; end
+            begin dbsrc_addr=4'hf;regwrite=0; end
         5'h02://ALU SELECT
-            begin dbsrc_addr=4'h1;regwrite=1;jmp_en=0; end
+            begin dbsrc_addr=4'h1;regwrite=1; end
         5'h03://MOV From XREG
-            begin dbsrc_addr=4'h5;regwrite=1;jmp_en=0; end
+            begin dbsrc_addr=4'h5;regwrite=1; end
         5'h04://LOAD MEM
-            begin dbsrc_addr=4'h2;regwrite=1;jmp_en=0; end
-        5'h05://MOV FROM C
-            begin dbsrc_addr=4'h0;regwrite=1;jmp_en=0; end
+            begin dbsrc_addr=4'h2;regwrite=1; end
+        5'h05://MOV A/B to XREG
+            begin dbsrc_addr=4'h1;regwrite=1; end
         5'h06://LOAD IMM
-            begin dbsrc_addr=4'h3;regwrite=1;jmp_en=0; end
-        5'h07://MOV FROM D
-            begin dbsrc_addr=4'h4;regwrite=1;jmp_en=0; end
-        5'h08://MOV A/B to XREG
-            begin dbsrc_addr=4'h1;regwrite=0;jmp_en=0; end
+            begin dbsrc_addr=4'h3;regwrite=1; end
+        5'h07://MOV FROM XCR
+            begin dbsrc_addr=4'h0;regwrite=1; end
+        5'h08://MOV TO XCR
+            begin dbsrc_addr=4'h1;regwrite=0; end
         5'h0d://SHIFT START
-            begin dbsrc_addr=4'h7;regwrite=1;jmp_en=0; end
+            begin dbsrc_addr=4'h7;regwrite=1; end
         5'h10:
-            begin dbsrc_addr=4'h8;regwrite=1;jmp_en=0; end
+            begin dbsrc_addr=4'h8;regwrite=1; end
         5'h12:
-            begin dbsrc_addr=4'h9;regwrite=1;jmp_en=0; end  
+            begin dbsrc_addr=4'h9;regwrite=1; end  
         5'h14:
-            begin dbsrc_addr=4'ha;regwrite=1;jmp_en=0; end  
+            begin dbsrc_addr=4'ha;regwrite=1; end  
         5'h16:
-            begin dbsrc_addr=4'hb;regwrite=1;jmp_en=0; end  
+            begin dbsrc_addr=4'hb;regwrite=1; end  
         5'h18:
-            begin dbsrc_addr=4'hc;regwrite=1;jmp_en=0; end  
+            begin dbsrc_addr=4'hc;regwrite=1; end  
         5'h1a:
-            begin dbsrc_addr=4'hd;regwrite=1;jmp_en=0; end  
+            begin dbsrc_addr=4'hd;regwrite=1; end  
         5'h1c://SHIFT END
-            begin dbsrc_addr=4'he;regwrite=1;jmp_en=0; end       
+            begin dbsrc_addr=4'he;regwrite=1; end            
     endcase
 end
 reg [7:0]XREGr;//扩展寄存器组
@@ -195,7 +208,9 @@ begin
         3'h3:XREGr=RTA0;
         3'h4:XREGr=RTA1;
         3'h5:XREGr=RTA2;
-    default :XREGr=8'hxx;
+        3'h6:XREGr=C;
+        3'h7:XREGr=D;
+    default :XREGr=8'hzz;
     endcase
 end
 //ALU控制线
@@ -238,42 +253,55 @@ alu74181 ALU_H4
     .g(),
     .p()
 );
+reg [7:0]SFTO;
+always@(*)
+case(opcode5)
+    4'h7:SFTO=ALU_inA<<1;//与原作中一样的移位器
+    4'h8:SFTO={ALU_inA[6:0],ALU_inB[7]};
+    4'h9:SFTO=ALU_inA>>1;
+    4'ha:SFTO={ALU_inA[7],ALU_inA[7:1]};
+    4'hb:SFTO=ALU_inB<<1;
+    4'hc:SFTO=ALU_inB>>1;
+    4'hd:SFTO={ALU_inB[7],ALU_inB[7:1]};
+    4'he:SFTO={ALU_inA[0],ALU_inB[7:1]};
+    default:
+        SFTO=ALU_inA<<1;
+endcase
 //JMP exec
 always@(*)
 if(jmp_en)
+begin
+    if(jmp_sel==3'h0)ret_sel=1;
+    else ret_sel=0;
     case (jmp_sel)
-        3'h0:begin jmp=1;ret_sel=1;end//RET 指令,0x08xx
-        3'h1:begin jmp=!ALU_inA[7]; ret_sel=0;end
-        3'h2:begin jmp=!ALU_inB[7]; ret_sel=0;end
-        3'h3:begin jmp=!ALU_eqo; ret_sel=0;end
-        3'h4:begin jmp=!ALU_Co; ret_sel=0;end
-        3'h5:begin jmp=1; ret_sel=0;end//JMP指令
-        default: begin jmp=0; ret_sel=0;end
+        3'h0:begin jmp=1;end//RET 指令,0x08xx
+        3'h1:begin jmp=!ALU_inA[7]; end
+        3'h2:begin jmp=!ALU_inB[7]; end
+        3'h3:begin jmp=!ALU_eqo; end
+        3'h4:begin jmp=!ALU_Co; end
+        3'h5:begin jmp=1; end//JMP指令
+        default: begin jmp=0; end
     endcase
+end
 else begin jmp=0;ret_sel=0; end
+
 always@(posedge clk)
 begin
     jmp_wait<=jmp;//跳转流水线冲刷
 end
+
 //数据写回总线MUX
 always@(*)//WB DATA BUS (shift contained here)
 begin
     case(dbsrc_addr)
-        4'h0:DB8w=C;
+        4'h0:DB8w=XCRi;
         4'h1:DB8w=ALU_out;
         4'h2:DB8w=ddata_i;
         4'h3:DB8w=IMM;
-        4'h4:DB8w=D;
+        //4'h4:DB8w=D;
         4'h5:DB8w=XREGr;
-        4'h7:DB8w=ALU_inA<<1;//与原作中一样的移位器
-        4'h8:DB8w={ALU_inA[6:0],ALU_inB[7]};
-        4'h9:DB8w=ALU_inA>>1;
-        4'ha:DB8w={ALU_inA[7],ALU_inA[7:1]};
-        4'hb:DB8w=ALU_inB<<1;
-        4'hc:DB8w=ALU_inB>>1;
-        4'hd:DB8w={ALU_inB[7],ALU_inB[7:1]};
-        4'he:DB8w={ALU_inA[0],ALU_inB[7:1]};
-        default:DB8w=8'h00;
+        4'h7:DB8w=SFTO;
+        default:DB8w=8'hzz;
     endcase
 end
 
@@ -286,6 +314,8 @@ assign jaddr=(  //JUMP ADDRESS
 assign iaddr=PC;
 assign daddr={A2,A1,A0};
 assign ddata_o=DB8w;
+assign XCRo=DB8w;
+assign XCRa=IMM;
 assign dread=(dbsrc_addr==4'h2)?1'b1:1'b0;
 assign dwrite=(regwrite&(!instr_wait)&regwaddr==3'h7)?1'b1:1'b0;
 

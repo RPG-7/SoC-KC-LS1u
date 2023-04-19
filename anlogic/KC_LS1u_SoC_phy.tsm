@@ -1,0 +1,154 @@
+al3_s10
+13 23 378 358 1572 0 0
+7.874 0.110 regfile_test al3_s10 LQFP144 Detail 7 1
+clock: clk
+13 1572 358 2
+Setup check
+23 3
+Endpoint: regfile/al_ram_regmem_r1_c0_l
+23 7.874000 10 3
+Timing path: reg3_b64|reg2_b2_hfnopt2_0.clk->regfile/al_ram_regmem_r1_c0_l
+reg3_b64|reg2_b2_hfnopt2_0.clk
+regfile/al_ram_regmem_r1_c0_l
+25 7.874000 12.625000 4.751000 2 2
+lfsr_65[64] reg2_b2_hfnopt2_2|reg3_b48.c[1]
+regfile/we_1_al_n1 regfile/al_ram_regmem_r1_c0_l.e[0]
+
+Timing path: reg3_b52|reg2_b4.clk->regfile/al_ram_regmem_r1_c0_l
+reg3_b52|reg2_b4.clk
+regfile/al_ram_regmem_r1_c0_l
+64 7.883000 12.625000 4.742000 2 2
+cnt[4] reg2_b2_hfnopt2_2|reg3_b48.d[1]
+regfile/we_1_al_n1 regfile/al_ram_regmem_r1_c0_l.e[0]
+
+Timing path: reg2_b2|reg2_b3.clk->regfile/al_ram_regmem_r1_c0_l
+reg2_b2|reg2_b3.clk
+regfile/al_ram_regmem_r1_c0_l
+103 8.588000 12.625000 4.037000 1 1
+cnt[3] regfile/al_ram_regmem_r1_c0_l.d[0]
+
+
+Endpoint: regfile/al_ram_regmem_r1_c5_l
+140 7.934000 10 3
+Timing path: reg3_b64|reg2_b2_hfnopt2_0.clk->regfile/al_ram_regmem_r1_c5_l
+reg3_b64|reg2_b2_hfnopt2_0.clk
+regfile/al_ram_regmem_r1_c5_l
+142 7.934000 12.625000 4.691000 2 2
+lfsr_65[64] reg2_b2_hfnopt2_2|reg3_b48.c[1]
+regfile/we_1_al_n1 regfile/al_ram_regmem_r1_c5_l.e[0]
+
+Timing path: reg3_b52|reg2_b4.clk->regfile/al_ram_regmem_r1_c5_l
+reg3_b52|reg2_b4.clk
+regfile/al_ram_regmem_r1_c5_l
+181 7.943000 12.625000 4.682000 2 2
+cnt[4] reg2_b2_hfnopt2_2|reg3_b48.d[1]
+regfile/we_1_al_n1 regfile/al_ram_regmem_r1_c5_l.e[0]
+
+Timing path: reg3_b20|reg0_b0.clk->regfile/al_ram_regmem_r1_c5_l
+reg3_b20|reg0_b0.clk
+regfile/al_ram_regmem_r1_c5_l
+220 8.372000 12.625000 4.253000 1 1
+lfsr_65[20] regfile/al_ram_regmem_r1_c5_l.a[1]
+
+
+Endpoint: reg3_b64|reg2_b2_hfnopt2_0
+257 7.937000 3 3
+Timing path: reg2_b2_hfnopt2_2|reg3_b48.clk->reg3_b64|reg2_b2_hfnopt2_0
+reg2_b2_hfnopt2_2|reg3_b48.clk
+reg3_b64|reg2_b2_hfnopt2_0
+259 7.937000 12.618000 4.681000 1 2
+cnt[2]_hfnopt2_2 reg2_b2|reg2_b3.c[1]
+n3[2] reg3_b64|reg2_b2_hfnopt2_0.mi[0]
+
+Timing path: reg2_b0|reg2_b1.clk->reg3_b64|reg2_b2_hfnopt2_0
+reg2_b0|reg2_b1.clk
+reg3_b64|reg2_b2_hfnopt2_0
+298 8.153000 12.618000 4.465000 1 2
+cnt[0] reg2_b2|reg2_b3.d[1]
+n3[2] reg3_b64|reg2_b2_hfnopt2_0.mi[0]
+
+Timing path: reg2_b0|reg2_b1_hfnopt2_1.clk->reg3_b64|reg2_b2_hfnopt2_0
+reg2_b0|reg2_b1_hfnopt2_1.clk
+reg3_b64|reg2_b2_hfnopt2_0
+337 8.189000 12.618000 4.429000 1 2
+cnt[1]_hfnopt2_1 reg2_b2|reg2_b3.b[1]
+n3[2] reg3_b64|reg2_b2_hfnopt2_0.mi[0]
+
+
+
+Hold check
+376 3
+Endpoint: regfile/al_ram_regmem_al_u0_r0_c2_l
+378 0.110000 10 3
+Timing path: reg3_b10|reg0_b3_hfnopt2_0.clk->regfile/al_ram_regmem_al_u0_r0_c2_l
+reg3_b10|reg0_b3_hfnopt2_0.clk
+regfile/al_ram_regmem_al_u0_r0_c2_l
+380 0.110000 2.766000 2.876000 1 1
+lfsr_65[10] regfile/al_ram_regmem_al_u0_r0_c2_l.c[1]
+
+Timing path: reg3_b6|reg3_b8.clk->regfile/al_ram_regmem_al_u0_r0_c2_l
+reg3_b6|reg3_b8.clk
+regfile/al_ram_regmem_al_u0_r0_c2_l
+417 0.315000 2.766000 3.081000 1 1
+lfsr_65[8] regfile/al_ram_regmem_al_u0_r0_c2_l.a[1]
+
+Timing path: reg3_b36|reg3_b9.clk->regfile/al_ram_regmem_al_u0_r0_c2_l
+reg3_b36|reg3_b9.clk
+regfile/al_ram_regmem_al_u0_r0_c2_l
+454 0.390000 2.766000 3.156000 1 1
+lfsr_65[9] regfile/al_ram_regmem_al_u0_r0_c2_l.b[1]
+
+
+Endpoint: regfile/al_ram_regmem_r0_c1_l
+491 0.110000 10 3
+Timing path: reg3_b6|reg3_b8.clk->regfile/al_ram_regmem_r0_c1_l
+reg3_b6|reg3_b8.clk
+regfile/al_ram_regmem_r0_c1_l
+493 0.110000 2.766000 2.876000 1 1
+lfsr_65[6] regfile/al_ram_regmem_r0_c1_l.c[1]
+
+Timing path: reg3_b5|reg3_b7.clk->regfile/al_ram_regmem_r0_c1_l
+reg3_b5|reg3_b7.clk
+regfile/al_ram_regmem_r0_c1_l
+530 0.239000 2.766000 3.005000 1 1
+lfsr_65[5] regfile/al_ram_regmem_r0_c1_l.b[1]
+
+Timing path: reg3_b5|reg3_b7.clk->regfile/al_ram_regmem_r0_c1_l
+reg3_b5|reg3_b7.clk
+regfile/al_ram_regmem_r0_c1_l
+567 0.461000 2.766000 3.227000 1 1
+lfsr_65[7] regfile/al_ram_regmem_r0_c1_l.d[1]
+
+
+Endpoint: regfile/al_ram_regmem_al_u0_r1_c14_l
+604 0.118000 10 3
+Timing path: reg3_b58|reg1_b3_hfnopt2_1.clk->regfile/al_ram_regmem_al_u0_r1_c14_l
+reg3_b58|reg1_b3_hfnopt2_1.clk
+regfile/al_ram_regmem_al_u0_r1_c14_l
+606 0.118000 2.766000 2.884000 1 1
+lfsr_65[58] regfile/al_ram_regmem_al_u0_r1_c14_l.c[1]
+
+Timing path: reg3_b57|reg3_b59.clk->regfile/al_ram_regmem_al_u0_r1_c14_l
+reg3_b57|reg3_b59.clk
+regfile/al_ram_regmem_al_u0_r1_c14_l
+643 0.190000 2.766000 2.956000 1 1
+lfsr_65[57] regfile/al_ram_regmem_al_u0_r1_c14_l.b[1]
+
+Timing path: reg3_b54|reg3_b56.clk->regfile/al_ram_regmem_al_u0_r1_c14_l
+reg3_b54|reg3_b56.clk
+regfile/al_ram_regmem_al_u0_r1_c14_l
+680 0.230000 2.766000 2.996000 1 1
+lfsr_65[56] regfile/al_ram_regmem_al_u0_r1_c14_l.a[1]
+
+
+
+
+
+Timing group statistics: 
+	Clock constraints: 
+	  Clock Name                                  Min Period     Max Freq           Skew      Fanout            TNS
+	  clk (100.000MHz)                               2.126ns     470.367MHz        0.078ns       124        0.000ns
+	Minimum input arrival time before clock: no constraint path
+	Maximum output required time after clock: no constraint path
+	Maximum combinational path delay: no constraint path
+

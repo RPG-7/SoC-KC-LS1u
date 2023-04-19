@@ -1,0 +1,1 @@
+编译器生成的 "ROM_U4.bin" 和 "ROM_U8.bin" 分别烧入W27C020两片ROM芯片后, 再分别插KC-LS1u_EPROM这层PCB上的"U4" 和 "U8"位置;

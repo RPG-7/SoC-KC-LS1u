@@ -1,24 +1,24 @@
-ENC28J60���ڴ濨�ӵ� "KC_LS1u_SPI_C" �� "KC_LS1u_SPI_D" ����ƬPCB��.
+ENC28J60和内存卡接到 "KC_LS1u_SPI_C" 和 "KC_LS1u_SPI_D" 这两片PCB上.
 
 
-�ڴ濨�ǽӵ�J7�ӿ�.
+内存卡是接到J7接口.
 
-�ڴ濨�� "VCC" �� "3V"
-�ڴ濨�� "GND" �� "GND"
-�ڴ濨�� "MISO" �� "SI"
-�ڴ濨�� "MOSI" �� "SO"
-�ڴ濨�� "SCK" �� "SCK"
-�ڴ濨�� "CS" �� "S_CS0"
+内存卡的 "VCC" 接 "3V"
+内存卡的 "GND" 接 "GND"
+内存卡的 "MISO" 接 "SI"
+内存卡的 "MOSI" 接 "SO"
+内存卡的 "SCK" 接 "SCK"
+内存卡的 "CS" 接 "S_CS0"
 
 
-ENC28J60�ǽӵ�J8�ӿ�.
+ENC28J60是接到J8接口.
 
-ENC28J60�� "VCC" �� "3V"
-ENC28J60�� "GND" �� "GND"
-ENC28J60�� "SO" �� "SI"
-ENC28J60�� "SI" �� "SO"
-ENC28J60�� "SCK" �� "SCK"
-ENC28J60�� "CS" �� "S_CS1"
-ENC28J60�� "RESET" �� "RST"
-ENC28J60�� "INT" �� "S_INT0"
+ENC28J60的 "VCC" 接 "3V"
+ENC28J60的 "GND" 接 "GND"
+ENC28J60的 "SO" 接 "SI"
+ENC28J60的 "SI" 接 "SO"
+ENC28J60的 "SCK" 接 "SCK"
+ENC28J60的 "CS" 接 "S_CS1"
+ENC28J60的 "RESET" 接 "RST"
+ENC28J60的 "INT" 接 "S_INT0"
 

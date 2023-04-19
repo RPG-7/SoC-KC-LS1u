@@ -6,7 +6,7 @@ module bus_unit
 #(
 	parameter BUS_WIDTH=8,
 	BUS_ADDR=24,
-	MAX_BURST=128
+	MAX_BURST=256
 )
 (
 input wire clk,

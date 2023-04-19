@@ -15,7 +15,7 @@ module syscall
     input clk,rst,
     //-----------Wishbone BUS-----------
     input wire [7:0]WB_ADRi,
-    output reg [7:0]WB_DATo,
+    output [7:0]WB_DATo,
     input wire [7:0]WB_DATi,
     input wire WB_WEi,
     input wire WB_CYCi,
@@ -41,4 +41,6 @@ begin
         SYSCALL_trig<=SYSCALL_trig;
     end
 end
+assign WB_DATo=0;
+assign WB_ACKo=1;
 endmodule

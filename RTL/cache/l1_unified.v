@@ -14,7 +14,6 @@ module l1_unified
 (
 //配置信号
 input cacheable,
-//input cache_only,
 input clk,
 input rst,
 
@@ -33,7 +32,7 @@ output [15:0]instr_read,
 output load_acc_fault,
 output store_acc_fault,
 output ins_acc_fault,
-output cache_data_ready,	//可缓存的数据准备好
+output reg cache_data_ready,	//可缓存的数据准备好
 output uncache_data_ready,	//不可缓存的数据准备好
 output access_ready,
 //cache控制器逻辑
@@ -154,11 +153,12 @@ assign read_req			=	(main_state==read_singal);			//请求读一次
 assign read_line_req	=	(main_state==read_line);		//请求读一行
 
 //tag管理逻辑
-defparam tag_manager.ENTRY_NUM=ENTRY_NUM;
-defparam tag_manager.TAG_MSB=ADDR_WIDTH;
-defparam tag_manager.TAG_LSB=$clog2(CACHE_DEPTH/ENTRY_NUM)+1;//ATTENTION: 16BIT CACHE!
-defparam tag_manager.WBACK_ENABLE=1'b0;
-tag_arbiter_fa tag_manager
+tag_arbiter_fa#(
+	.ENTRY_NUM(ENTRY_NUM),
+	.TAG_MSB(ADDR_WIDTH),
+	.TAG_LSB($clog2(CACHE_DEPTH/ENTRY_NUM)+1),//ATTENTION: 16BIT CACHE!
+	.WBACK_ENABLE(1'b0)
+) tag_manager
 (
 //entry0
 .clk(clk),
@@ -178,7 +178,6 @@ tag_arbiter_fa tag_manager
 assign cache_write	=write & (trans_rdy);
 assign write_data	=(main_state==read_line) ? line_data : data_write;
 //如果是不可缓存的数据，直接将line data打入内部
-//assign data_read	=
 //生成缓存地址
 //L1读地址由命中情况生成
 wire we_u,we_d;
@@ -194,24 +193,29 @@ assign we	=(main_state==read_line) ? line_write : cache_write;
 //This might take 2 BRAMs
 wire [15:0]cwrite_data;
 wire [1:0]byte_sel;
-defparam l1_ram.datawidth=16;
-defparam l1_ram.cache_depth=1024;
 assign cwrite_data={write_data,write_data};
 assign byte_sel={!write_addr,write_addr};
-cachemem 				l1_ram
+cachemem #(.datawidth(16),.cache_depth(1024))
+l1_ram
 (
     .raddr			({read_addr,1'b0}),
     .waddr			({write_addr,1'b0}),
     .di				(cwrite_data),
     .we				(we),
+    .cwait(1'b0),
     .bsel			(byte_sel),
     .dato			(cache_read),
-    .clk			(clk)
+    .rclk			(clk),
+    .wclk			(clk)
+
 );
 //准备好信号
-assign cache_data_ready	=	(!cache_miss) & (read | execute | write&trans_rdy);
-
-//assign L1_size	=	size;			
+always@(posedge clk or posedge rst) 
+if(rst)
+    cache_data_ready<=0;
+else 
+    cache_data_ready	<=	(!cache_miss) & (read | execute | write&trans_rdy);
+		
 assign pa	=	addr_pa;
 assign wt_data=data_write;	
 endmodule		

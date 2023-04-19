@@ -1,0 +1,1 @@
+spi_device0:KC_LS1u_ROM_0\ROM.bin

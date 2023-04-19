@@ -24,22 +24,16 @@ module MIN_LS1u
 );
 localparam MMU_SETTING = `TRUE;
 localparam cDMA_SETTING = `FALSE;
+localparam cSPM_SETTING = `TRUE;
 localparam BUS_ADDRWID =(MMU_SETTING)?32:24;
+
 wire ADdir;
 wire [7:0]AD_in,AD_out;
 assign AD8=(ADdir)?AD_out:8'hzz;
 assign AD_in=AD8;
 wire clk,rst;
-wire INT,XCP,IN_ISP;
-wire [23:0]IVEC_addr;//中断向量
 wire  SYNC_MODE;
 wire  [6:0]ASYNC_WAITCYCLE;
-//-----------MMU SIGNALS-----------
-wire [10:0]HPAGE_BASEADDR;
-wire PAE_ENABLE;
-wire ALWAYS_SVM;
-wire [15:0]IPAE,DPAE;
-wire [7:0]IPTE,DPTE;
 //Shrinked AHB
 wire [BUS_ADDRWID-1:0]haddr;
 wire hwrite;
@@ -56,30 +50,18 @@ wire [7:0]hrdata_fsb;
 wire hready_fsb;
 wire hsel_ocf;//OCF are on-chip 1T functions, no need to have hready
 wire [7:0]hrdata_ocf;
-wire [7:0]XCP_ARR;
-wire FSB_IRQ;
+wire FSB_IRQ,systick_int,syscall_int;
 assign hreset_n=~rst;
 defparam CPU1.CACHE_TYP =`L1IONLY;
 defparam CPU1.CACHE_DEPTH=2048;
-defparam CPU1.ENTRY_NUM=16;
+defparam CPU1.ENTRY_NUM=32;
 defparam CPU1.MMU_ENABLE=MMU_SETTING;
 CPU_LS1u CPU1
 (
     .clk(clk),
     .rst(rst),
     //Interrupt
-	 .INT(INT),
-    .XCP_ARR(XCP_ARR),
-    .IVEC_addr(IVEC_addr),//中断向量表基址
-    .IN_ISP(IN_ISP),
-    //MMU signals
-    .hugepage_ptr(HPAGE_BASEADDR), //for OS working in pure physical address mode 
-    .mmu_enable(PAE_ENABLE),
-    .force_svpriv(ALWAYS_SVM),
-    .ipae_h16(IPAE),//From MMU control regs
-    .dpae_h16(DPAE),
-    .ipte_h8(IPTE),
-    .dpte_h8(DPTE),
+    .INT_ARR({FSB_IRQ,systick_int,syscall_int}),
     //Shrinked AHB
     .haddr(haddr),
     .hwrite(hwrite),
@@ -88,7 +70,7 @@ CPU_LS1u CPU1
     .hwdata(hwdata),
     .hready(hready),
     .hresp(hresp),
-    .hreset_n(hreset_n),
+    //.hreset_n(hreset_n),
     .hrdata(hrdata)
 );
 defparam FSB8_CONTROLLER.PAE_ENABLE=MMU_SETTING;
@@ -129,7 +111,7 @@ fsb8 FSB8_CONTROLLER
     .FSB_irq(FSB_IRQ)
 
 );
-defparam OC_PERIPHERALS.MMU_ENABLE=MMU_SETTING;
+
 min_pbus OC_PERIPHERALS
 (
 //------------SYSTEM CONTROL-------
@@ -137,19 +119,9 @@ min_pbus OC_PERIPHERALS
     .SYNC_MODE(SYNC_MODE),
     .ASYNC_WAITCYCLE(ASYNC_WAITCYCLE),
     .MNMX(rdy_n),
-    //-----------MMU SIGNALS-----------
-    .HPAGE_BASEADDR(HPAGE_BASEADDR),
-    .PAE_ENABLE(PAE_ENABLE),
-    .ALWAYS_SVM(ALWAYS_SVM),
-    .ipae_h16(IPAE),//From MMU control regs
-    .dpae_h16(DPAE),
-    .ipte_h8(IPTE),
-    .dpte_h8(DPTE),     
-//------------INT signals--------  
-    .XTNL_INT(FSB_IRQ),
-    .XCP_ARR(XCP_ARR),
-    .INT(INT),
-    .IVEC_ADDR(IVEC_addr),
+//------------Interrupts   --------
+    .SYSTICK_INT(systick_int),
+    .SYSCALL(syscall_int),
 //------------Global signals--------
     .clki(sysclk),
     .rsti(~sysrst_n),

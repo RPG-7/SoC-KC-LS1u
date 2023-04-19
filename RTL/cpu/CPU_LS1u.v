@@ -1,27 +1,16 @@
 module CPU_LS1u
 #(
-    parameter CACHE_TYP = 2'b00,
+    parameter CPU_TYPE = "PLUS", //CLASSIC / PLUS
+    CACHE_TYP = 2'b00,
     CACHE_DEPTH=2048,
     CACHE_WIDTH=16,
-    ENTRY_NUM=16,
+    ENTRY_NUM=32,
     MMU_ENABLE=1'b1,
     cDMA_ENABLE=1'b0
 )
 (
     input clk,rst,
-    //Interrupt
-	input INT,
-    input [23:0]IVEC_addr,//中断向量表基址
-    output IN_ISP,//在中断服务程序中
-    output [7:0]XCP_ARR,//eXCePtion array
-    //MMU inputs
-    input [15:0]ipae_h16,//From MMU control regs
-    input [15:0]dpae_h16,
-    input [7:0]ipte_h8,
-    input [7:0]dpte_h8,
-    input [10:0]hugepage_ptr, //for OS working in pure physical address mode 
-    input mmu_enable,
-    input force_svpriv,
+    input [7:0]INT_ARR,
     //Shrinked AHB
     output wire [BUS_ADDRWID-1:0]haddr,
     output wire hwrite,
@@ -30,7 +19,7 @@ module CPU_LS1u
     output wire [7:0]hwdata,
     input wire hready,
     input wire hresp,
-    input wire hreset_n,
+    //input wire hreset_n,
     input wire [7:0]hrdata
 );
 wire [23:0]iaddr;
@@ -45,14 +34,39 @@ wire INSTR_HOLD;
 wire cache_flush;//当存在MMU，切换页表须冲刷cache
 localparam BUS_ADDRWID =(MMU_ENABLE)?32:24;
 wire [BUS_ADDRWID-1:0]pa;
+//eXternal Control Register 
+wire [7:0]XCRi;
+wire [7:0]XCRo;
+wire[7:0]XCRa;
+wire XCRwe;
+wire XCRcs;
+//Interrupt
+wire INT_Req;
+wire [23:0]IVEC_addr;//中断向量表基址
+wire IN_ISP;//在中断服务程序中
+wire [7:0]XCP_ARR;//eXCePtion array
+//MMU inputs
+wire [15:0]ipae_h16;//From MMU control regs
+wire [15:0]dpae_h16;
+wire [7:0]ipte_h8;
+wire [7:0]dpte_h8;
+wire [10:0]hugepage_ptr; //for OS working in pure physical address mode 
+wire mmu_enable;
+wire force_svpriv;
+
 KC_LS1u_plus CORE
 (
     .clk(clk),
     .rst(rst),
-    .INT(INT),
+    .INT(INT_Req),
     .WAIT(!READY),
     .IVEC_addr(IVEC_addr),//中断向量地址
     .IN_ISP(IN_ISP),//注意:这里的取值是字编址的！
+    .XCRi(XCRi),
+    .XCRo(XCRo),
+    .XCRa(XCRa),
+    .XCRwe(XCRwe),
+    .XCRcs(XCRcs),
     .iaddr(iaddr),
     .instr(instr),
     .daddr(daddr),
@@ -63,6 +77,32 @@ KC_LS1u_plus CORE
     .ddata_i(ddata_i),
     .ddata_o(ddata_o)
 );
+
+xcr_top #(.MMU_ENABLE(MMU_ENABLE),
+    .cDMA_ENABLE(cDMA_ENABLE))
+eXternalCtrlRegs(
+    .clk(clk),
+    .rst(rst),
+    .cr_din(XCRo),
+    .cr_dout(XCRi),
+    .cr_adr(XCRa),
+    .cr_we(XCRwe),
+	.cr_cs(XCRcs),
+    
+    .INT_ARR(INT_ARR),
+    .XCP_ARR(XCP_ARR),
+    .IVEC_ADDR(IVEC_addr),
+    .INT(INT_Req),
+
+    .ipae_h16(ipae_h16),//From MMU control regs
+	.dpae_h16(dpae_h16),
+	.ipte_h8(ipte_h8),
+	.dpte_h8(dpte_h8),
+	.hugepage_ptr(hugepage_ptr), //for OS working in pure physical address mode 
+	.mmu_enable(mmu_enable),
+    .supervisor_mode(force_svpriv)
+);
+
 wire [23:0]pa_l1;			//L1 PA
 wire load_acc_fault;
 wire store_acc_fault;
@@ -72,7 +112,7 @@ wire read_req;			//请求读一次
 wire read_line_req;		//请求读一行
 wire [7:0]wt_data;
 wire [7:0]line_data;
-wire [6:0]addr_count;
+wire [7:0]addr_count;
 wire line_write;			//cache写
 wire cache_entry_refill;	//更新缓存entry
 wire trans_rdy;			//传输完成
@@ -136,7 +176,7 @@ case (CACHE_TYP)
             .store_acc_fault(store_acc_fault),
             .ins_acc_fault(ins_acc_fault),
             .cache_data_ready(READY),
-            .uncache_data_ready(dop_finish),
+            .uncache_data_ready(DREADY),
             //cache控制器逻辑
             .write_through_req(write_through_req),	//请求写穿
             .read_req(read_req),			//请求读一次
@@ -165,7 +205,6 @@ assign XCP_ARR[2]=store_acc_fault;
 generate 
 if(MMU_ENABLE == 1'b1) 
     begin : PAE32_MMU //Only L1 will trigger WT/RT
-
         pae32_mmu MMU
         (
             .clk(clk),
@@ -192,35 +231,38 @@ else
         assign XCP_ARR[7:3]=0;
     end
 endgenerate
-defparam AHB_INTERFACE.BUS_ADDR=BUS_ADDRWID;
-bus_unit AHB_INTERFACE
-(
-.clk(clk),
-.rst(rst),
 
-.write_through_req(write_through_req),	//请求写穿
-.read_req(read_req),			//请求读一次
-.read_line_req(read_line_req),		//请求读一行
-.pa(pa),			//
-.wt_data(wt_data),
-.line_data(line_data),
-.addr_count(addr_count),
-.line_write(line_write),			//cache写
-.trans_rdy(trans_rdy),			//传输完成
-.bus_error(bus_error),			//访问失败
-//AHB总线
-//ahb
-.haddr(haddr),
-.hwrite(hwrite),
-.hburst(hburst),
-.htrans(htrans),
-.hwdata(hwdata),
-.hready(hready),
-.hresp(hresp),
-.hreset_n(hreset_n),
-.hrdata(hrdata),
-.bus_ack(1'b1)	//总线允许使用
-//.bus_req(bus_req)		//总线请求使用
+bus_unit #(
+    .BUS_ADDR(BUS_ADDRWID),
+    .MAX_BURST(256))
+AHB_Interface
+(
+    .clk(clk),
+    .rst(rst),
+
+    .write_through_req(write_through_req),	//请求写穿
+    .read_req(read_req),			//请求读一次
+    .read_line_req(read_line_req),		//请求读一行
+    .pa(pa),			//
+    .wt_data(wt_data),
+    .line_data(line_data),
+    .addr_count(addr_count),
+    .line_write(line_write),			//cache写
+    .trans_rdy(trans_rdy),			//传输完成
+    .bus_error(bus_error),			//访问失败
+    //AHB总线
+    //ahb
+    .haddr(haddr),
+    .hwrite(hwrite),
+    .hburst(hburst),
+    .htrans(htrans),
+    .hwdata(hwdata),
+    .hready(hready),
+    .hresp(hresp),
+    .hreset_n(hreset_n),
+    .hrdata(hrdata),
+    .bus_ack(1'b1),	//总线允许使用
+    .bus_req()		//总线请求使用
 
 );
 
