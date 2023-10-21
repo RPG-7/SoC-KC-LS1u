@@ -10,6 +10,10 @@ module MIN_LS1u
     //FSB8 bus
     input sysclk,//let bus reset system
     input sysrst_n,
+
+    input jtck,jtms,jtdi,
+    output jtdo,
+
     output busclk,
     output busrst_n,
     output ale_n,
@@ -31,7 +35,7 @@ wire ADdir;
 wire [7:0]AD_in,AD_out;
 assign AD8=(ADdir)?AD_out:8'hzz;
 assign AD_in=AD8;
-wire clk,rst;
+wire clk,rst,dbg_rsto;
 wire  SYNC_MODE;
 wire  [6:0]ASYNC_WAITCYCLE;
 //Shrinked AHB
@@ -58,8 +62,14 @@ defparam CPU1.ENTRY_NUM=32;
 defparam CPU1.MMU_ENABLE=MMU_SETTING;
 CPU_LS1u CPU1
 (
+    .sys_por(!sysrst_n),
     .clk(clk),
     .rst(rst),
+    .jrst_out(dbg_rsto),
+    .jtck(jtck),
+    .jtms(jtms),
+    .jtdi(jtdi),
+    .jtdo(jtdo),
     //Interrupt
     .INT_ARR({FSB_IRQ,systick_int,syscall_int}),
     //Shrinked AHB

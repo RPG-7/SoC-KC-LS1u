@@ -31,6 +31,7 @@
         <File path="src/peripherals/syscall.v" type="file.verilog" enable="1"/>
         <File path="src/peripherals/systick.v" type="file.verilog" enable="1"/>
         <File path="src/top/MIN_LS1u.v" type="file.verilog" enable="1"/>
+        <File path="src/KC-LS1u-SoC.cst" type="file.cst" enable="1"/>
         <File path="src/l1d.sdc" type="file.sdc" enable="1"/>
     </FileList>
 </Project>

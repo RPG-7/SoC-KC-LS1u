@@ -1,15 +1,21 @@
 module CPU_LS1u
 #(
-    parameter CPU_TYPE = "PLUS", //CLASSIC / PLUS
+    parameter //CPU_TYPE = "WITHDEBUG", //CLASSIC / PLUS / WITHDEBUG
     CACHE_TYP = 2'b00,
     CACHE_DEPTH=2048,
     CACHE_WIDTH=16,
     ENTRY_NUM=32,
     MMU_ENABLE=1'b1,
+    JTAG_ENABLE=1'b1,
     cDMA_ENABLE=1'b0
 )
 (
+    input sys_por,
     input clk,rst,
+    output jrst_out,
+    input jtck,jtms,jtdi,
+    output jtdo,
+
     input [7:0]INT_ARR,
     //Shrinked AHB
     output wire [BUS_ADDRWID-1:0]haddr,
@@ -45,6 +51,18 @@ wire INT_Req;
 wire [23:0]IVEC_addr;//中断向量表基址
 wire IN_ISP;//在中断服务程序中
 wire [7:0]XCP_ARR;//eXCePtion array
+//debug wires
+wire step_mode;//Also act as halt
+wire inject_req;
+wire [1:0]dbg_cmd;
+wire [15:0]inject_instr;
+wire  [7:0]dbus_out;
+wire  jflag;
+wire  cflag;
+wire  tflag;
+wire  prio;
+wire  inject_ack;
+
 //MMU inputs
 wire [15:0]ipae_h16;//From MMU control regs
 wire [15:0]dpae_h16;
@@ -54,7 +72,7 @@ wire [10:0]hugepage_ptr; //for OS working in pure physical address mode
 wire mmu_enable;
 wire force_svpriv;
 
-KC_LS1u_plus CORE
+KC_LS1u_dbg CORE
 (
     .clk(clk),
     .rst(rst),
@@ -67,6 +85,16 @@ KC_LS1u_plus CORE
     .XCRa(XCRa),
     .XCRwe(XCRwe),
     .XCRcs(XCRcs),
+    .step_mode(step_mode),
+    .inject_req(inject_req),
+    .dbg_cmd(dbg_cmd),
+    .inject_instr(inject_instr),
+    .dbus_out(dbus_out),
+    .jflag(jflag),
+    .cflag(cflag),
+    .tflag(tflag),
+    .prio(prio),
+    .inject_ack(inject_ack),
     .iaddr(iaddr),
     .instr(instr),
     .daddr(daddr),
@@ -101,6 +129,31 @@ eXternalCtrlRegs(
 	.hugepage_ptr(hugepage_ptr), //for OS working in pure physical address mode 
 	.mmu_enable(mmu_enable),
     .supervisor_mode(force_svpriv)
+);
+
+jtagbridge jtag_bridge
+(
+    //JTAG ports
+    .sys_por(sys_por),
+    .jtms(jtms),
+    .jtck(jtck),
+    .jtdi(jtdi),
+    .jtdo(jtdo),
+
+    .sys_clk(clk),
+    .reset_out(jrst_out),
+    .step_mode(step_mode), //Also act as halt
+    .inject_req(inject_req),
+    .dbg_cmd(dbg_cmd),
+    .inject_instr(inject_instr),
+    //
+    .dbus_in(dbus_out),
+    .jflag(jflag),
+    .cflag(cflag),
+    .tflag(tflag),
+    .prio(prio),
+    .inject_ack(inject_ack)//Also act as cmd ready
+
 );
 
 wire [23:0]pa_l1;			//L1 PA

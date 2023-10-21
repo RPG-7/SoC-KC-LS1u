@@ -125,11 +125,11 @@ assign WB_ACKo=1'b1;
 always @(*) 
 begin
     case ({STBi_STK,STBi_SYC,1'b0,STBi_SPM})
-        5'b10000: WB_DATo=DATo_STK;
+        4'b1000: WB_DATo=DATo_STK;
         //5'b01000: WB_DATo=DATo_ITC;
-        5'b00100: WB_DATo=DATo_SYC;
+        4'b0100: WB_DATo=DATo_SYC;
         //5'b00010: WB_DATo=DATo_MMA;
-        5'b00001: WB_DATo=DATo_SPM;
+        4'b0001: WB_DATo=DATo_SPM;
         default: WB_DATo=8'hxx;
     endcase
 end

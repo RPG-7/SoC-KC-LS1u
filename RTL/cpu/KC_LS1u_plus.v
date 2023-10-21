@@ -40,7 +40,7 @@ assign instr_wait=WAIT|jmp_wait;//指令等待
 assign data_wait=((dread|(regwrite&(regwaddr==3'h7)|dwrite))&WAIT_DATA);//数据等待
 //程序计数器，状态：+1s/等待/跳中断处理/(加载A2A1A0跳转|加载返回寄存器(RET)
 wire [23:0]PCP1;//PC+1,省LE的奇技淫巧(MUX比加法器节约LE)
-assign PCP1=PC+1;
+assign PCP1=PC+24'h1;
 //PC_NEXT 选择器
 always@(*)
 begin
@@ -180,22 +180,22 @@ begin
             begin dbsrc_addr=4'h0;regwrite=1; end
         5'h08://MOV TO XCR
             begin dbsrc_addr=4'h1;regwrite=0; end
-        5'h0d://SHIFT START
+        5'h0e://SHIFT START
             begin dbsrc_addr=4'h7;regwrite=1; end
         5'h10:
-            begin dbsrc_addr=4'h8;regwrite=1; end
+            begin dbsrc_addr=4'h7;regwrite=1; end
         5'h12:
-            begin dbsrc_addr=4'h9;regwrite=1; end  
+            begin dbsrc_addr=4'h7;regwrite=1; end  
         5'h14:
-            begin dbsrc_addr=4'ha;regwrite=1; end  
+            begin dbsrc_addr=4'h7;regwrite=1; end  
         5'h16:
-            begin dbsrc_addr=4'hb;regwrite=1; end  
+            begin dbsrc_addr=4'h7;regwrite=1; end  
         5'h18:
-            begin dbsrc_addr=4'hc;regwrite=1; end  
+            begin dbsrc_addr=4'h7;regwrite=1; end  
         5'h1a:
-            begin dbsrc_addr=4'hd;regwrite=1; end  
+            begin dbsrc_addr=4'h7;regwrite=1; end  
         5'h1c://SHIFT END
-            begin dbsrc_addr=4'he;regwrite=1; end            
+            begin dbsrc_addr=4'h7;regwrite=1; end              
     endcase
 end
 reg [7:0]XREGr;//扩展寄存器组
@@ -255,7 +255,7 @@ alu74181 ALU_H4
 );
 reg [7:0]SFTO;
 always@(*)
-case(opcode5)
+case(opcode5[4:1])
     4'h7:SFTO=ALU_inA<<1;//与原作中一样的移位器
     4'h8:SFTO={ALU_inA[6:0],ALU_inB[7]};
     4'h9:SFTO=ALU_inA>>1;
