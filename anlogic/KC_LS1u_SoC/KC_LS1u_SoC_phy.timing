@@ -1,0 +1,545 @@
+=========================================================================================================
+Auto created by the td v4.6.64949
+@Copy Right: Shanghai Anlogic Infotech, 2011 - 2022.
+Mon Jan  1 23:40:51 2024
+=========================================================================================================
+
+
+Top Model:                CPLD_LS1u                                                       
+Device:                   elf_6                                                           
+Timing Constraint File:   KC_LS1u_SoC.sdc                                                 
+STA Level:                Detail                                                          
+Process parameter::       TT  1.10v  85C                                                  
+
+=========================================================================================================
+Timing constraint:        clock: SYS_CLK                                                  
+Clock = SYS_CLK, period 80ns, rising at 0ns, falling at 40ns
+
+596 endpoints analyzed totally, and 608236 paths analyzed
+0 errors detected : 0 setup errors (TNS = 0.000), 0 hold errors (TNS = 0.000)
+Minimum period is 41.232ns
+---------------------------------------------------------------------------------------------------------
+
+Paths for end point CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7 (787 paths)
+---------------------------------------------------------------------------------------------------------
+ Slack (setup check)      38.768 ns                                                       
+ StartPoint:              ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk (rising edge triggered by clock SYS_CLK)
+ EndPoint:                CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7.mi[0] (rising edge triggered by clock SYS_CLK)
+ Clock group:             SYS_CLK                                                         
+
+ Point                                                       Type                     Incr           Info
+---------------------------------------------------------------------------------------------------------
+ ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk                        clock                   2.982
+ launch clock edge                                           clock                   0.000
+ ram_ctl/reg1_b10|ram_ctl/reg1_b7.q[0]                       cell                    0.383
+ CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.a[1] (instr[7])    net (fanout = 28)       5.713 ../../RTL/top/CPLD_LS1u.v(31)
+ CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.f[1]               cell                    0.894
+ CPU/GEN_PLUS_CORE$CORE/_al_u400.a[1] (CPU/GEN_PLUS_CORE$CORE/_al_u396_o) net (fanout = 5)        2.400               
+ CPU/GEN_PLUS_CORE$CORE/_al_u400.f[0]                        cell                    1.050
+ CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u400_o) net (fanout = 2)        1.341               
+ CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u403_o) net (fanout = 2)        0.894               
+ CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u462_o) net (fanout = 2)        2.813               
+ CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.c[0] (CPU/GEN_PLUS_CORE$CORE/ALU_H4/n32) net (fanout = 2)        1.031               
+ CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.f[0]               cell                    0.667
+ CPU/GEN_PLUS_CORE$CORE/_al_u559.b[1] (CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_92) net (fanout = 4)        1.049 ../../RTL/cpu/alu74181.v(49)
+ CPU/GEN_PLUS_CORE$CORE/_al_u559.f[0]                        cell                    1.026
+ CPU/GEN_PLUS_CORE$CORE/_al_u562|_al_u529.d[1] (CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_93_lutinv) net (fanout = 1)        5.322 ../../RTL/cpu/alu74181.v(50)
+ CPU/GEN_PLUS_CORE$CORE/_al_u562|_al_u529.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u564.a[1] (CPU/GEN_PLUS_CORE$CORE/_al_u562_o) net (fanout = 4)        1.635               
+ CPU/GEN_PLUS_CORE$CORE/_al_u564.f[0]                        cell                    1.050
+ CPU/GEN_PLUS_CORE$CORE/reg9_b7.mi[0] (CPU/GEN_PLUS_CORE$CORE/_al_u564_o) net (fanout = 1)        2.249               
+ CPU/GEN_PLUS_CORE$CORE/reg9_b7.f[0]                         cell                    0.223
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7.mi[0] (ddata_o[7]) net (fanout = 27)       8.102 ../../RTL/top/CPLD_LS1u.v(38)
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7 path2reg0               0.106
+ Arrival time                                                                       43.302 (11 lvl)
+                                                                                          (25% logic, 75% net)
+
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7.clk                         2.746
+ capture clock edge                                                                 80.000
+ cell setup                                                                         -0.882
+ clock uncertainty                                                                  -0.000
+ clock recovergence pessimism                                                        0.206
+ Required time                                                                      82.070
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                           38.768 ns
+
+---------------------------------------------------------------------------------------------------------
+
+ Slack (setup check)      38.768 ns                                                       
+ StartPoint:              ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk (rising edge triggered by clock SYS_CLK)
+ EndPoint:                CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7.mi[0] (rising edge triggered by clock SYS_CLK)
+ Clock group:             SYS_CLK                                                         
+
+ Point                                                       Type                     Incr           Info
+---------------------------------------------------------------------------------------------------------
+ ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk                        clock                   2.982
+ launch clock edge                                           clock                   0.000
+ ram_ctl/reg1_b10|ram_ctl/reg1_b7.q[0]                       cell                    0.383
+ CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.a[1] (instr[7])    net (fanout = 28)       5.713 ../../RTL/top/CPLD_LS1u.v(31)
+ CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.f[1]               cell                    0.894
+ CPU/GEN_PLUS_CORE$CORE/_al_u400.a[1] (CPU/GEN_PLUS_CORE$CORE/_al_u396_o) net (fanout = 5)        2.400               
+ CPU/GEN_PLUS_CORE$CORE/_al_u400.f[0]                        cell                    1.050
+ CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u400_o) net (fanout = 2)        1.341               
+ CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u403_o) net (fanout = 2)        0.894               
+ CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u462_o) net (fanout = 2)        2.813               
+ CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.c[0] (CPU/GEN_PLUS_CORE$CORE/ALU_H4/n32) net (fanout = 2)        1.031               
+ CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.f[0]               cell                    0.667
+ CPU/GEN_PLUS_CORE$CORE/_al_u559.b[0] (CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_92) net (fanout = 4)        1.049 ../../RTL/cpu/alu74181.v(49)
+ CPU/GEN_PLUS_CORE$CORE/_al_u559.f[0]                        cell                    1.026
+ CPU/GEN_PLUS_CORE$CORE/_al_u562|_al_u529.d[1] (CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_93_lutinv) net (fanout = 1)        5.322 ../../RTL/cpu/alu74181.v(50)
+ CPU/GEN_PLUS_CORE$CORE/_al_u562|_al_u529.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u564.a[1] (CPU/GEN_PLUS_CORE$CORE/_al_u562_o) net (fanout = 4)        1.635               
+ CPU/GEN_PLUS_CORE$CORE/_al_u564.f[0]                        cell                    1.050
+ CPU/GEN_PLUS_CORE$CORE/reg9_b7.mi[0] (CPU/GEN_PLUS_CORE$CORE/_al_u564_o) net (fanout = 1)        2.249               
+ CPU/GEN_PLUS_CORE$CORE/reg9_b7.f[0]                         cell                    0.223
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7.mi[0] (ddata_o[7]) net (fanout = 27)       8.102 ../../RTL/top/CPLD_LS1u.v(38)
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7 path2reg0               0.106
+ Arrival time                                                                       43.302 (11 lvl)
+                                                                                          (25% logic, 75% net)
+
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7.clk                         2.746
+ capture clock edge                                                                 80.000
+ cell setup                                                                         -0.882
+ clock uncertainty                                                                  -0.000
+ clock recovergence pessimism                                                        0.206
+ Required time                                                                      82.070
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                           38.768 ns
+
+---------------------------------------------------------------------------------------------------------
+
+ Slack (setup check)      38.768 ns                                                       
+ StartPoint:              ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk (rising edge triggered by clock SYS_CLK)
+ EndPoint:                CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7.mi[0] (rising edge triggered by clock SYS_CLK)
+ Clock group:             SYS_CLK                                                         
+
+ Point                                                       Type                     Incr           Info
+---------------------------------------------------------------------------------------------------------
+ ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk                        clock                   2.982
+ launch clock edge                                           clock                   0.000
+ ram_ctl/reg1_b10|ram_ctl/reg1_b7.q[0]                       cell                    0.383
+ CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.a[1] (instr[7])    net (fanout = 28)       5.713 ../../RTL/top/CPLD_LS1u.v(31)
+ CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.f[1]               cell                    0.894
+ CPU/GEN_PLUS_CORE$CORE/_al_u400.a[1] (CPU/GEN_PLUS_CORE$CORE/_al_u396_o) net (fanout = 5)        2.400               
+ CPU/GEN_PLUS_CORE$CORE/_al_u400.f[0]                        cell                    1.050
+ CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u400_o) net (fanout = 2)        1.341               
+ CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u403_o) net (fanout = 2)        0.894               
+ CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u462_o) net (fanout = 2)        2.813               
+ CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.c[0] (CPU/GEN_PLUS_CORE$CORE/ALU_H4/n32) net (fanout = 2)        1.031               
+ CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.f[0]               cell                    0.667
+ CPU/GEN_PLUS_CORE$CORE/_al_u559.b[1] (CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_92) net (fanout = 4)        1.049 ../../RTL/cpu/alu74181.v(49)
+ CPU/GEN_PLUS_CORE$CORE/_al_u559.f[0]                        cell                    1.026
+ CPU/GEN_PLUS_CORE$CORE/_al_u562|_al_u529.d[1] (CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_93_lutinv) net (fanout = 1)        5.322 ../../RTL/cpu/alu74181.v(50)
+ CPU/GEN_PLUS_CORE$CORE/_al_u562|_al_u529.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u564.a[0] (CPU/GEN_PLUS_CORE$CORE/_al_u562_o) net (fanout = 4)        1.635               
+ CPU/GEN_PLUS_CORE$CORE/_al_u564.f[0]                        cell                    1.050
+ CPU/GEN_PLUS_CORE$CORE/reg9_b7.mi[0] (CPU/GEN_PLUS_CORE$CORE/_al_u564_o) net (fanout = 1)        2.249               
+ CPU/GEN_PLUS_CORE$CORE/reg9_b7.f[0]                         cell                    0.223
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7.mi[0] (ddata_o[7]) net (fanout = 27)       8.102 ../../RTL/top/CPLD_LS1u.v(38)
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7 path2reg0               0.106
+ Arrival time                                                                       43.302 (11 lvl)
+                                                                                          (25% logic, 75% net)
+
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7.clk                         2.746
+ capture clock edge                                                                 80.000
+ cell setup                                                                         -0.882
+ clock uncertainty                                                                  -0.000
+ clock recovergence pessimism                                                        0.206
+ Required time                                                                      82.070
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                           38.768 ns
+
+---------------------------------------------------------------------------------------------------------
+
+Paths for end point CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5 (2833 paths)
+---------------------------------------------------------------------------------------------------------
+ Slack (setup check)      38.934 ns                                                       
+ StartPoint:              ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk (rising edge triggered by clock SYS_CLK)
+ EndPoint:                CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5.b[0] (rising edge triggered by clock SYS_CLK)
+ Clock group:             SYS_CLK                                                         
+
+ Point                                                       Type                     Incr           Info
+---------------------------------------------------------------------------------------------------------
+ ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk                        clock                   2.982
+ launch clock edge                                           clock                   0.000
+ ram_ctl/reg1_b10|ram_ctl/reg1_b7.q[0]                       cell                    0.383
+ CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.a[1] (instr[7])    net (fanout = 28)       5.713 ../../RTL/top/CPLD_LS1u.v(31)
+ CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.f[1]               cell                    0.894
+ CPU/GEN_PLUS_CORE$CORE/_al_u400.a[1] (CPU/GEN_PLUS_CORE$CORE/_al_u396_o) net (fanout = 5)        2.400               
+ CPU/GEN_PLUS_CORE$CORE/_al_u400.f[0]                        cell                    1.050
+ CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u400_o) net (fanout = 2)        1.341               
+ CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u403_o) net (fanout = 2)        0.894               
+ CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u462_o) net (fanout = 2)        2.813               
+ CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.d[1] (CPU/GEN_PLUS_CORE$CORE/ALU_H4/n32) net (fanout = 2)        3.096               
+ CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u480|_al_u478.a[1] (CPU/GEN_PLUS_CORE$CORE/_al_u477_o) net (fanout = 3)        2.614               
+ CPU/GEN_PLUS_CORE$CORE/_al_u480|_al_u478.f[1]               cell                    0.894
+ CPU/GEN_PLUS_CORE$CORE/_al_u573.a[1] (CPU/GEN_PLUS_CORE$CORE/ALU_out[5]) net (fanout = 4)        4.328 ../../RTL/cpu/KC_LS1u_plus.v(223)
+ CPU/GEN_PLUS_CORE$CORE/_al_u573.f[0]                        cell                    1.050
+ CPU/GEN_PLUS_CORE$CORE/jmp_wait_reg.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u573_o) net (fanout = 2)        1.871               
+ CPU/GEN_PLUS_CORE$CORE/jmp_wait_reg.f[0]                    cell                    0.749
+ CPU/GEN_PLUS_CORE$CORE/_al_u586.mi[0] (CPU/GEN_PLUS_CORE$CORE/jmp) net (fanout = 46)       4.020 ../../RTL/cpu/KC_LS1u_plus.v(32)
+ CPU/GEN_PLUS_CORE$CORE/_al_u586.f[0]                        cell                    0.223
+ CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5.b[0] (CPU/GEN_PLUS_CORE$CORE/_al_u586_o) net (fanout = 1)        2.491 ../../RTL/top/CPLD_LS1u.v(30)
+ CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5                   path2reg0               0.958
+ Arrival time                                                                       43.136 (11 lvl)
+                                                                                          (27% logic, 73% net)
+
+ CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5.clk                                       2.746
+ capture clock edge                                                                 80.000
+ cell setup                                                                         -0.882
+ clock uncertainty                                                                  -0.000
+ clock recovergence pessimism                                                        0.206
+ Required time                                                                      82.070
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                           38.934 ns
+
+---------------------------------------------------------------------------------------------------------
+
+ Slack (setup check)      38.934 ns                                                       
+ StartPoint:              ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk (rising edge triggered by clock SYS_CLK)
+ EndPoint:                CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5.b[0] (rising edge triggered by clock SYS_CLK)
+ Clock group:             SYS_CLK                                                         
+
+ Point                                                       Type                     Incr           Info
+---------------------------------------------------------------------------------------------------------
+ ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk                        clock                   2.982
+ launch clock edge                                           clock                   0.000
+ ram_ctl/reg1_b10|ram_ctl/reg1_b7.q[0]                       cell                    0.383
+ CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.a[1] (instr[7])    net (fanout = 28)       5.713 ../../RTL/top/CPLD_LS1u.v(31)
+ CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.f[1]               cell                    0.894
+ CPU/GEN_PLUS_CORE$CORE/_al_u400.a[1] (CPU/GEN_PLUS_CORE$CORE/_al_u396_o) net (fanout = 5)        2.400               
+ CPU/GEN_PLUS_CORE$CORE/_al_u400.f[0]                        cell                    1.050
+ CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u400_o) net (fanout = 2)        1.341               
+ CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u403_o) net (fanout = 2)        0.894               
+ CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u462_o) net (fanout = 2)        2.813               
+ CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.d[1] (CPU/GEN_PLUS_CORE$CORE/ALU_H4/n32) net (fanout = 2)        3.096               
+ CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u480|_al_u478.a[1] (CPU/GEN_PLUS_CORE$CORE/_al_u477_o) net (fanout = 3)        2.614               
+ CPU/GEN_PLUS_CORE$CORE/_al_u480|_al_u478.f[1]               cell                    0.894
+ CPU/GEN_PLUS_CORE$CORE/_al_u573.a[0] (CPU/GEN_PLUS_CORE$CORE/ALU_out[5]) net (fanout = 4)        4.328 ../../RTL/cpu/KC_LS1u_plus.v(223)
+ CPU/GEN_PLUS_CORE$CORE/_al_u573.f[0]                        cell                    1.050
+ CPU/GEN_PLUS_CORE$CORE/jmp_wait_reg.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u573_o) net (fanout = 2)        1.871               
+ CPU/GEN_PLUS_CORE$CORE/jmp_wait_reg.f[0]                    cell                    0.749
+ CPU/GEN_PLUS_CORE$CORE/_al_u586.mi[0] (CPU/GEN_PLUS_CORE$CORE/jmp) net (fanout = 46)       4.020 ../../RTL/cpu/KC_LS1u_plus.v(32)
+ CPU/GEN_PLUS_CORE$CORE/_al_u586.f[0]                        cell                    0.223
+ CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5.b[0] (CPU/GEN_PLUS_CORE$CORE/_al_u586_o) net (fanout = 1)        2.491 ../../RTL/top/CPLD_LS1u.v(30)
+ CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5                   path2reg0               0.958
+ Arrival time                                                                       43.136 (11 lvl)
+                                                                                          (27% logic, 73% net)
+
+ CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5.clk                                       2.746
+ capture clock edge                                                                 80.000
+ cell setup                                                                         -0.882
+ clock uncertainty                                                                  -0.000
+ clock recovergence pessimism                                                        0.206
+ Required time                                                                      82.070
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                           38.934 ns
+
+---------------------------------------------------------------------------------------------------------
+
+ Slack (setup check)      38.934 ns                                                       
+ StartPoint:              ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk (rising edge triggered by clock SYS_CLK)
+ EndPoint:                CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5.b[0] (rising edge triggered by clock SYS_CLK)
+ Clock group:             SYS_CLK                                                         
+
+ Point                                                       Type                     Incr           Info
+---------------------------------------------------------------------------------------------------------
+ ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk                        clock                   2.982
+ launch clock edge                                           clock                   0.000
+ ram_ctl/reg1_b10|ram_ctl/reg1_b7.q[0]                       cell                    0.383
+ CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.a[1] (instr[7])    net (fanout = 28)       5.713 ../../RTL/top/CPLD_LS1u.v(31)
+ CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.f[1]               cell                    0.894
+ CPU/GEN_PLUS_CORE$CORE/_al_u400.a[1] (CPU/GEN_PLUS_CORE$CORE/_al_u396_o) net (fanout = 5)        2.400               
+ CPU/GEN_PLUS_CORE$CORE/_al_u400.f[0]                        cell                    1.050
+ CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u400_o) net (fanout = 2)        1.341               
+ CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u403_o) net (fanout = 2)        0.894               
+ CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u462_o) net (fanout = 2)        2.813               
+ CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.d[1] (CPU/GEN_PLUS_CORE$CORE/ALU_H4/n32) net (fanout = 2)        3.096               
+ CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u480|_al_u478.a[1] (CPU/GEN_PLUS_CORE$CORE/_al_u477_o) net (fanout = 3)        2.614               
+ CPU/GEN_PLUS_CORE$CORE/_al_u480|_al_u478.f[1]               cell                    0.894
+ CPU/GEN_PLUS_CORE$CORE/_al_u573.a[1] (CPU/GEN_PLUS_CORE$CORE/ALU_out[5]) net (fanout = 4)        4.328 ../../RTL/cpu/KC_LS1u_plus.v(223)
+ CPU/GEN_PLUS_CORE$CORE/_al_u573.f[0]                        cell                    1.050
+ CPU/GEN_PLUS_CORE$CORE/jmp_wait_reg.d[0] (CPU/GEN_PLUS_CORE$CORE/_al_u573_o) net (fanout = 2)        1.871               
+ CPU/GEN_PLUS_CORE$CORE/jmp_wait_reg.f[0]                    cell                    0.749
+ CPU/GEN_PLUS_CORE$CORE/_al_u586.mi[0] (CPU/GEN_PLUS_CORE$CORE/jmp) net (fanout = 46)       4.020 ../../RTL/cpu/KC_LS1u_plus.v(32)
+ CPU/GEN_PLUS_CORE$CORE/_al_u586.f[0]                        cell                    0.223
+ CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5.b[0] (CPU/GEN_PLUS_CORE$CORE/_al_u586_o) net (fanout = 1)        2.491 ../../RTL/top/CPLD_LS1u.v(30)
+ CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5                   path2reg0               0.958
+ Arrival time                                                                       43.136 (11 lvl)
+                                                                                          (27% logic, 73% net)
+
+ CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5.clk                                       2.746
+ capture clock edge                                                                 80.000
+ cell setup                                                                         -0.882
+ clock uncertainty                                                                  -0.000
+ clock recovergence pessimism                                                        0.206
+ Required time                                                                      82.070
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                           38.934 ns
+
+---------------------------------------------------------------------------------------------------------
+
+Paths for end point CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109 (787 paths)
+---------------------------------------------------------------------------------------------------------
+ Slack (setup check)      39.277 ns                                                       
+ StartPoint:              ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk (rising edge triggered by clock SYS_CLK)
+ EndPoint:                CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109.mi[1] (rising edge triggered by clock SYS_CLK)
+ Clock group:             SYS_CLK                                                         
+
+ Point                                                       Type                     Incr           Info
+---------------------------------------------------------------------------------------------------------
+ ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk                        clock                   2.982
+ launch clock edge                                           clock                   0.000
+ ram_ctl/reg1_b10|ram_ctl/reg1_b7.q[0]                       cell                    0.383
+ CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.a[1] (instr[7])    net (fanout = 28)       5.713 ../../RTL/top/CPLD_LS1u.v(31)
+ CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.f[1]               cell                    0.894
+ CPU/GEN_PLUS_CORE$CORE/_al_u400.a[1] (CPU/GEN_PLUS_CORE$CORE/_al_u396_o) net (fanout = 5)        2.400               
+ CPU/GEN_PLUS_CORE$CORE/_al_u400.f[0]                        cell                    1.050
+ CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u400_o) net (fanout = 2)        1.341               
+ CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u403_o) net (fanout = 2)        0.894               
+ CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u462_o) net (fanout = 2)        2.813               
+ CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.c[0] (CPU/GEN_PLUS_CORE$CORE/ALU_H4/n32) net (fanout = 2)        1.031               
+ CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.f[0]               cell                    0.667
+ CPU/GEN_PLUS_CORE$CORE/_al_u559.b[1] (CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_92) net (fanout = 4)        1.049 ../../RTL/cpu/alu74181.v(49)
+ CPU/GEN_PLUS_CORE$CORE/_al_u559.f[0]                        cell                    1.026
+ CPU/GEN_PLUS_CORE$CORE/_al_u562|_al_u529.d[1] (CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_93_lutinv) net (fanout = 1)        5.322 ../../RTL/cpu/alu74181.v(50)
+ CPU/GEN_PLUS_CORE$CORE/_al_u562|_al_u529.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u564.a[1] (CPU/GEN_PLUS_CORE$CORE/_al_u562_o) net (fanout = 4)        1.635               
+ CPU/GEN_PLUS_CORE$CORE/_al_u564.f[0]                        cell                    1.050
+ CPU/GEN_PLUS_CORE$CORE/reg9_b7.mi[0] (CPU/GEN_PLUS_CORE$CORE/_al_u564_o) net (fanout = 1)        2.249               
+ CPU/GEN_PLUS_CORE$CORE/reg9_b7.f[0]                         cell                    0.223
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109.mi[1] (ddata_o[7]) net (fanout = 27)       7.593 ../../RTL/top/CPLD_LS1u.v(38)
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109 path2reg1               0.106
+ Arrival time                                                                       42.793 (11 lvl)
+                                                                                          (26% logic, 74% net)
+
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109.clk                         2.746
+ capture clock edge                                                                 80.000
+ cell setup                                                                         -0.882
+ clock uncertainty                                                                  -0.000
+ clock recovergence pessimism                                                        0.206
+ Required time                                                                      82.070
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                           39.277 ns
+
+---------------------------------------------------------------------------------------------------------
+
+ Slack (setup check)      39.277 ns                                                       
+ StartPoint:              ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk (rising edge triggered by clock SYS_CLK)
+ EndPoint:                CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109.mi[1] (rising edge triggered by clock SYS_CLK)
+ Clock group:             SYS_CLK                                                         
+
+ Point                                                       Type                     Incr           Info
+---------------------------------------------------------------------------------------------------------
+ ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk                        clock                   2.982
+ launch clock edge                                           clock                   0.000
+ ram_ctl/reg1_b10|ram_ctl/reg1_b7.q[0]                       cell                    0.383
+ CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.a[1] (instr[7])    net (fanout = 28)       5.713 ../../RTL/top/CPLD_LS1u.v(31)
+ CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.f[1]               cell                    0.894
+ CPU/GEN_PLUS_CORE$CORE/_al_u400.a[1] (CPU/GEN_PLUS_CORE$CORE/_al_u396_o) net (fanout = 5)        2.400               
+ CPU/GEN_PLUS_CORE$CORE/_al_u400.f[0]                        cell                    1.050
+ CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u400_o) net (fanout = 2)        1.341               
+ CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u403_o) net (fanout = 2)        0.894               
+ CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u462_o) net (fanout = 2)        2.813               
+ CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.c[0] (CPU/GEN_PLUS_CORE$CORE/ALU_H4/n32) net (fanout = 2)        1.031               
+ CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.f[0]               cell                    0.667
+ CPU/GEN_PLUS_CORE$CORE/_al_u559.b[0] (CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_92) net (fanout = 4)        1.049 ../../RTL/cpu/alu74181.v(49)
+ CPU/GEN_PLUS_CORE$CORE/_al_u559.f[0]                        cell                    1.026
+ CPU/GEN_PLUS_CORE$CORE/_al_u562|_al_u529.d[1] (CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_93_lutinv) net (fanout = 1)        5.322 ../../RTL/cpu/alu74181.v(50)
+ CPU/GEN_PLUS_CORE$CORE/_al_u562|_al_u529.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u564.a[1] (CPU/GEN_PLUS_CORE$CORE/_al_u562_o) net (fanout = 4)        1.635               
+ CPU/GEN_PLUS_CORE$CORE/_al_u564.f[0]                        cell                    1.050
+ CPU/GEN_PLUS_CORE$CORE/reg9_b7.mi[0] (CPU/GEN_PLUS_CORE$CORE/_al_u564_o) net (fanout = 1)        2.249               
+ CPU/GEN_PLUS_CORE$CORE/reg9_b7.f[0]                         cell                    0.223
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109.mi[1] (ddata_o[7]) net (fanout = 27)       7.593 ../../RTL/top/CPLD_LS1u.v(38)
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109 path2reg1               0.106
+ Arrival time                                                                       42.793 (11 lvl)
+                                                                                          (26% logic, 74% net)
+
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109.clk                         2.746
+ capture clock edge                                                                 80.000
+ cell setup                                                                         -0.882
+ clock uncertainty                                                                  -0.000
+ clock recovergence pessimism                                                        0.206
+ Required time                                                                      82.070
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                           39.277 ns
+
+---------------------------------------------------------------------------------------------------------
+
+ Slack (setup check)      39.277 ns                                                       
+ StartPoint:              ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk (rising edge triggered by clock SYS_CLK)
+ EndPoint:                CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109.mi[1] (rising edge triggered by clock SYS_CLK)
+ Clock group:             SYS_CLK                                                         
+
+ Point                                                       Type                     Incr           Info
+---------------------------------------------------------------------------------------------------------
+ ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk                        clock                   2.982
+ launch clock edge                                           clock                   0.000
+ ram_ctl/reg1_b10|ram_ctl/reg1_b7.q[0]                       cell                    0.383
+ CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.a[1] (instr[7])    net (fanout = 28)       5.713 ../../RTL/top/CPLD_LS1u.v(31)
+ CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.f[1]               cell                    0.894
+ CPU/GEN_PLUS_CORE$CORE/_al_u400.a[1] (CPU/GEN_PLUS_CORE$CORE/_al_u396_o) net (fanout = 5)        2.400               
+ CPU/GEN_PLUS_CORE$CORE/_al_u400.f[0]                        cell                    1.050
+ CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u400_o) net (fanout = 2)        1.341               
+ CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u403_o) net (fanout = 2)        0.894               
+ CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.d[1] (CPU/GEN_PLUS_CORE$CORE/_al_u462_o) net (fanout = 2)        2.813               
+ CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.c[0] (CPU/GEN_PLUS_CORE$CORE/ALU_H4/n32) net (fanout = 2)        1.031               
+ CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.f[0]               cell                    0.667
+ CPU/GEN_PLUS_CORE$CORE/_al_u559.b[1] (CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_92) net (fanout = 4)        1.049 ../../RTL/cpu/alu74181.v(49)
+ CPU/GEN_PLUS_CORE$CORE/_al_u559.f[0]                        cell                    1.026
+ CPU/GEN_PLUS_CORE$CORE/_al_u562|_al_u529.d[1] (CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_93_lutinv) net (fanout = 1)        5.322 ../../RTL/cpu/alu74181.v(50)
+ CPU/GEN_PLUS_CORE$CORE/_al_u562|_al_u529.f[1]               cell                    0.593
+ CPU/GEN_PLUS_CORE$CORE/_al_u564.a[0] (CPU/GEN_PLUS_CORE$CORE/_al_u562_o) net (fanout = 4)        1.635               
+ CPU/GEN_PLUS_CORE$CORE/_al_u564.f[0]                        cell                    1.050
+ CPU/GEN_PLUS_CORE$CORE/reg9_b7.mi[0] (CPU/GEN_PLUS_CORE$CORE/_al_u564_o) net (fanout = 1)        2.249               
+ CPU/GEN_PLUS_CORE$CORE/reg9_b7.f[0]                         cell                    0.223
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109.mi[1] (ddata_o[7]) net (fanout = 27)       7.593 ../../RTL/top/CPLD_LS1u.v(38)
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109 path2reg1               0.106
+ Arrival time                                                                       42.793 (11 lvl)
+                                                                                          (26% logic, 74% net)
+
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109.clk                         2.746
+ capture clock edge                                                                 80.000
+ cell setup                                                                         -0.882
+ clock uncertainty                                                                  -0.000
+ clock recovergence pessimism                                                        0.206
+ Required time                                                                      82.070
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                           39.277 ns
+
+---------------------------------------------------------------------------------------------------------
+
+Hold checks:
+---------------------------------------------------------------------------------------------------------
+Paths for end point CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b0|reg0_b2 (1 paths)
+---------------------------------------------------------------------------------------------------------
+ Slack (hold check)       0.931 ns                                                        
+ StartPoint:              CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg6_b2|reg6_b6.clk (rising edge triggered by clock SYS_CLK)
+ EndPoint:                CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b0|reg0_b2.mi[0] (rising edge triggered by clock SYS_CLK)
+ Clock group:             SYS_CLK                                                         
+
+ Point                                                       Type                     Incr           Info
+---------------------------------------------------------------------------------------------------------
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg6_b2|reg6_b6.clk clock                   2.746
+ launch clock edge                                           clock                   0.000
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg6_b2|reg6_b6.q[1] cell                    0.232
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b0|reg0_b2.mi[0] (CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/IVT0[2]) net (fanout = 2)        0.627 ../../RTL/cpu/XCR_Components/xcr_ecp_ctrl.v(34)
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b0|reg0_b2 path2reg0               0.102
+ Arrival time                                                                        3.707 (1 lvl)
+                                                                                          (84% logic, 16% net)
+
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b0|reg0_b2.clk                         2.982
+ capture clock edge                                                                  0.000
+ cell hold                                                                           0.000
+ clock uncertainty                                                                   0.000
+ clock recovergence pessimism                                                       -0.206
+ Required time                                                                       2.776
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                            0.931 ns
+
+---------------------------------------------------------------------------------------------------------
+
+Paths for end point CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b3|reg0_b9 (1 paths)
+---------------------------------------------------------------------------------------------------------
+ Slack (hold check)       0.962 ns                                                        
+ StartPoint:              CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg6_b3|reg6_b5.clk (rising edge triggered by clock SYS_CLK)
+ EndPoint:                CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b3|reg0_b9.mi[1] (rising edge triggered by clock SYS_CLK)
+ Clock group:             SYS_CLK                                                         
+
+ Point                                                       Type                     Incr           Info
+---------------------------------------------------------------------------------------------------------
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg6_b3|reg6_b5.clk clock                   2.746
+ launch clock edge                                           clock                   0.000
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg6_b3|reg6_b5.q[1] cell                    0.232
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b3|reg0_b9.mi[1] (CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/IVT0[3]) net (fanout = 3)        0.621 ../../RTL/cpu/XCR_Components/xcr_ecp_ctrl.v(34)
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b3|reg0_b9 path2reg1               0.102
+ Arrival time                                                                        3.701 (1 lvl)
+                                                                                          (84% logic, 16% net)
+
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b3|reg0_b9.clk                         2.982
+ capture clock edge                                                                  0.000
+ cell hold                                                                           0.000
+ clock uncertainty                                                                   0.000
+ clock recovergence pessimism                                                       -0.243
+ Required time                                                                       2.739
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                            0.962 ns
+
+---------------------------------------------------------------------------------------------------------
+
+Paths for end point CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b8|_al_u86 (1 paths)
+---------------------------------------------------------------------------------------------------------
+ Slack (hold check)       0.981 ns                                                        
+ StartPoint:              CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg5_b0|_al_u83.clk (rising edge triggered by clock SYS_CLK)
+ EndPoint:                CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b8|_al_u86.mi[1] (rising edge triggered by clock SYS_CLK)
+ Clock group:             SYS_CLK                                                         
+
+ Point                                                       Type                     Incr           Info
+---------------------------------------------------------------------------------------------------------
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg5_b0|_al_u83.clk clock                   2.746
+ launch clock edge                                           clock                   0.000
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg5_b0|_al_u83.q[1] cell                    0.232
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b8|_al_u86.mi[1] (CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/IVT1[0]) net (fanout = 3)        0.640 ../../RTL/cpu/XCR_Components/xcr_ecp_ctrl.v(34)
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b8|_al_u86 path2reg1               0.102
+ Arrival time                                                                        3.720 (1 lvl)
+                                                                                          (83% logic, 17% net)
+
+ CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b8|_al_u86.clk                         2.982
+ capture clock edge                                                                  0.000
+ cell hold                                                                           0.000
+ clock uncertainty                                                                   0.000
+ clock recovergence pessimism                                                       -0.243
+ Required time                                                                       2.739
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                            0.981 ns
+
+---------------------------------------------------------------------------------------------------------
+
+
+=========================================================================================================
+Timing summary:                                                                           
+---------------------------------------------------------------------------------------------------------
+Constraint path number: 608236 (STA coverage = 98.19%)
+Timing violations: 0 setup errors, and 0 hold errors.
+Minimal setup slack: 38.768, minimal hold slack: 0.931
+
+Timing group statistics: 
+	Clock constraints: 
+	  Clock Name                                  Min Period     Max Freq           Skew      Fanout            TNS
+	  SYS_CLK (12.500MHz)                           41.232ns      24.253MHz        0.059ns       168        0.000ns
+	Minimum input arrival time before clock: no constraint path
+	Maximum output required time after clock: no constraint path
+	Maximum combinational path delay: no constraint path
+
+---------------------------------------------------------------------------------------------------------

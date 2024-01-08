@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<SDRAMConfig>
-    <GeneralConfig>
-        <Type>AL_PHY_SDRAM</Type>
-        <Device>AL3S10NG88</Device>
-        <create_VHDL>false</create_VHDL>
-        <inst>SDRAM</inst>
-    </GeneralConfig>
-</SDRAMConfig>

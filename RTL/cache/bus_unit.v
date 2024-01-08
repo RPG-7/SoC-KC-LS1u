@@ -13,7 +13,7 @@ input wire clk,
 input wire rst,
 
 //cache控制器逻辑
-input wire write_through_req,	//请求写穿
+input wire [BUS_WIDTH/8-1:0]write_through_req,	//请求写穿
 input wire read_req,			//请求读一次
 input wire read_line_req,		//请求读一行
 input wire [BUS_ADDR-1:0]pa,			//
@@ -29,11 +29,10 @@ output wire bus_error,			//访问失败
 //input [BUS_ADDR-1:0]periph_addr,
 //input [3:0]ramsel //in between 4*M9K
  
-//AHB总线
+//"AHB"总线
 //ahb
 output wire[BUS_ADDR-1:0]haddr,
-output wire hwrite,
-//output wire[2:0]hsize,
+output wire [BUS_WIDTH/8-1:0]hwrite,//also act as strobe signal
 output hburst,//0=SINGLE 1=BURST BURST
 output htrans,//0=INACTIVE 1=ACTIVE
 output reg[BUS_WIDTH-1:0]hwdata,
@@ -152,7 +151,7 @@ wire req_occur;
 assign req_occur=read_line_req|read_req|write_through_req;
 assign #1 haddr	=	(read_line_req) ? //|write_line_req
 							{haddr_temp[BUS_ADDR-1:BURST_WID],addr_counter} : haddr_temp;
-assign #1 hwrite	= (statu==wr_ap);
+assign #1 hwrite	= {BUS_WIDTH/8{(statu==wr_ap)}} & write_through_req;
 assign #1 hburst	= ((statu==wr_ap)|(statu==rd_ap))?Single:
 					((statu==rb_ap)|(statu==rb_dp))?BURST:Single;
 assign #1 htrans	= ((statu==wr_ap)|(statu==rd_ap)|(statu==rb_ap)|(statu==rb_dp))?1'b1:1'b0;	

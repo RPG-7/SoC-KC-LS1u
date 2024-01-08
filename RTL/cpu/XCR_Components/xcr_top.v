@@ -32,7 +32,7 @@ module xcr_top
 );
 wire [7:0]ecp_dout,mmuc_dout,cdma_dout;
 wire ecp_cs,mmuc_cs;
-xcr_ecp_ctrl Interrupt_Controller
+xcr_ecp_lite Interrupt_Controller
 (
     .clk(clk),
     .rst(rst),

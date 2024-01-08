@@ -140,8 +140,8 @@ module tiny_spi(
    input	  MISO
    );
 
-   parameter BAUD_WIDTH = 8;
-   parameter BAUD_DIV = 0;
+   parameter BAUD_WIDTH = 1;
+   parameter BAUD_DIV = 1;
    parameter SPI_MODE = 0;
    parameter BC_WIDTH = 3;
    parameter DIV_WIDTH = BAUD_DIV ? $clog2(BAUD_DIV / 2 - 1) : BAUD_WIDTH;

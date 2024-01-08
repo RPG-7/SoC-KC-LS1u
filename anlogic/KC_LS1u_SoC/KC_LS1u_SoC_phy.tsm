@@ -1,0 +1,201 @@
+elf_6
+13 23 445 596 608236 0 0
+38.768 0.931 CPLD_LS1u elf_6 AMLQFP144 Detail 7 1
+clock: SYS_CLK
+13 608236 596 2
+Setup check
+23 3
+Endpoint: CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7
+23 38.768000 787 3
+Timing path: ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk->CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7
+ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk
+CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7
+25 38.768000 82.070000 43.302000 11 11
+instr[7] CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u396_o CPU/GEN_PLUS_CORE$CORE/_al_u400.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u400_o CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u403_o CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u462_o CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.d[1]
+CPU/GEN_PLUS_CORE$CORE/ALU_H4/n32 CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.c[0]
+CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_92 CPU/GEN_PLUS_CORE$CORE/_al_u559.b[1]
+CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_93_lutinv CPU/GEN_PLUS_CORE$CORE/_al_u562|_al_u529.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u562_o CPU/GEN_PLUS_CORE$CORE/_al_u564.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u564_o CPU/GEN_PLUS_CORE$CORE/reg9_b7.mi[0]
+ddata_o[7] CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7.mi[0]
+
+Timing path: ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk->CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7
+ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk
+CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7
+71 38.768000 82.070000 43.302000 11 11
+instr[7] CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u396_o CPU/GEN_PLUS_CORE$CORE/_al_u400.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u400_o CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u403_o CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u462_o CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.d[1]
+CPU/GEN_PLUS_CORE$CORE/ALU_H4/n32 CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.c[0]
+CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_92 CPU/GEN_PLUS_CORE$CORE/_al_u559.b[0]
+CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_93_lutinv CPU/GEN_PLUS_CORE$CORE/_al_u562|_al_u529.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u562_o CPU/GEN_PLUS_CORE$CORE/_al_u564.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u564_o CPU/GEN_PLUS_CORE$CORE/reg9_b7.mi[0]
+ddata_o[7] CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7.mi[0]
+
+Timing path: ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk->CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7
+ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk
+CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7
+117 38.768000 82.070000 43.302000 11 11
+instr[7] CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u396_o CPU/GEN_PLUS_CORE$CORE/_al_u400.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u400_o CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u403_o CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u462_o CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.d[1]
+CPU/GEN_PLUS_CORE$CORE/ALU_H4/n32 CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.c[0]
+CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_92 CPU/GEN_PLUS_CORE$CORE/_al_u559.b[1]
+CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_93_lutinv CPU/GEN_PLUS_CORE$CORE/_al_u562|_al_u529.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u562_o CPU/GEN_PLUS_CORE$CORE/_al_u564.a[0]
+CPU/GEN_PLUS_CORE$CORE/_al_u564_o CPU/GEN_PLUS_CORE$CORE/reg9_b7.mi[0]
+ddata_o[7] CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg3_b1|reg3_b7.mi[0]
+
+
+Endpoint: CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5
+163 38.934000 2833 3
+Timing path: ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk->CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5
+ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk
+CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5
+165 38.934000 82.070000 43.136000 11 11
+instr[7] CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u396_o CPU/GEN_PLUS_CORE$CORE/_al_u400.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u400_o CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u403_o CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u462_o CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.d[1]
+CPU/GEN_PLUS_CORE$CORE/ALU_H4/n32 CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u477_o CPU/GEN_PLUS_CORE$CORE/_al_u480|_al_u478.a[1]
+CPU/GEN_PLUS_CORE$CORE/ALU_out[5] CPU/GEN_PLUS_CORE$CORE/_al_u573.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u573_o CPU/GEN_PLUS_CORE$CORE/jmp_wait_reg.d[1]
+CPU/GEN_PLUS_CORE$CORE/jmp CPU/GEN_PLUS_CORE$CORE/_al_u586.mi[0]
+CPU/GEN_PLUS_CORE$CORE/_al_u586_o CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5.b[0]
+
+Timing path: ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk->CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5
+ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk
+CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5
+211 38.934000 82.070000 43.136000 11 11
+instr[7] CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u396_o CPU/GEN_PLUS_CORE$CORE/_al_u400.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u400_o CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u403_o CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u462_o CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.d[1]
+CPU/GEN_PLUS_CORE$CORE/ALU_H4/n32 CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u477_o CPU/GEN_PLUS_CORE$CORE/_al_u480|_al_u478.a[1]
+CPU/GEN_PLUS_CORE$CORE/ALU_out[5] CPU/GEN_PLUS_CORE$CORE/_al_u573.a[0]
+CPU/GEN_PLUS_CORE$CORE/_al_u573_o CPU/GEN_PLUS_CORE$CORE/jmp_wait_reg.d[1]
+CPU/GEN_PLUS_CORE$CORE/jmp CPU/GEN_PLUS_CORE$CORE/_al_u586.mi[0]
+CPU/GEN_PLUS_CORE$CORE/_al_u586_o CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5.b[0]
+
+Timing path: ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk->CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5
+ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk
+CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5
+257 38.934000 82.070000 43.136000 11 11
+instr[7] CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u396_o CPU/GEN_PLUS_CORE$CORE/_al_u400.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u400_o CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u403_o CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u462_o CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.d[1]
+CPU/GEN_PLUS_CORE$CORE/ALU_H4/n32 CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u477_o CPU/GEN_PLUS_CORE$CORE/_al_u480|_al_u478.a[1]
+CPU/GEN_PLUS_CORE$CORE/ALU_out[5] CPU/GEN_PLUS_CORE$CORE/_al_u573.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u573_o CPU/GEN_PLUS_CORE$CORE/jmp_wait_reg.d[0]
+CPU/GEN_PLUS_CORE$CORE/jmp CPU/GEN_PLUS_CORE$CORE/_al_u586.mi[0]
+CPU/GEN_PLUS_CORE$CORE/_al_u586_o CPU/GEN_PLUS_CORE$CORE/reg13_b13|reg13_b5.b[0]
+
+
+Endpoint: CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109
+303 39.277000 787 3
+Timing path: ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk->CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109
+ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk
+CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109
+305 39.277000 82.070000 42.793000 11 11
+instr[7] CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u396_o CPU/GEN_PLUS_CORE$CORE/_al_u400.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u400_o CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u403_o CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u462_o CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.d[1]
+CPU/GEN_PLUS_CORE$CORE/ALU_H4/n32 CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.c[0]
+CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_92 CPU/GEN_PLUS_CORE$CORE/_al_u559.b[1]
+CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_93_lutinv CPU/GEN_PLUS_CORE$CORE/_al_u562|_al_u529.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u562_o CPU/GEN_PLUS_CORE$CORE/_al_u564.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u564_o CPU/GEN_PLUS_CORE$CORE/reg9_b7.mi[0]
+ddata_o[7] CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109.mi[1]
+
+Timing path: ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk->CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109
+ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk
+CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109
+351 39.277000 82.070000 42.793000 11 11
+instr[7] CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u396_o CPU/GEN_PLUS_CORE$CORE/_al_u400.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u400_o CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u403_o CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u462_o CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.d[1]
+CPU/GEN_PLUS_CORE$CORE/ALU_H4/n32 CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.c[0]
+CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_92 CPU/GEN_PLUS_CORE$CORE/_al_u559.b[0]
+CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_93_lutinv CPU/GEN_PLUS_CORE$CORE/_al_u562|_al_u529.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u562_o CPU/GEN_PLUS_CORE$CORE/_al_u564.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u564_o CPU/GEN_PLUS_CORE$CORE/reg9_b7.mi[0]
+ddata_o[7] CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109.mi[1]
+
+Timing path: ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk->CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109
+ram_ctl/reg1_b10|ram_ctl/reg1_b7.clk
+CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109
+397 39.277000 82.070000 42.793000 11 11
+instr[7] CPU/GEN_PLUS_CORE$CORE/_al_u396|_al_u445.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u396_o CPU/GEN_PLUS_CORE$CORE/_al_u400.a[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u400_o CPU/GEN_PLUS_CORE$CORE/_al_u403|_al_u402.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u403_o CPU/GEN_PLUS_CORE$CORE/_al_u462|_al_u404.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u462_o CPU/GEN_PLUS_CORE$CORE/_al_u476|_al_u465.d[1]
+CPU/GEN_PLUS_CORE$CORE/ALU_H4/n32 CPU/GEN_PLUS_CORE$CORE/_al_u477|_al_u530.c[0]
+CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_92 CPU/GEN_PLUS_CORE$CORE/_al_u559.b[1]
+CPU/GEN_PLUS_CORE$CORE/ALU_H4/SYNTHESIZED_WIRE_93_lutinv CPU/GEN_PLUS_CORE$CORE/_al_u562|_al_u529.d[1]
+CPU/GEN_PLUS_CORE$CORE/_al_u562_o CPU/GEN_PLUS_CORE$CORE/_al_u564.a[0]
+CPU/GEN_PLUS_CORE$CORE/_al_u564_o CPU/GEN_PLUS_CORE$CORE/reg9_b7.mi[0]
+ddata_o[7] CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg2_b7|_al_u109.mi[1]
+
+
+
+Hold check
+443 3
+Endpoint: CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b0|reg0_b2
+445 0.931000 1 1
+Timing path: CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg6_b2|reg6_b6.clk->CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b0|reg0_b2
+CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg6_b2|reg6_b6.clk
+CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b0|reg0_b2
+447 0.931000 2.776000 3.707000 1 1
+CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/IVT0[2] CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b0|reg0_b2.mi[0]
+
+
+Endpoint: CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b3|reg0_b9
+473 0.962000 1 1
+Timing path: CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg6_b3|reg6_b5.clk->CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b3|reg0_b9
+CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg6_b3|reg6_b5.clk
+CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b3|reg0_b9
+475 0.962000 2.739000 3.701000 1 1
+CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/IVT0[3] CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b3|reg0_b9.mi[1]
+
+
+Endpoint: CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b8|_al_u86
+501 0.981000 1 1
+Timing path: CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg5_b0|_al_u83.clk->CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b8|_al_u86
+CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg5_b0|_al_u83.clk
+CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b8|_al_u86
+503 0.981000 2.739000 3.720000 1 1
+CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/IVT1[0] CPU/GEN_XCR$eXternalCtrlRegs/Interrupt_Controller/reg0_b8|_al_u86.mi[1]
+
+
+
+
+
+Timing group statistics: 
+	Clock constraints: 
+	  Clock Name                                  Min Period     Max Freq           Skew      Fanout            TNS
+	  SYS_CLK (12.500MHz)                           41.232ns      24.253MHz        0.059ns       168        0.000ns
+	Minimum input arrival time before clock: no constraint path
+	Maximum output required time after clock: no constraint path
+	Maximum combinational path delay: no constraint path
+

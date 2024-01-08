@@ -1,12 +1,12 @@
 module CPU_LS1u
 #(
-    parameter //CPU_TYPE = "WITHDEBUG", //CLASSIC / PLUS / WITHDEBUG
-    CACHE_TYP = 2'b00,
+    parameter CPU_TYPE = "PLUS", //CLASSIC / PLUS / WITHDEBUG
+    CACHE_TYP = 2'b11, //00:L1I only 01:Mixed I$D$ 1x:Cache-less
     CACHE_DEPTH=2048,
     CACHE_WIDTH=16,
-    ENTRY_NUM=32,
-    MMU_ENABLE=1'b1,
-    JTAG_ENABLE=1'b1,
+    BUS_WIDTH=16,
+    ENTRY_NUM=1,
+    MMU_ENABLE=1'b0,
     cDMA_ENABLE=1'b0
 )
 (
@@ -19,14 +19,14 @@ module CPU_LS1u
     input [7:0]INT_ARR,
     //Shrinked AHB
     output wire [BUS_ADDRWID-1:0]haddr,
-    output wire hwrite,
+    output wire [BUS_WIDTH/8-1:0]hwrite,
     output wire hburst,
     output wire htrans,
-    output wire [7:0]hwdata,
+    output wire [BUS_WIDTH-1:0]hwdata,
     input wire hready,
     input wire hresp,
     //input wire hreset_n,
-    input wire [7:0]hrdata
+    input wire [BUS_WIDTH-1:0]hrdata
 );
 wire [23:0]iaddr;
 wire [15:0]instr;
@@ -51,18 +51,6 @@ wire INT_Req;
 wire [23:0]IVEC_addr;//中断向量表基址
 wire IN_ISP;//在中断服务程序中
 wire [7:0]XCP_ARR;//eXCePtion array
-//debug wires
-wire step_mode;//Also act as halt
-wire inject_req;
-wire [1:0]dbg_cmd;
-wire [15:0]inject_instr;
-wire  [7:0]dbus_out;
-wire  jflag;
-wire  cflag;
-wire  tflag;
-wire  prio;
-wire  inject_ack;
-
 //MMU inputs
 wire [15:0]ipae_h16;//From MMU control regs
 wire [15:0]dpae_h16;
@@ -71,100 +59,159 @@ wire [7:0]dpte_h8;
 wire [10:0]hugepage_ptr; //for OS working in pure physical address mode 
 wire mmu_enable;
 wire force_svpriv;
+generate case(CPU_TYPE)
+    "WITHDEBUG":begin:GEN_DBG_CORE
+        //debug wires
+        wire step_mode;//Also act as halt
+        wire inject_req;
+        wire [1:0]dbg_cmd;
+        wire [15:0]inject_instr;
+        wire  [7:0]dbus_out;
+        wire  jflag;
+        wire  cflag;
+        wire  tflag;
+        wire  prio;
+        wire  inject_ack;
+        KC_LS1u_dbg CORE
+        (
+            .clk(clk),
+            .rst(rst),
+            .INT(INT_Req),
+            .WAIT(!READY),
+            .IVEC_addr(IVEC_addr),//中断向量地址
+            .IN_ISP(IN_ISP),//注意:这里的取值是字编址的！
+            .XCRi(XCRi),
+            .XCRo(XCRo),
+            .XCRa(XCRa),
+            .XCRwe(XCRwe),
+            .XCRcs(XCRcs),
+            .step_mode(step_mode),
+            .inject_req(inject_req),
+            .dbg_cmd(dbg_cmd),
+            .inject_instr(inject_instr),
+            .dbus_out(dbus_out),
+            .jflag(jflag),
+            .cflag(cflag),
+            .tflag(tflag),
+            .prio(prio),
+            .inject_ack(inject_ack),
+            .iaddr(iaddr),
+            .instr(instr),
+            .daddr(daddr),
+            .dwrite(dwrite),
+            .dread(dread),
+            .WAIT_DATA(!DREADY),
+            .INSTR_HOLD(INSTR_HOLD),
+            .ddata_i(ddata_i),
+            .ddata_o(ddata_o)
+        );
 
-KC_LS1u_dbg CORE
-(
-    .clk(clk),
-    .rst(rst),
-    .INT(INT_Req),
-    .WAIT(!READY),
-    .IVEC_addr(IVEC_addr),//中断向量地址
-    .IN_ISP(IN_ISP),//注意:这里的取值是字编址的！
-    .XCRi(XCRi),
-    .XCRo(XCRo),
-    .XCRa(XCRa),
-    .XCRwe(XCRwe),
-    .XCRcs(XCRcs),
-    .step_mode(step_mode),
-    .inject_req(inject_req),
-    .dbg_cmd(dbg_cmd),
-    .inject_instr(inject_instr),
-    .dbus_out(dbus_out),
-    .jflag(jflag),
-    .cflag(cflag),
-    .tflag(tflag),
-    .prio(prio),
-    .inject_ack(inject_ack),
-    .iaddr(iaddr),
-    .instr(instr),
-    .daddr(daddr),
-    .dwrite(dwrite),
-    .dread(dread),
-    .WAIT_DATA(!DREADY),
-    .INSTR_HOLD(INSTR_HOLD),
-    .ddata_i(ddata_i),
-    .ddata_o(ddata_o)
-);
+        jtagbridge jtag_bridge
+        (
+            //JTAG ports
+            .sys_por(sys_por),
+            .jtms(jtms),
+            .jtck(jtck),
+            .jtdi(jtdi),
+            .jtdo(jtdo),
 
-xcr_top #(.MMU_ENABLE(MMU_ENABLE),
+            .sys_clk(clk),
+            .reset_out(jrst_out),
+            .step_mode(step_mode), //Also act as halt
+            .inject_req(inject_req),
+            .dbg_cmd(dbg_cmd),
+            .inject_instr(inject_instr),
+            //
+            .dbus_in(dbus_out),
+            .jflag(jflag),
+            .cflag(cflag),
+            .tflag(tflag),
+            .prio(prio),
+            .inject_ack(inject_ack)//Also act as cmd ready
+
+        );
+    end
+    "PLUS":begin:GEN_PLUS_CORE
+        KC_LS1u_plus CORE
+        (
+            .clk(clk),
+            .rst(rst),
+            .INT(INT_Req),
+            .WAIT(!READY),
+            .IVEC_addr(IVEC_addr),//中断向量地址
+            .IN_ISP(IN_ISP),//注意:这里的取值是字编址的！
+            .XCRi(XCRi),
+            .XCRo(XCRo),
+            .XCRa(XCRa),
+            .XCRwe(XCRwe),
+            .XCRcs(XCRcs),
+            .iaddr(iaddr),
+            .instr(instr),
+            .daddr(daddr),
+            .dwrite(dwrite),
+            .dread(dread),
+            .WAIT_DATA(!DREADY),
+            .INSTR_HOLD(INSTR_HOLD),
+            .ddata_i(ddata_i),
+            .ddata_o(ddata_o)
+        );
+
+        end
+    default:begin:GEN_CLASSIC_CORE
+        KC_LS1u CORE
+        (
+            .clk(clk),
+            .rst(rst),
+            .WAIT(!READY),
+            .iaddr(iaddr),
+            .instr(instr),
+            .daddr(daddr),
+            .dwrite(dwrite),
+            .ddata_i(ddata_i),
+            .ddata_o(ddata_o)
+        );
+        end
+    endcase
+endgenerate
+
+generate if((CPU_TYPE == "WITHDEBUG") | (CPU_TYPE == "PLUS"))
+begin:GEN_XCR
+
+    xcr_top #(.MMU_ENABLE(MMU_ENABLE),
     .cDMA_ENABLE(cDMA_ENABLE))
-eXternalCtrlRegs(
+    eXternalCtrlRegs(
     .clk(clk),
     .rst(rst),
     .cr_din(XCRo),
     .cr_dout(XCRi),
     .cr_adr(XCRa),
     .cr_we(XCRwe),
-	.cr_cs(XCRcs),
-    
+    .cr_cs(XCRcs),
+
     .INT_ARR(INT_ARR),
     .XCP_ARR(XCP_ARR),
     .IVEC_ADDR(IVEC_addr),
     .INT(INT_Req),
 
     .ipae_h16(ipae_h16),//From MMU control regs
-	.dpae_h16(dpae_h16),
-	.ipte_h8(ipte_h8),
-	.dpte_h8(dpte_h8),
-	.hugepage_ptr(hugepage_ptr), //for OS working in pure physical address mode 
-	.mmu_enable(mmu_enable),
+    .dpae_h16(dpae_h16),
+    .ipte_h8(ipte_h8),
+    .dpte_h8(dpte_h8),
+    .hugepage_ptr(hugepage_ptr), //for OS working in pure physical address mode 
+    .mmu_enable(mmu_enable),
     .supervisor_mode(force_svpriv)
-);
-
-jtagbridge jtag_bridge
-(
-    //JTAG ports
-    .sys_por(sys_por),
-    .jtms(jtms),
-    .jtck(jtck),
-    .jtdi(jtdi),
-    .jtdo(jtdo),
-
-    .sys_clk(clk),
-    .reset_out(jrst_out),
-    .step_mode(step_mode), //Also act as halt
-    .inject_req(inject_req),
-    .dbg_cmd(dbg_cmd),
-    .inject_instr(inject_instr),
-    //
-    .dbus_in(dbus_out),
-    .jflag(jflag),
-    .cflag(cflag),
-    .tflag(tflag),
-    .prio(prio),
-    .inject_ack(inject_ack)//Also act as cmd ready
-
-);
-
+    );
+end
+endgenerate
 wire [23:0]pa_l1;			//L1 PA
 wire load_acc_fault;
 wire store_acc_fault;
 wire ins_acc_fault;
-wire write_through_req;	//请求写穿
+wire [BUS_WIDTH/8-1:0]write_through_req;	//请求写穿
 wire read_req;			//请求读一次
 wire read_line_req;		//请求读一行
-wire [7:0]wt_data;
-wire [7:0]line_data;
+wire [BUS_WIDTH-1:0]wt_data;
+wire [BUS_WIDTH-1:0]line_data;
 wire [7:0]addr_count;
 wire line_write;			//cache写
 wire cache_entry_refill;	//更新缓存entry
@@ -244,19 +291,53 @@ case (CACHE_TYP)
             );
             end
     default:begin : NO_CACHE
-                always@(*)//If you managed to finish this function
-                begin
-                    $display("Too lazy to do, plz DIY");
-                    //THIS_LINE_IS_TO_GENERATE_ERROR_IN_ORDER_TO_STOP_WORKFLOW<=1'b1;
-                end//Delete or comment this block 
+            if(BUS_WIDTH==16)
+            begin:BIT16_BUS_CASE		
+            		reg prev_xf_is_instr,dbyte;
+            		reg [15:0]instr_hold;
+            		wire access_is_data=(dwrite | dread);
+            		assign read_line_req=1'b0;
+                	assign write_through_req={2{dwrite}}&{daddr[0],!daddr[0]};
+                	assign read_req=!(dwrite);
+                	assign pa_l1=(access_is_data)?daddr:{iaddr[22:0],1'b0};
+                	assign instr=(prev_xf_is_instr)?line_data:instr_hold;
+                	assign wdata_o={ddata_o,ddata_o};
+                	assign ddata_i=(dbyte)?line_data[15:8]:line_data[7:0];
+                	
+                	always@(posedge clk or posedge rst)
+                	if(rst)
+                	begin
+                		prev_xf_is_instr<=1'b0;
+                		dbyte=1'b0;
+                	end
+                	else if(trans_rdy)
+                	begin
+                		prev_xf_is_instr<=!access_is_data;
+                		dbyte<=daddr[0];
+                	end
+                	
+                	always@(posedge clk)
+                	if(!access_is_data && trans_rdy)
+                		instr_hold<=line_data;
+                	
+                	assign READY=trans_rdy;
+                	assign DREADY=trans_rdy;
+                	assign load_acc_fault=1'b0;
+                	assign store_acc_fault=1'b0;
+                	assign ins_acc_fault=1'b0;
             end
+            else
+            begin:BIT8_CASE
+            	//Write some shit here
+            end
+        end
     endcase
 endgenerate
 assign XCP_ARR[0]=ins_acc_fault;
 assign XCP_ARR[1]=load_acc_fault;
 assign XCP_ARR[2]=store_acc_fault;
 generate 
-if(MMU_ENABLE == 1'b1) 
+if(MMU_ENABLE == 1'b1 && ((CPU_TYPE == "WITHDEBUG") | (CPU_TYPE == "PLUS"))) 
     begin : PAE32_MMU //Only L1 will trigger WT/RT
         pae32_mmu MMU
         (
@@ -287,7 +368,8 @@ endgenerate
 
 bus_unit #(
     .BUS_ADDR(BUS_ADDRWID),
-    .MAX_BURST(256))
+    .BUS_WIDTH(BUS_WIDTH),
+    .MAX_BURST(4))
 AHB_Interface
 (
     .clk(clk),

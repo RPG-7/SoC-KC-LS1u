@@ -44,8 +44,8 @@ assign PCP1=PC+24'h1;
 //PC_NEXT 选择器
 always@(*)
 begin
-    if (data_wait)PC_NEXT=PC;
-    else if(int_filter)PC_NEXT=IVEC_addr;//中断向量
+    //if (data_wait)PC_NEXT=PC;else 
+    if(int_filter)PC_NEXT=IVEC_addr;//中断向量
     else if(jmp)PC_NEXT=jaddr;//跳转或返回
     else PC_NEXT=PCP1;//没事+1s
 end
