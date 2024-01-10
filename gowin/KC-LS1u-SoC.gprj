@@ -17,12 +17,14 @@
         <File path="src/cache/tag_arbiter_wa.v" type="file.verilog" enable="1"/>
         <File path="src/cpu/CPU_LS1u.v" type="file.verilog" enable="1"/>
         <File path="src/cpu/KC_LS1u.v" type="file.verilog" enable="1"/>
+        <File path="src/cpu/KC_LS1u_dbg.v" type="file.verilog" enable="1"/>
         <File path="src/cpu/KC_LS1u_plus.v" type="file.verilog" enable="1"/>
         <File path="src/cpu/XCR_Components/xcr_ecp_ctrl.v" type="file.verilog" enable="1"/>
         <File path="src/cpu/XCR_Components/xcr_pae32_ctrl.v" type="file.verilog" enable="1"/>
         <File path="src/cpu/XCR_Components/xcr_top.v" type="file.verilog" enable="1"/>
         <File path="src/cpu/alu74181.v" type="file.verilog" enable="1"/>
         <File path="src/cpu/pae32_mmu.v" type="file.verilog" enable="1"/>
+        <File path="src/debug/jtagbridge.v" type="file.verilog" enable="1"/>
         <File path="src/hispeed/fsb8.v" type="file.verilog" enable="1"/>
         <File path="src/peripherals/left_bshifter.v" type="file.verilog" enable="1"/>
         <File path="src/peripherals/min_pbus.v" type="file.verilog" enable="1"/>

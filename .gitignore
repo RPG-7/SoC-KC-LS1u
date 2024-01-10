@@ -8,3 +8,8 @@ temp/
 *.log
 *.db
 *.area
+*tdrtl.v
+*.tsm
+*.timing
+*.bid
+*.bit

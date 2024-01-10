@@ -2,11 +2,11 @@
 <Project>
     <Project_Created_Time>2024-01-01 03:26:33</Project_Created_Time>
     <TD_Version>4.6.64949</TD_Version>
-    <UCode>00000000</UCode>
+    <UCode>00101010</UCode>
     <Name>KC_LS1u_SoC</Name>
     <HardWare>
-        <Family>EF1</Family>
-        <Device>EF1A650LG144</Device>
+        <Family>AL3</Family>
+        <Device>AL3S10LG144</Device>
     </HardWare>
     <Source_Files>
         <Verilog>
@@ -37,14 +37,29 @@
             <File>../../RTL/cpu/CPU_LS1u_Lite.v</File>
             <File>../../RTL/hispeed/asram16_intf.v</File>
             <File>../../RTL/peripherals/tiny_spi.v</File>
+            <File>../../RTL/cpu/XCR_Components/xcr_ecp_lite.v</File>
+            <File>../../RTL/top/MIN_LS1u.v</File>
+            <File>../../RTL/peripherals/UART.v</File>
+            <File>../../RTL/peripherals/timer.v</File>
+            <File>../../RTL/peripherals/systick.v</File>
+            <File>../../RTL/peripherals/sys_ctrl.v</File>
+            <File>../../RTL/peripherals/syscall.v</File>
+            <File>../../RTL/peripherals/port_lpc.v</File>
+            <File>../../RTL/peripherals/port8080.v</File>
+            <File>../../RTL/peripherals/pbus_top.v</File>
+            <File>../../RTL/peripherals/pbus_mux.v</File>
+            <File>../../RTL/peripherals/ocspm.v</File>
+            <File>../../RTL/peripherals/min_pbus.v</File>
+            <File>../../RTL/peripherals/GPIO.v</File>
+            <File>../../RTL/hispeed/fsb8.v</File>
         </Verilog>
         <ADC_FILE/>
         <SDC_FILE/>
         <CWC_FILE/>
     </Source_Files>
     <TOP_MODULE>
-        <LABEL>CPU_LS1u/eXternalCtrlRegs</LABEL>
-        <MODULE>xcr_top</MODULE>
+        <LABEL/>
+        <MODULE>MIN_LS1u</MODULE>
         <CREATEINDEX>user</CREATEINDEX>
     </TOP_MODULE>
     <Property>
@@ -70,7 +85,7 @@
         </RouteProperty>
     </Property>
     <Project_Settings>
-        <Step_Last_Change>2024-01-03 23:41:45</Step_Last_Change>
+        <Step_Last_Change>2024-01-10 21:28:04</Step_Last_Change>
         <Current_Step>30</Current_Step>
         <Step_Status>true</Step_Status>
     </Project_Settings>

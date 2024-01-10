@@ -34,7 +34,7 @@ integer i;
 //-----------Regs defines-----------
 reg   INTC;
 reg [7:0]   IVT0,IVT1,IVT2,
-            INTE0,EXPP0,INTP0;//,INTE2,INTE3//sub-interrupt enable
+            INTE0,XCPP0,INTP0;//,INTE2,INTE3//sub-interrupt enable
 wire [7:0]int_masked;
 wire int_trigged;
 assign int_trigged = |int_masked;
@@ -49,7 +49,7 @@ assign xcp_clr=~({8{(cr_cs & cr_we & (cr_adr[2:0]==4'h5))}}&cr_din);
 assign int_masked=(INT_ARR[7:0]&INTE0);
 assign IVT_ADDR={IVT2,IVT1,IVT0};//INTC Highest bit is interrupt enable 
 assign IVEC_ADDR=IVT_ADDR;
-assign INT = (|{INTPO,XCPP0}) & INTC;
+assign INT = (|{INTP0,XCPP0}) & INTC;
 
 always @(posedge clk or posedge rst) 
 begin
@@ -99,7 +99,7 @@ always@(*)begin
         4'h2    :   cr_dout <= IVT1;
         4'h3    :   cr_dout <= IVT2;
         4'h4    :   cr_dout <= INTE0;
-        4'h5    :   cr_dout <= EXPP0;
+        4'h5    :   cr_dout <= XCPP0;
         4'h6    :   cr_dout <= INTP0;
         default :   cr_dout <= 8'hzz;
     endcase

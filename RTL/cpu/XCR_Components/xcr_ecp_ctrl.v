@@ -83,7 +83,7 @@ begin
     end
     else if(INTC[2])
     begin
-        INT <= (|{INTPO,XCPP0}) & INTC;
+        INT <= (|{INTP0,XCPP0}) & INTC;
         IVEC_ADDR<=IVT_ADDR+{INT_OFFSET,2'b00};
     end
     else 
@@ -133,7 +133,7 @@ always@(*)begin
         4'h2    :   cr_dout <= IVT1;
         4'h3    :   cr_dout <= IVT2;
         4'h4    :   cr_dout <= INTE0;
-        4'h5    :   cr_dout <= EXPP0;
+        4'h5    :   cr_dout <= XCPP0;
         4'h6    :   cr_dout <= INTP0;
         default :   cr_dout <= 8'hzz;
     endcase

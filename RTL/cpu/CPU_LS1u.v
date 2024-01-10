@@ -1,12 +1,12 @@
 module CPU_LS1u
 #(
-    parameter CPU_TYPE = "PLUS", //CLASSIC / PLUS / WITHDEBUG
-    CACHE_TYP = 2'b11, //00:L1I only 01:Mixed I$D$ 1x:Cache-less
+    parameter CPU_TYPE = "WITHDEBUG", //CLASSIC / PLUS / WITHDEBUG
+    CACHE_TYP = 2'b01, //00:L1I only 01:Mixed I$D$ 1x:Cache-less
     CACHE_DEPTH=2048,
     CACHE_WIDTH=16,
-    BUS_WIDTH=16,
-    ENTRY_NUM=1,
-    MMU_ENABLE=1'b0,
+    BUS_WIDTH=8,
+    ENTRY_NUM=32,
+    MMU_ENABLE=1'b1,
     cDMA_ENABLE=1'b0
 )
 (
