@@ -97,6 +97,7 @@ syscall SYSCALL_UNIT
     .WB_STBi(STBi_SCL),
     .WB_ACKo()
 );
+/*
 ocspm #(.SPM_DEPTH(2048))
 DATA_SPM
 (   //Last 2K R/W area
@@ -112,6 +113,7 @@ DATA_SPM
     .WB_STBi(STBi_SPM),
     .WB_ACKo()
 );
+*/
 //IO Bank Base-Addr:0xC00000~0xC005FF (1.5KB)
 //GOTO EXTERNAL 
 //Config Bank Base-Addr:0xC00600~0xC006FF;(256B)

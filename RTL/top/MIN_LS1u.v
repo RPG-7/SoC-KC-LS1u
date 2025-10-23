@@ -3,6 +3,7 @@
 //目标器件GW1N-1
 `define UNIFIED 2'b01
 `define L1IONLY 2'b00
+`define NOCACHE 2'b10
 `define TRUE 1'b1
 `define FALSE 1'b0
 module MIN_LS1u
@@ -28,7 +29,7 @@ module MIN_LS1u
 );
 localparam MMU_SETTING = `TRUE;
 localparam cDMA_SETTING = `FALSE;
-localparam cSPM_SETTING = `TRUE;
+localparam cSPM_SETTING = `FALSE;
 localparam BUS_ADDRWID =(MMU_SETTING)?32:24;
 
 wire ADdir;
@@ -56,7 +57,7 @@ wire hsel_ocf;//OCF are on-chip 1T functions, no need to have hready
 wire [7:0]hrdata_ocf;
 wire FSB_IRQ,systick_int,syscall_int;
 assign hreset_n=~rst;
-defparam CPU1.CACHE_TYP =`L1IONLY;
+defparam CPU1.CACHE_TYP =`NOCACHE;
 defparam CPU1.CACHE_DEPTH=2048;
 defparam CPU1.ENTRY_NUM=32;
 defparam CPU1.MMU_ENABLE=MMU_SETTING;

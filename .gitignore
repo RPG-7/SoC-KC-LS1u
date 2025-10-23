@@ -4,6 +4,8 @@ altera/output_files/
 sim/uvm_library/*
 gowin/impl/
 temp/
+local_doc/
+*_Runs/
 *.bak
 *.log
 *.db

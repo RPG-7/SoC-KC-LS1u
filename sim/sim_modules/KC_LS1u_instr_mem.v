@@ -3,6 +3,7 @@ module KC_LS1u_instr_mem
     input [23:0]addr,
     output reg[15:0]instr
 );
+reg [15:0]instr_mem[65535:0];
 always@(*)
 begin
     case (addr)
@@ -35,8 +36,8 @@ begin
         default:
         begin
             instr= 16'h0000;
-            //$display("Instruction Fetch Out of Range! ADDR: %h",addr);
-            //#100 $finish;
+            $display("Instruction Fetch Out of Range! ADDR: %h",addr);
+            #100 $finish;
         end
     endcase
 end

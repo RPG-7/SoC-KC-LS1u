@@ -65,33 +65,15 @@ always @(posedge clk or posedge rst)
 begin
     if(rst)
     begin
-        {RET2,RET1,RET0}<=24'h0;
         int_service<=1'b0;
     end    
     else if(int_filter&(!instr_wait)) 
     begin
-        if(jmp){RET2,RET1,RET0}=jaddr;
-            else {RET2,RET1,RET0}<=PC;//? in some cases (XCP/INT),OS should manually +1 ?
         int_service<=1'b1;
-        RTA0<=A0;
-        RTA1<=A1;
-        RTA2<=A2;
     end
     else if(ret_sel)
     begin
         int_service<=1'b0;
-    end
-    else 
-    begin
-        if(xreg_write&(!instr_wait))
-        case(xreg_addr)
-            3'h0:RET0<=DB8w;
-            3'h1:RET1<=DB8w;
-            3'h2:RET2<=DB8w;
-            3'h3:RTA0<=DB8w;
-            3'h4:RTA1<=DB8w;
-            3'h5:RTA2<=DB8w;
-        endcase
     end
 end
 //REGs
@@ -131,6 +113,33 @@ begin
         A2<=A2;  
     end
 end
+
+//中断数据保存寄存器
+always @(posedge clk or posedge rst) 
+begin
+    if(rst)
+    begin
+        {RET2,RET1,RET0}<=24'h0;
+    end    
+    else if(int_filter&(!instr_wait)) 
+    begin
+        if(jmp){RET2,RET1,RET0}=jaddr;
+            else {RET2,RET1,RET0}<=PC;//? in some cases (XCP/INT),OS should manually +1 ?
+        RTA0<=A0;
+        RTA1<=A1;
+        RTA2<=A2;
+    end
+    else if(xreg_write&(!instr_wait))
+    case(regwaddr)
+        3'h0:RET0<=DB8w;
+        3'h1:RET1<=DB8w;
+        3'h2:RET2<=DB8w;
+        3'h3:RTA0<=DB8w;
+        3'h4:RTA1<=DB8w;
+        3'h5:RTA2<=DB8w;
+    endcase
+end
+
 //Instruction decode logic
 //JMP function select
 reg jmp_en;
@@ -153,7 +162,7 @@ assign opcode5=instr[15:11];
 reg [3:0]dbsrc_addr;
 always@(*)
 begin
-    if(opcode5==5'h08)xreg_write=1;
+    if(opcode5==5'h05)xreg_write=1;
         else xreg_write=0;
     if(opcode5==5'h01)jmp_en=1;
         else jmp_en=0;
@@ -166,34 +175,35 @@ begin
             begin dbsrc_addr=4'hf;regwrite=0; end
         5'h01://JMP select
             begin dbsrc_addr=4'hf;regwrite=0; end
-        5'h02://ALU SELECT
+        5'h02,//ALU SELECT
+        5'h03:
             begin dbsrc_addr=4'h1;regwrite=1; end
-        5'h03://MOV From XREG
-            begin dbsrc_addr=4'h5;regwrite=1; end
         5'h04://LOAD MEM
             begin dbsrc_addr=4'h2;regwrite=1; end
-        5'h05://MOV A/B to XREG
-            begin dbsrc_addr=4'h1;regwrite=1; end
+        5'h05://MOV From XREG
+            begin dbsrc_addr=4'h5;regwrite=1; end
         5'h06://LOAD IMM
             begin dbsrc_addr=4'h3;regwrite=1; end
-        5'h07://MOV FROM XCR
-            begin dbsrc_addr=4'h0;regwrite=1; end
-        5'h08://MOV TO XCR
+        5'h07://ALU calc result to XREG
+            begin dbsrc_addr=4'h4;regwrite=0; end
+        5'h08://MOV C to XCR
             begin dbsrc_addr=4'h1;regwrite=0; end
-        5'h0e://SHIFT START
-            begin dbsrc_addr=4'h7;regwrite=1; end
-        5'h10:
-            begin dbsrc_addr=4'h7;regwrite=1; end
-        5'h12:
-            begin dbsrc_addr=4'h7;regwrite=1; end  
-        5'h14:
-            begin dbsrc_addr=4'h7;regwrite=1; end  
-        5'h16:
-            begin dbsrc_addr=4'h7;regwrite=1; end  
-        5'h18:
-            begin dbsrc_addr=4'h7;regwrite=1; end  
-        5'h1a:
-            begin dbsrc_addr=4'h7;regwrite=1; end  
+        5'h09://MOV FROM XCR
+            begin dbsrc_addr=4'h0;regwrite=1; end
+        5'h0e,//SHIFT START
+        5'h0f,
+        5'h10,
+        5'h11,
+        5'h12,
+        5'h13,
+        5'h14,
+        5'h15,
+        5'h16,
+        5'h17,
+        5'h18,
+        5'h19,
+        5'h1a,
+        5'h1b,
         5'h1c://SHIFT END
             begin dbsrc_addr=4'h7;regwrite=1; end              
     endcase
@@ -208,8 +218,8 @@ begin
         3'h3:XREGr=RTA0;
         3'h4:XREGr=RTA1;
         3'h5:XREGr=RTA2;
-        3'h6:XREGr=C;
-        3'h7:XREGr=D;
+        //3'h6:XREGr=C;
+        //3'h7:XREGr=D;
     default :XREGr=8'hzz;
     endcase
 end
@@ -225,8 +235,8 @@ wire [1:0]ALU_eq;
 wire ALU_eqo,ALU_C1,ALU_Co;
 assign ALU_eqo=&ALU_eq;//both L4&H4 are equal
 wire [7:0]ALU_inA,ALU_inB;
-assign ALU_inA=A;
-assign ALU_inB=B;
+assign ALU_inA=(opcode5[0])?C:A;
+assign ALU_inB=(opcode5[0])?D:B;
 alu74181 ALU_L4
 (
     .a(ALU_inA[3:0]),
@@ -285,10 +295,14 @@ begin
 end
 else begin jmp=0;ret_sel=0; end
 
-always@(posedge clk)
-begin
-    jmp_wait<=jmp;//跳转流水线冲刷
-end
+always@(posedge clk or posedge rst)//跳转流水线冲刷
+if(rst)
+    jmp_wait<=1'b0;
+else if(!WAIT)
+    jmp_wait<=jmp & (!jmp_wait);
+else
+    jmp_wait<=jmp_wait;
+
 
 //数据写回总线MUX
 always@(*)//WB DATA BUS (shift contained here)
@@ -298,7 +312,7 @@ begin
         4'h1:DB8w=ALU_out;
         4'h2:DB8w=ddata_i;
         4'h3:DB8w=IMM;
-        //4'h4:DB8w=D;
+        4'h4:DB8w=C;
         4'h5:DB8w=XREGr;
         4'h7:DB8w=SFTO;
         default:DB8w=8'hzz;

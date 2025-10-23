@@ -1,5 +1,5 @@
 module CPLD_LS1u 
-#(parameter RAM_AWIDTH=17,
+#(parameter RAM_AWIDTH=19,
             CPU_TYPE = "PLUS", //CLASSIC / PLUS / WITHDEBUG
             MMU_ENABLE=1'b0
 )(

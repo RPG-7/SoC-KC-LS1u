@@ -3,7 +3,7 @@
 
 module KC_LS1u_plus_tb();
     //import uvm_pkg::*;
-    bit clk,rst,dwrite,INT,WAIT=0;
+    bit clk,rst,dwrite,INT,WAIT=0,WAIT_DATA=0;
     bit known_WAIT;
     logic [23:0]iaddr,daddr,IVT_ADDR;
     wire [7:0]ddata_i,ddata_o;
@@ -29,17 +29,21 @@ module KC_LS1u_plus_tb();
     begin
         if(dwrite)testspm[daddr[7:0]]<=ddata_o;
     end
+    
     always@(posedge clk)
     begin
         //ddata_i<=$random;
-        //WAIT<=$random;
+        WAIT_DATA<=$random;
+        WAIT<=$random;
     end
+    
     KC_LS1u_plus DUT
     (
         .clk(clk),
         .rst(rst),
         .INT(INT),
         .WAIT(WAIT|known_WAIT),
+        .WAIT_DATA(WAIT_DATA),
         //.INTCODE(INTCODE),//中断源编码
         .IVEC_addr(IVT_ADDR),//中断向量表基址
         .iaddr(iaddr),
@@ -47,7 +51,12 @@ module KC_LS1u_plus_tb();
         .daddr(daddr),
         .dwrite(dwrite),
         .ddata_i(ddata_i),
-        .ddata_o(ddata_o)
+        .ddata_o(ddata_o),
+        .XCRi(8'h0),
+        .XCRo(),
+        .XCRa(),
+        .XCRwe(),
+        .XCRcs()
     );
     KC_LS1u_instr_mem TEST_MEM
     (

@@ -1,0 +1,24 @@
+
+task jtag_inj_instr;
+input [15:0]input_instr;
+
+endtask
+
+
+
+
+//This is based on 
+task jtag_drscan;
+input [15:0] input_data;
+output [15:0] output_data;
+
+
+endtask
+
+task jtag_irscan;
+input [3:0] input_cmd;
+
+
+endtask
+
+
